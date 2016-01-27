@@ -1,5 +1,6 @@
 package org.androidforfun.retrogames.droids.view;
 
+import org.androidforfun.retrogames.framework.Music;
 import org.androidforfun.retrogames.framework.Pixmap;
 import org.androidforfun.retrogames.framework.Sound;
 
@@ -47,6 +48,9 @@ public class Assets {
     // sounds
     public static Sound click;
     public static Sound bitten;
+
+    // music
+    public static Music music;
 
     public static Pixmap getBlockByColor(int color) {
         switch(color) {

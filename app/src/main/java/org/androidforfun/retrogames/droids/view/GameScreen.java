@@ -67,8 +67,7 @@ public class GameScreen extends Screen {
         for(int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);
             if(event.type == TouchEvent.TOUCH_UP) {
-                if(event.x >= 5 && event.x < 55 &&
-                        event.y >= 20 && event.y < 70) {
+                if(event.x >= 5 && event.x < 55 && event.y >= 20 && event.y < 70) {
                     if(Settings.soundEnabled)
                         Assets.click.play(1);
                     DroidsWorld.getInstance().setState(DroidsWorld.GameState.Paused);
@@ -109,8 +108,13 @@ public class GameScreen extends Screen {
         if (DroidsWorld.getInstance().getState() == DroidsWorld.GameState.GameOver) {
             if(Settings.soundEnabled)
                 Assets.bitten.play(1);
-            DroidsWorld.getInstance().setState(DroidsWorld.GameState.GameOver);
+            //DroidsWorld.getInstance().setState(DroidsWorld.GameState.GameOver);
         }
+        if(Settings.soundEnabled)
+            if (!Assets.music.isPlaying()) {
+                Assets.music.setLooping(true);
+                Assets.music.play();
+            }
     }
 
     private void updatePaused(List<TouchEvent> touchEvents) {
@@ -135,6 +139,9 @@ public class GameScreen extends Screen {
                 }
             }
         }
+        if(Settings.soundEnabled)
+            if (Assets.music.isPlaying())
+                Assets.music.pause();
     }
 
     private void updateGameOver(List<TouchEvent> touchEvents) {
@@ -152,6 +159,9 @@ public class GameScreen extends Screen {
                 }
             }
         }
+        if(Settings.soundEnabled)
+            if (Assets.music.isPlaying())
+                Assets.music.stop();
     }
 
     @Override

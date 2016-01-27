@@ -51,6 +51,7 @@ public class LoadingScreen extends Screen {
 
         Assets.click = game.getAudio().newSound("click.ogg");
         Assets.bitten = game.getAudio().newSound("bitten.ogg");
+        Assets.music = game.getAudio().newMusic("Korobeiniki.ogg");
 
         Settings.load(game.getFileIO());
         game.setScreen(new StartScreen(game));
