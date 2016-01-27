@@ -77,28 +77,28 @@ public class GameScreen extends Screen {
             }
             if(event.type == TouchEvent.TOUCH_DOWN) {
                 // Move falling shape on the left, if possible
-                if(event.x >= 20 && event.x < 70 &&
+                if(event.x >= 30 && event.x < 80 &&
                         event.y >= 425 && event.y < 475) {
                     DroidsWorld.getInstance().getFallingShape().moveLeft();
                     if (DroidsWorld.getInstance().getFallingShape().collide())
                         DroidsWorld.getInstance().getFallingShape().moveRight();
                 }
                 // Move falling shape on the right, if possible
-                if(event.x >= 230 && event.x < 280 &&
+                if(event.x >= 240 && event.x < 290 &&
                         event.y >= 425 && event.y < 475) {
                     DroidsWorld.getInstance().getFallingShape().moveRight();
                     if (DroidsWorld.getInstance().getFallingShape().collide())
                         DroidsWorld.getInstance().getFallingShape().moveLeft();
                 }
                 // Rotate falling shape, if possible
-                if(event.x >= 90 && event.x < 140 &&
+                if(event.x >= 100 && event.x < 150 &&
                         event.y >= 425 && event.y < 475) {
                     DroidsWorld.getInstance().getFallingShape().rotateRight();
                     if (DroidsWorld.getInstance().getFallingShape().collide())
                         DroidsWorld.getInstance().getFallingShape().rotateLeft();
                 }
                 // Accelerate falling of the falling shape
-                if(event.x >= 160 && event.x < 210 &&
+                if(event.x >= 170 && event.x < 220 &&
                         event.y >= 425 && event.y < 475) {
                     DroidsWorld.getInstance().getFallingShape().accelerateFalling();
                 }
@@ -223,10 +223,10 @@ public class GameScreen extends Screen {
         Graphics g = game.getGraphics();
 
         g.drawPixmap(Assets.readymenu, 65, 100);
-        g.drawPixmap(Assets.buttons, 20, 425, 50, 50, 51, 51); // left button
-        g.drawPixmap(Assets.buttons, 230, 425, 0, 50, 51, 51); // right button
-        g.drawPixmap(Assets.buttons, 90, 425, 50, 150, 51, 51); // rotate button
-        g.drawPixmap(Assets.buttons, 160, 425, 0, 150, 51, 51); // down button
+        g.drawPixmap(Assets.buttons, 30, 425, 50, 50, 51, 51); // left button
+        g.drawPixmap(Assets.buttons, 240, 425, 0, 50, 51, 51); // right button
+        g.drawPixmap(Assets.buttons, 100, 425, 50, 150, 51, 51); // rotate button
+        g.drawPixmap(Assets.buttons, 170, 425, 0, 150, 51, 51); // down button
     }
 
     private void drawRunningUI() {
@@ -234,10 +234,10 @@ public class GameScreen extends Screen {
         Graphics g = game.getGraphics();
 
         g.drawPixmap(Assets.buttons, 5, 20, 50, 100, 51, 51); // pause button
-        g.drawPixmap(Assets.buttons, 20, 425, 50, 50, 51, 51);  // left button
-        g.drawPixmap(Assets.buttons, 230, 425, 0, 50, 51, 51); // right button
-        g.drawPixmap(Assets.buttons, 90, 425, 50, 150, 51, 51); // rotate button
-        g.drawPixmap(Assets.buttons, 160, 425, 0, 150, 51, 51); // down button
+        g.drawPixmap(Assets.buttons, 30, 425, 50, 50, 51, 51);  // left button
+        g.drawPixmap(Assets.buttons, 240, 425, 0, 50, 51, 51); // right button
+        g.drawPixmap(Assets.buttons, 100, 425, 50, 150, 51, 51); // rotate button
+        g.drawPixmap(Assets.buttons, 170, 425, 0, 150, 51, 51); // down button
     }
 
     private void drawPausedUI() {
