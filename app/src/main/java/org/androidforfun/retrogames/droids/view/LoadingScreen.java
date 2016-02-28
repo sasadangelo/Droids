@@ -58,7 +58,7 @@ public class LoadingScreen extends Screen {
     }
 
     @Override
-    public void present(float deltaTime) {
+    public void draw(float deltaTime) {
     }
 
     @Override

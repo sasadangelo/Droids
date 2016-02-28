@@ -18,7 +18,9 @@ import org.androidforfun.retrogames.framework.Input.TouchEvent;
 import org.androidforfun.retrogames.framework.Screen;
 import org.androidforfun.retrogames.framework.TextStyle;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameScreen extends Screen {
     public static int BLOCK_WIDTH=20;
@@ -30,6 +32,9 @@ public class GameScreen extends Screen {
     private Region workingRegion;
     private Region commandRegion;
 
+    Map<DroidsWorld.GameState, GameState> states = new EnumMap<DroidsWorld.GameState, GameState>(DroidsWorld.GameState.class);
+    //private GameState state;
+
     public GameScreen(Game game) {
         super(game);
         Log.i(LOG_TAG, "constructor -- begin");
@@ -37,6 +42,10 @@ public class GameScreen extends Screen {
         workingRegion = new Region(60, 20, 200, 400);
         rightRegion = new Region(260, 0, 60, 400);
         commandRegion = new Region(0, 400, 320, 80);
+        states.put(DroidsWorld.GameState.Paused, new GamePaused());
+        states.put(DroidsWorld.GameState.Ready, new GameReady());
+        states.put(DroidsWorld.GameState.Running, new GameRunning());
+        states.put(DroidsWorld.GameState.GameOver, new GameOver());
     }
 
     @Override
@@ -44,142 +53,18 @@ public class GameScreen extends Screen {
         Log.i(LOG_TAG, "update -- begin");
         List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
         game.getInput().getKeyEvents();
-        
-        if(DroidsWorld.getInstance().getState() == DroidsWorld.GameState.Ready)
-            updateReady(touchEvents);
-        if(DroidsWorld.getInstance().getState() == DroidsWorld.GameState.Running)
-            updateRunning(touchEvents, deltaTime);
-        if(DroidsWorld.getInstance().getState() == DroidsWorld.GameState.Paused)
-            updatePaused(touchEvents);
-        if(DroidsWorld.getInstance().getState() == DroidsWorld.GameState.GameOver)
-            updateGameOver(touchEvents);        
-    }
-    
-    private void updateReady(List<TouchEvent> touchEvents) {
-        Log.i(LOG_TAG, "updateReady -- begin");
-        if(touchEvents.size() > 0)
-            DroidsWorld.getInstance().setState(DroidsWorld.GameState.Running);
-    }
-    
-    private void updateRunning(List<TouchEvent> touchEvents, float deltaTime) {
-        Log.i(LOG_TAG, "updateRunning -- begin");
-        int len = touchEvents.size();
-        for(int i = 0; i < len; i++) {
-            TouchEvent event = touchEvents.get(i);
-            if(event.type == TouchEvent.TOUCH_UP) {
-                if(event.x >= 5 && event.x < 55 && event.y >= 20 && event.y < 70) {
-                    if(Settings.soundEnabled)
-                        Assets.click.play(1);
-                    DroidsWorld.getInstance().setState(DroidsWorld.GameState.Paused);
-                    return;
-                }
-            }
-            if(event.type == TouchEvent.TOUCH_DOWN) {
-                // Move falling shape on the left, if possible
-                if(event.x >= 30 && event.x < 80 &&
-                        event.y >= 425 && event.y < 475) {
-                    DroidsWorld.getInstance().getFallingShape().moveLeft();
-                    if (DroidsWorld.getInstance().getFallingShape().collide())
-                        DroidsWorld.getInstance().getFallingShape().moveRight();
-                }
-                // Move falling shape on the right, if possible
-                if(event.x >= 240 && event.x < 290 &&
-                        event.y >= 425 && event.y < 475) {
-                    DroidsWorld.getInstance().getFallingShape().moveRight();
-                    if (DroidsWorld.getInstance().getFallingShape().collide())
-                        DroidsWorld.getInstance().getFallingShape().moveLeft();
-                }
-                // Rotate falling shape, if possible
-                if(event.x >= 100 && event.x < 150 &&
-                        event.y >= 425 && event.y < 475) {
-                    DroidsWorld.getInstance().getFallingShape().rotateRight();
-                    if (DroidsWorld.getInstance().getFallingShape().collide())
-                        DroidsWorld.getInstance().getFallingShape().rotateLeft();
-                }
-                // Accelerate falling of the falling shape
-                if(event.x >= 170 && event.x < 220 &&
-                        event.y >= 425 && event.y < 475) {
-                    DroidsWorld.getInstance().getFallingShape().accelerateFalling();
-                }
-            }
-        }
 
-        DroidsWorld.getInstance().update(deltaTime);
-        if (DroidsWorld.getInstance().getState() == DroidsWorld.GameState.GameOver) {
-            if(Settings.soundEnabled)
-                Assets.bitten.play(1);
-            //DroidsWorld.getInstance().setState(DroidsWorld.GameState.GameOver);
-        }
-        if(Settings.soundEnabled)
-            if (!Assets.music.isPlaying()) {
-                Assets.music.setLooping(true);
-                Assets.music.play();
-            }
-    }
-
-    private void updatePaused(List<TouchEvent> touchEvents) {
-        Log.i(LOG_TAG, "updatePaused -- begin");
-        int len = touchEvents.size();
-        for(int i = 0; i < len; i++) {
-            TouchEvent event = touchEvents.get(i);
-            if(event.type == TouchEvent.TOUCH_UP) {
-                if(event.x > 80 && event.x <= 240) {
-                    if(event.y > 100 && event.y <= 148) {
-                        if(Settings.soundEnabled)
-                            Assets.click.play(1);
-                        DroidsWorld.getInstance().setState(DroidsWorld.GameState.Running);
-                        return;
-                    }
-                    if(event.y > 148 && event.y < 196) {
-                        if(Settings.soundEnabled)
-                            Assets.click.play(1);
-                        game.setScreen(new StartScreen(game));
-                        return;
-                    }
-                }
-            }
-        }
-        if(Settings.soundEnabled)
-            if (Assets.music.isPlaying())
-                Assets.music.pause();
-    }
-
-    private void updateGameOver(List<TouchEvent> touchEvents) {
-        Log.i(LOG_TAG, "updateGameOver -- begin");
-        int len = touchEvents.size();
-        for(int i = 0; i < len; i++) {
-            TouchEvent event = touchEvents.get(i);
-            if(event.type == TouchEvent.TOUCH_UP) {
-                if(event.x >= 128 && event.x <= 192 && event.y >= 200 && event.y <= 264) {
-                    if(Settings.soundEnabled)
-                        Assets.click.play(1);
-                    game.setScreen(new StartScreen(game));
-                    DroidsWorld.getInstance().clear();
-                    return;
-                }
-            }
-        }
-        if(Settings.soundEnabled)
-            if (Assets.music.isPlaying())
-                Assets.music.stop();
+        states.get(DroidsWorld.getInstance().getState()).update(touchEvents, deltaTime);
     }
 
     @Override
-    public void present(float deltaTime) {
+    public void draw(float deltaTime) {
         Log.i(LOG_TAG, "present -- begin");
         Graphics g = game.getGraphics();
 
         g.drawPixmap(Assets.gamescreen, 0, 0);
         drawTetris();
-        if(DroidsWorld.getInstance().getState() == DroidsWorld.GameState.Ready)
-            drawReadyUI();
-        if(DroidsWorld.getInstance().getState() == DroidsWorld.GameState.Running)
-            drawRunningUI();
-        if(DroidsWorld.getInstance().getState() == DroidsWorld.GameState.Paused)
-            drawPausedUI();
-        if(DroidsWorld.getInstance().getState() == DroidsWorld.GameState.GameOver)
-            drawGameOverUI();
-
+        states.get(DroidsWorld.getInstance().getState()).draw();
         if (DroidsWorld.getInstance().getState() != DroidsWorld.GameState.GameOver) {
             TextStyle style = new TextStyle();
             style.setColor(0xffffffff);
@@ -228,43 +113,6 @@ public class GameScreen extends Screen {
         }
     }
 
-    private void drawReadyUI() {
-        Log.i(LOG_TAG, "drawReadyUI -- begin");
-        Graphics g = game.getGraphics();
-
-        g.drawPixmap(Assets.readymenu, 65, 100);
-        g.drawPixmap(Assets.buttons, 30, 425, 50, 50, 51, 51); // left button
-        g.drawPixmap(Assets.buttons, 240, 425, 0, 50, 51, 51); // right button
-        g.drawPixmap(Assets.buttons, 100, 425, 50, 150, 51, 51); // rotate button
-        g.drawPixmap(Assets.buttons, 170, 425, 0, 150, 51, 51); // down button
-    }
-
-    private void drawRunningUI() {
-        Log.i(LOG_TAG, "drawRunningUI -- begin");
-        Graphics g = game.getGraphics();
-
-        g.drawPixmap(Assets.buttons, 5, 20, 50, 100, 51, 51); // pause button
-        g.drawPixmap(Assets.buttons, 30, 425, 50, 50, 51, 51);  // left button
-        g.drawPixmap(Assets.buttons, 240, 425, 0, 50, 51, 51); // right button
-        g.drawPixmap(Assets.buttons, 100, 425, 50, 150, 51, 51); // rotate button
-        g.drawPixmap(Assets.buttons, 170, 425, 0, 150, 51, 51); // down button
-    }
-
-    private void drawPausedUI() {
-        Log.i(LOG_TAG, "drawPausedUI -- begin");
-        Graphics g = game.getGraphics();
-        g.drawPixmap(Assets.pausemenu, 100, 100);
-    }
-
-    private void drawGameOverUI() {
-        Log.i(LOG_TAG, "drawGameOverUI -- begin");
-        Graphics g = game.getGraphics();
-
-        g.drawPixmap(Assets.gameoverscreen, 0, 0);
-        g.drawPixmap(Assets.buttons, 128, 200, 0, 100, 51, 51);
-        drawText(g, ""+ DroidsWorld.getInstance().getScore(), 180, 280);
-    }
-
     public void drawText(Graphics g, String line, int x, int y) {
         Log.i(LOG_TAG, "drawText -- begin");
         int len = line.length();
@@ -300,6 +148,164 @@ public class GameScreen extends Screen {
         if(DroidsWorld.getInstance().getState() == DroidsWorld.GameState.GameOver) {
             Settings.addScore(DroidsWorld.getInstance().getScore());
             Settings.save(game.getFileIO());
+        }
+    }
+
+    abstract class GameState {
+        abstract void update(List<TouchEvent> touchEvents, float deltaTime);
+        abstract void draw();
+    }
+
+    class GameRunning extends GameState {
+        void update(List<TouchEvent> touchEvents, float deltaTime) {
+            Log.i(LOG_TAG, "updateRunning -- begin");
+            int len = touchEvents.size();
+            for(int i = 0; i < len; i++) {
+                TouchEvent event = touchEvents.get(i);
+                if(event.type == TouchEvent.TOUCH_UP) {
+                    if(event.x >= 5 && event.x < 55 && event.y >= 20 && event.y < 70) {
+                        if(Settings.soundEnabled)
+                            Assets.click.play(1);
+                        DroidsWorld.getInstance().setState(DroidsWorld.GameState.Paused);
+                        return;
+                    }
+                }
+                if(event.type == TouchEvent.TOUCH_DOWN) {
+                    // Move falling shape on the left, if possible
+                    if(event.x >= 30 && event.x < 80 &&
+                            event.y >= 425 && event.y < 475) {
+                        DroidsWorld.getInstance().getFallingShape().moveLeft();
+                        if (DroidsWorld.getInstance().getFallingShape().collide())
+                            DroidsWorld.getInstance().getFallingShape().moveRight();
+                    }
+                    // Move falling shape on the right, if possible
+                    if(event.x >= 240 && event.x < 290 &&
+                            event.y >= 425 && event.y < 475) {
+                        DroidsWorld.getInstance().getFallingShape().moveRight();
+                        if (DroidsWorld.getInstance().getFallingShape().collide())
+                            DroidsWorld.getInstance().getFallingShape().moveLeft();
+                    }
+                    // Rotate falling shape, if possible
+                    if(event.x >= 100 && event.x < 150 &&
+                            event.y >= 425 && event.y < 475) {
+                        DroidsWorld.getInstance().getFallingShape().rotateRight();
+                        if (DroidsWorld.getInstance().getFallingShape().collide())
+                            DroidsWorld.getInstance().getFallingShape().rotateLeft();
+                    }
+                    // Accelerate falling of the falling shape
+                    if(event.x >= 170 && event.x < 220 &&
+                            event.y >= 425 && event.y < 475) {
+                        DroidsWorld.getInstance().getFallingShape().accelerateFalling();
+                    }
+                }
+            }
+
+            DroidsWorld.getInstance().update(deltaTime);
+            if (DroidsWorld.getInstance().getState() == DroidsWorld.GameState.GameOver) {
+                if(Settings.soundEnabled)
+                    Assets.bitten.play(1);
+            }
+            if(Settings.soundEnabled)
+                if (!Assets.music.isPlaying()) {
+                    Assets.music.setLooping(true);
+                    Assets.music.play();
+            }
+        }
+
+        void draw() {
+            Log.i(LOG_TAG, "drawRunningUI -- begin");
+            Graphics g = game.getGraphics();
+
+            g.drawPixmap(Assets.buttons, 5, 20, 50, 100, 51, 51); // pause button
+            g.drawPixmap(Assets.buttons, 30, 425, 50, 50, 51, 51);  // left button
+            g.drawPixmap(Assets.buttons, 240, 425, 0, 50, 51, 51); // right button
+            g.drawPixmap(Assets.buttons, 100, 425, 50, 150, 51, 51); // rotate button
+            g.drawPixmap(Assets.buttons, 170, 425, 0, 150, 51, 51); // down button
+        }
+    }
+
+    class GamePaused extends GameState {
+        void update(List<TouchEvent> touchEvents, float deltaTime) {
+            Log.i(LOG_TAG, "updatePaused -- begin");
+            int len = touchEvents.size();
+            for(int i = 0; i < len; i++) {
+                TouchEvent event = touchEvents.get(i);
+                if(event.type == TouchEvent.TOUCH_UP) {
+                    if(event.x > 80 && event.x <= 240) {
+                        if(event.y > 100 && event.y <= 148) {
+                            if(Settings.soundEnabled)
+                                Assets.click.play(1);
+                            DroidsWorld.getInstance().setState(DroidsWorld.GameState.Running);
+                            return;
+                        }
+                        if(event.y > 148 && event.y < 196) {
+                            if(Settings.soundEnabled)
+                                Assets.click.play(1);
+                            game.setScreen(new StartScreen(game));
+                            return;
+                        }
+                    }
+                }
+            }
+            if(Settings.soundEnabled)
+                if (Assets.music.isPlaying())
+                    Assets.music.pause();
+        }
+
+        void draw() {
+            Log.i(LOG_TAG, "drawPausedUI -- begin");
+            Graphics g = game.getGraphics();
+            g.drawPixmap(Assets.pausemenu, 100, 100);
+        }
+    }
+
+    class GameReady extends GameState {
+        void update(List<TouchEvent> touchEvents, float deltaTime) {
+            Log.i(LOG_TAG, "updateReady -- begin");
+            if(touchEvents.size() > 0)
+                DroidsWorld.getInstance().setState(DroidsWorld.GameState.Running);
+        }
+
+        void draw() {
+            Log.i(LOG_TAG, "drawReadyUI -- begin");
+            Graphics g = game.getGraphics();
+
+            g.drawPixmap(Assets.readymenu, 65, 100);
+            g.drawPixmap(Assets.buttons, 30, 425, 50, 50, 51, 51); // left button
+            g.drawPixmap(Assets.buttons, 240, 425, 0, 50, 51, 51); // right button
+            g.drawPixmap(Assets.buttons, 100, 425, 50, 150, 51, 51); // rotate button
+            g.drawPixmap(Assets.buttons, 170, 425, 0, 150, 51, 51); // down button
+        }
+    }
+
+    class GameOver extends GameState {
+        void update(List<TouchEvent> touchEvents, float deltaTime) {
+            Log.i(LOG_TAG, "updateGameOver -- begin");
+            int len = touchEvents.size();
+            for(int i = 0; i < len; i++) {
+                TouchEvent event = touchEvents.get(i);
+                if(event.type == TouchEvent.TOUCH_UP) {
+                    if(event.x >= 128 && event.x <= 192 && event.y >= 200 && event.y <= 264) {
+                        if(Settings.soundEnabled)
+                            Assets.click.play(1);
+                        game.setScreen(new StartScreen(game));
+                        DroidsWorld.getInstance().clear();
+                        return;
+                    }
+                }
+            }
+            if(Settings.soundEnabled)
+                if (Assets.music.isPlaying())
+                    Assets.music.stop();
+        }
+
+        void draw() {
+            Log.i(LOG_TAG, "drawGameOverUI -- begin");
+            Graphics g = game.getGraphics();
+
+            g.drawPixmap(Assets.gameoverscreen, 0, 0);
+            g.drawPixmap(Assets.buttons, 128, 200, 0, 100, 51, 51);
+            drawText(g, "" + DroidsWorld.getInstance().getScore(), 180, 280);
         }
     }
 

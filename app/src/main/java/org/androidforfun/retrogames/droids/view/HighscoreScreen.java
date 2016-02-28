@@ -39,7 +39,7 @@ public class HighscoreScreen extends Screen {
     }
 
     @Override
-    public void present(float deltaTime) {
+    public void draw(float deltaTime) {
         Graphics g = game.getGraphics();
 
         g.drawPixmap(Assets.highscoresscreen, 0, 0);

@@ -60,7 +60,7 @@ public class StartScreen extends Screen {
     }
 
     @Override
-    public void present(float deltaTime) {
+    public void draw(float deltaTime) {
         Graphics g = game.getGraphics();
 
         g.drawPixmap(Assets.startscreen, 0, 0);
