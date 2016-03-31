@@ -38,19 +38,9 @@ public class DroidsWorld {
     // the user score
     private int score = 0;
 
-    public Shape getNextShape() {
-        return nextShape;
-    }
-    public int getLevel() {
-        return level;
-    }
-    public Shape getFallingShape() {
-        return fallingShape;
-    }
-
     // the private static instance used to implement the Singleton pattern.
     private static DroidsWorld instance = null;
-
+    
     private DroidsWorld() {
         spawnNextShape();
         makeNextShapeFalling();
@@ -203,4 +193,15 @@ public class DroidsWorld {
         this.score = score;
     }
 
+    public Shape getNextShape() {
+        return nextShape;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public Shape getFallingShape() {
+        return fallingShape;
+    }
 }

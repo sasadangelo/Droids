@@ -33,7 +33,6 @@ public class GameScreen extends Screen {
     private Region commandRegion;
 
     Map<DroidsWorld.GameState, GameState> states = new EnumMap<DroidsWorld.GameState, GameState>(DroidsWorld.GameState.class);
-    //private GameState state;
 
     public GameScreen(Game game) {
         super(game);
@@ -256,6 +255,12 @@ public class GameScreen extends Screen {
             Log.i(LOG_TAG, "drawPausedUI -- begin");
             Graphics g = game.getGraphics();
             g.drawPixmap(Assets.pausemenu, 100, 100);
+
+            g.drawPixmap(Assets.buttons, 5, 20, 50, 100, 51, 51); // pause button
+            g.drawPixmap(Assets.buttons, 30, 425, 50, 50, 51, 51);  // left button
+            g.drawPixmap(Assets.buttons, 240, 425, 0, 50, 51, 51); // right button
+            g.drawPixmap(Assets.buttons, 100, 425, 50, 150, 51, 51); // rotate button
+            g.drawPixmap(Assets.buttons, 170, 425, 0, 150, 51, 51); // down button
         }
     }
 
