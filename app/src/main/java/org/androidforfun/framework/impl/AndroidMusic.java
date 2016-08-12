@@ -1,7 +1,5 @@
 package org.androidforfun.framework.impl;
 
-import java.io.IOException;
-
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;

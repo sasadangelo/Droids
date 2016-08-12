@@ -4,7 +4,6 @@ import android.util.Log;
 
 import org.androidforfun.droids.model.DroidsWorld;
 import org.androidforfun.droids.model.Settings;
-import org.androidforfun.framework.FileIO;
 import org.androidforfun.framework.Game;
 import org.androidforfun.framework.Gdx;
 import org.androidforfun.framework.Graphics;
@@ -21,7 +20,7 @@ import java.util.Map;
 public class GameScreen implements Screen {
     private static final String LOG_TAG = "Droids.GameScreen";
 
-    private Map<DroidsWorld.GameState, GameState> states = new EnumMap<DroidsWorld.GameState, GameState>(DroidsWorld.GameState.class);
+    private Map<DroidsWorld.GameState, GameState> states = new EnumMap<>(DroidsWorld.GameState.class);
     private Rectangle leftRegion;
     private Rectangle rightRegion;
     private Rectangle workingRegion;

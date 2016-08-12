@@ -1,9 +1,7 @@
 package org.androidforfun.droids.model;
 
 import android.os.SystemClock;
-
 import org.androidforfun.framework.Actor;
-import org.androidforfun.framework.Rectangle;
 
 /*
  Shape
@@ -94,34 +92,6 @@ public abstract class Shape extends Actor {
         rotation-=1;
     }
 
-    // This method returns the minimum square that contains the shape.
-    public int[] getMyBounds() {
-        // Go throug all blocks to find the bounds of this shape
-        int x_min = 0;
-        int y_min = 0;
-        int x_max = DroidsWorld.getInstance().WORLD_WIDTH-1;
-        int y_max = DroidsWorld.getInstance().WORLD_HEIGHT-1;
-
-        for (Block block : blocks) {
-            if (block.getX() < x_min) {
-                x_min = block.getX();
-            }
-            if (block.getY() < y_min) {
-                y_min = block.getY();
-            }
-
-            if (block.getX() > x_max) {
-                x_max = block.getX();
-            }
-            if (block.getY() > y_max) {
-                y_max = block.getY();
-            }
-        }
-
-        int bounds[] = {x_min, y_min, x_max, y_max};
-        return bounds;
-    }
-
     // This method returns true if the time passed from last fall movement of the shape
     // (    Gosu::milliseconds - @last_fall_update) is > than updateInterval.
     // The updateInterval decrease with increase of game level and when user
@@ -193,22 +163,6 @@ public abstract class Shape extends Actor {
                 return true;
             }
         }
-
-        // Check if the shape collide with main windows
-        //int bounds[] = getMyBounds();
-
-        //if (bounds[3] > DroidsWorld.getInstance().WORLD_HEIGHT-1)
-        //    return true;
-
-        //if (bounds[2] > DroidsWorld.getInstance().WORLD_WIDTH-1)
-        //    return true;
-
-        //if (bounds[1] < 0)
-        //    return true;
-
-        //if (bounds[0] < 0)
-        //    return true;
-
         return false;
     }
 

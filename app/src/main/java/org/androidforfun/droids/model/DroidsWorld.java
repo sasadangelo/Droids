@@ -25,7 +25,7 @@ public class DroidsWorld {
     GameState state = GameState.Ready;
 
     // this is the list of blocks laying in the botton of screen.
-    private List<Block> blocks = new ArrayList<Block>();
+    private List<Block> blocks = new ArrayList<>();
     // the game level
     private int level = 0;
     // In droids falling shape.. This variable contains the falling shape.
@@ -107,7 +107,7 @@ public class DroidsWorld {
     // When the falling shape completes its journey this method is called
     // to check if its block completes one or more lines.
     void deleteLinesOf(Shape shape) {
-        List <Integer> deletedLines = new ArrayList<Integer>();
+        List <Integer> deletedLines = new ArrayList<>();
 
         // Go through each block of the shape and check if the lines they are on are complete.
         // If so, the line of the block will be candidate for removal.
