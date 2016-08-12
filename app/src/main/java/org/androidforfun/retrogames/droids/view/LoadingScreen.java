@@ -2,22 +2,21 @@ package org.androidforfun.retrogames.droids.view;
 
 import android.util.Log;
 
-import org.androidforfun.retrogames.framework.Game;
-import org.androidforfun.retrogames.framework.Graphics;
-import org.androidforfun.retrogames.framework.Graphics.PixmapFormat;
-import org.androidforfun.retrogames.framework.Screen;
+import org.androidforfun.framework.Game;
+import org.androidforfun.framework.Gdx;
+import org.androidforfun.framework.Graphics;
+import org.androidforfun.framework.Graphics.PixmapFormat;
+import org.androidforfun.framework.Screen;
 import org.androidforfun.retrogames.droids.model.Settings;
 
-public class LoadingScreen extends Screen {
+public class LoadingScreen implements Screen {
     private static final String LOG_TAG = "Droids.LoadingScreen";
-    public LoadingScreen(Game game) {
-        super(game);
-    }
 
     @Override
     public void update(float deltaTime) {
         Log.i(LOG_TAG, "update -- begin");
-        Graphics g = game.getGraphics();
+        Game game = Gdx.game;
+        Graphics g = Gdx.graphics;
 
         Assets.logo = g.newPixmap("logo.png", PixmapFormat.RGB565);
 
@@ -53,12 +52,13 @@ public class LoadingScreen extends Screen {
         Assets.bitten = game.getAudio().newSound("bitten.ogg");
         Assets.music = game.getAudio().newMusic("Korobeiniki.ogg");
 
-        Settings.load(game.getFileIO());
-        game.setScreen(new StartScreen(game));
+        Settings.load(Gdx.fileIO);
+        game.setScreen(new StartScreen());
     }
 
     @Override
     public void draw(float deltaTime) {
+        Log.i(LOG_TAG, "draw -- begin");
     }
 
     @Override

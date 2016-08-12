@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import android.content.Context;
 import android.os.Build.VERSION;
 import android.view.View;
 
-import org.androidforfun.retrogames.framework.Input;
+import org.androidforfun.framework.Input;
 
 public class AndroidInput implements Input {    
     AccelerometerHandler accelHandler;

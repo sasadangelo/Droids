@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,15 +6,15 @@ import java.util.List;
 import android.view.View;
 import android.view.View.OnKeyListener;
 
-import org.androidforfun.retrogames.framework.Input.KeyEvent;
-import org.androidforfun.retrogames.framework.Pool;
-import org.androidforfun.retrogames.framework.Pool.PoolObjectFactory;
+import org.androidforfun.framework.Input.KeyEvent;
+import org.androidforfun.framework.Pool;
+import org.androidforfun.framework.Pool.PoolObjectFactory;
 
 public class KeyboardHandler implements OnKeyListener {
     boolean[] pressedKeys = new boolean[128];
     Pool<KeyEvent> keyEventPool;
-    List<KeyEvent> keyEventsBuffer = new ArrayList<KeyEvent>();    
-    List<KeyEvent> keyEvents = new ArrayList<KeyEvent>();
+    List<KeyEvent> keyEventsBuffer = new ArrayList<>();
+    List<KeyEvent> keyEvents = new ArrayList<>();
 
     public KeyboardHandler(View view) {
         PoolObjectFactory<KeyEvent> factory = new PoolObjectFactory<KeyEvent>() {
@@ -23,7 +23,7 @@ public class KeyboardHandler implements OnKeyListener {
                 return new KeyEvent();
             }
         };
-        keyEventPool = new Pool<KeyEvent>(factory, 100);
+        keyEventPool = new Pool<>(factory, 100);
         view.setOnKeyListener(this);
         view.setFocusableInTouchMode(true);
         view.requestFocus();
@@ -54,9 +54,7 @@ public class KeyboardHandler implements OnKeyListener {
     }
 
     public boolean isKeyPressed(int keyCode) {
-        if (keyCode < 0 || keyCode > 127)
-            return false;
-        return pressedKeys[keyCode];
+        return !(keyCode < 0 || keyCode > 127) && pressedKeys[keyCode];
     }
 
     public List<KeyEvent> getKeyEvents() {

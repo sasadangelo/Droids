@@ -1,21 +1,21 @@
 package org.androidforfun.retrogames.droids.view;
 
+import org.androidforfun.framework.Gdx;
 import org.androidforfun.retrogames.droids.model.Settings;
-import org.androidforfun.retrogames.framework.Game;
-import org.androidforfun.retrogames.framework.Graphics;
-import org.androidforfun.retrogames.framework.Input;
-import org.androidforfun.retrogames.framework.Screen;
+import org.androidforfun.framework.Game;
+import org.androidforfun.framework.Graphics;
+import org.androidforfun.framework.Input;
+import org.androidforfun.framework.Screen;
 
 import java.util.List;
 
-public class StartScreen extends Screen {
-    public StartScreen(Game game) {
-        super(game);
+public class StartScreen implements Screen {
+    public StartScreen() {
     }
 
     @Override
     public void update(float deltaTime) {
-        Graphics g = game.getGraphics();
+        Game game = Gdx.game;
         List<Input.TouchEvent> touchEvents = game.getInput().getTouchEvents();
         game.getInput().getKeyEvents();
 
@@ -29,22 +29,22 @@ public class StartScreen extends Screen {
                         Assets.click.play(1);
                 }
                 if(inBounds(event, 64, 220, 192, 42) ) {
-                    game.setScreen(new GameScreen(game));
+                    game.setScreen(new GameScreen());
                     if (Settings.soundEnabled)
                         Assets.click.play(1);
                     return;
                 }
                 if(inBounds(event, 64, 220 + 42, 192, 42) ) {
-                    game.setScreen(new HighscoreScreen(game));
+                    game.setScreen(new HighscoreScreen());
                     if(Settings.soundEnabled)
                         Assets.click.play(1);
                     return;
                 }
                 if(inBounds(event, 64, 220 + 84, 192, 42) ) {
                     android.os.Process.killProcess(android.os.Process.myPid());
-                    System.exit(1);
                     if(Settings.soundEnabled)
                         Assets.click.play(1);
+                    System.exit(1);
                     return;
                 }
             }
@@ -61,7 +61,7 @@ public class StartScreen extends Screen {
 
     @Override
     public void draw(float deltaTime) {
-        Graphics g = game.getGraphics();
+        Graphics g = Gdx.graphics;
 
         g.drawPixmap(Assets.startscreen, 0, 0);
         g.drawPixmap(Assets.logo, 32, 20);
@@ -74,7 +74,7 @@ public class StartScreen extends Screen {
 
     @Override
     public void pause() {
-        Settings.save(game.getFileIO());
+        Settings.save(Gdx.fileIO);
     }
 
     @Override

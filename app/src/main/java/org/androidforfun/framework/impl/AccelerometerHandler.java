@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import android.content.Context;
 import android.hardware.Sensor;

@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,17 +6,17 @@ import java.util.List;
 import android.view.MotionEvent;
 import android.view.View;
 
-import org.androidforfun.retrogames.framework.Pool;
-import org.androidforfun.retrogames.framework.Input.TouchEvent;
-import org.androidforfun.retrogames.framework.Pool.PoolObjectFactory;
+import org.androidforfun.framework.Pool;
+import org.androidforfun.framework.Input.TouchEvent;
+import org.androidforfun.framework.Pool.PoolObjectFactory;
 
 public class SingleTouchHandler implements TouchHandler {
     boolean isTouched;
     int touchX;
     int touchY;
     Pool<TouchEvent> touchEventPool;
-    List<TouchEvent> touchEvents = new ArrayList<TouchEvent>();
-    List<TouchEvent> touchEventsBuffer = new ArrayList<TouchEvent>();
+    List<TouchEvent> touchEvents = new ArrayList<>();
+    List<TouchEvent> touchEventsBuffer = new ArrayList<>();
     float scaleX;
     float scaleY;
     
@@ -27,7 +27,7 @@ public class SingleTouchHandler implements TouchHandler {
                 return new TouchEvent();
             }            
         };
-        touchEventPool = new Pool<TouchEvent>(factory, 100);
+        touchEventPool = new Pool<>(factory, 100);
         view.setOnTouchListener(this);
 
         this.scaleX = scaleX;
@@ -65,10 +65,7 @@ public class SingleTouchHandler implements TouchHandler {
     @Override
     public boolean isTouchDown(int pointer) {
         synchronized(this) {
-            if(pointer == 0)
-                return isTouched;
-            else
-                return false;
+            return pointer == 0 && isTouched;
         }
     }
 

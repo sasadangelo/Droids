@@ -1,8 +1,8 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import android.media.SoundPool;
 
-import org.androidforfun.retrogames.framework.Sound;
+import org.androidforfun.framework.Sound;
 
 public class AndroidSound implements Sound {
     int soundId;

@@ -1,9 +1,9 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import android.graphics.Bitmap;
 
-import org.androidforfun.retrogames.framework.Graphics.PixmapFormat;
-import org.androidforfun.retrogames.framework.Pixmap;
+import org.androidforfun.framework.Graphics.PixmapFormat;
+import org.androidforfun.framework.Pixmap;
 
 public class AndroidPixmap implements Pixmap {
     Bitmap bitmap;

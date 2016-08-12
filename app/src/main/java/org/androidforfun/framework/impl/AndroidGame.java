@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,12 +11,13 @@ import android.os.PowerManager.WakeLock;
 import android.view.Window;
 import android.view.WindowManager;
 
-import org.androidforfun.retrogames.framework.Audio;
-import org.androidforfun.retrogames.framework.FileIO;
-import org.androidforfun.retrogames.framework.Game;
-import org.androidforfun.retrogames.framework.Graphics;
-import org.androidforfun.retrogames.framework.Input;
-import org.androidforfun.retrogames.framework.Screen;
+import org.androidforfun.framework.Audio;
+import org.androidforfun.framework.FileIO;
+import org.androidforfun.framework.Game;
+import org.androidforfun.framework.Gdx;
+import org.androidforfun.framework.Graphics;
+import org.androidforfun.framework.Input;
+import org.androidforfun.framework.Screen;
 
 public abstract class AndroidGame extends Activity implements Game {
     AndroidFastRenderView renderView;
@@ -51,6 +52,13 @@ public abstract class AndroidGame extends Activity implements Game {
         fileIO = new AndroidFileIO(getAssets());
         audio = new AndroidAudio(this);
         input = new AndroidInput(this, renderView, scaleX, scaleY);
+
+        Gdx.game = this;
+        Gdx.graphics = graphics;
+        Gdx.fileIO = fileIO;
+        Gdx.audio = audio;
+        Gdx.input = input;
+
         screen = getStartScreen();
         setContentView(renderView);
         

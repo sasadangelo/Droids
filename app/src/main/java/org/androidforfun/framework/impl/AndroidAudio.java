@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import java.io.IOException;
 
@@ -8,9 +8,9 @@ import android.content.res.AssetManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
 
-import org.androidforfun.retrogames.framework.Audio;
-import org.androidforfun.retrogames.framework.Music;
-import org.androidforfun.retrogames.framework.Sound;
+import org.androidforfun.framework.Audio;
+import org.androidforfun.framework.Music;
+import org.androidforfun.framework.Sound;
 
 public class AndroidAudio implements Audio {
     AssetManager assets;

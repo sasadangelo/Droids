@@ -1,8 +1,8 @@
 package org.androidforfun.retrogames.droids.view;
 
-import org.androidforfun.retrogames.framework.Music;
-import org.androidforfun.retrogames.framework.Pixmap;
-import org.androidforfun.retrogames.framework.Sound;
+import org.androidforfun.framework.Music;
+import org.androidforfun.framework.Pixmap;
+import org.androidforfun.framework.Sound;
 
 /*
  This class contains the global references to all the assets used in DroidsWorld game.

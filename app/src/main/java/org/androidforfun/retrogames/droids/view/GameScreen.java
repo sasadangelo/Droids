@@ -2,6 +2,8 @@ package org.androidforfun.retrogames.droids.view;
 
 import android.util.Log;
 
+import org.androidforfun.framework.Gdx;
+import org.androidforfun.framework.Input;
 import org.androidforfun.retrogames.droids.model.Block;
 import org.androidforfun.retrogames.droids.model.DroidsWorld;
 import org.androidforfun.retrogames.droids.model.Settings;
@@ -12,17 +14,17 @@ import org.androidforfun.retrogames.droids.model.ShapeL;
 import org.androidforfun.retrogames.droids.model.ShapeS;
 import org.androidforfun.retrogames.droids.model.ShapeT;
 import org.androidforfun.retrogames.droids.model.ShapeZ;
-import org.androidforfun.retrogames.framework.Game;
-import org.androidforfun.retrogames.framework.Graphics;
-import org.androidforfun.retrogames.framework.Input.TouchEvent;
-import org.androidforfun.retrogames.framework.Screen;
-import org.androidforfun.retrogames.framework.TextStyle;
+import org.androidforfun.framework.Game;
+import org.androidforfun.framework.Graphics;
+import org.androidforfun.framework.Input.TouchEvent;
+import org.androidforfun.framework.Screen;
+import org.androidforfun.framework.TextStyle;
 
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-public class GameScreen extends Screen {
+public class GameScreen implements Screen {
     public static int BLOCK_WIDTH=20;
     public static int BLOCK_HEIGHT=20;
 
@@ -34,8 +36,8 @@ public class GameScreen extends Screen {
 
     Map<DroidsWorld.GameState, GameState> states = new EnumMap<DroidsWorld.GameState, GameState>(DroidsWorld.GameState.class);
 
-    public GameScreen(Game game) {
-        super(game);
+    public GameScreen() {
+        super();
         Log.i(LOG_TAG, "constructor -- begin");
         leftRegion = new Region(0, 0, 60, 400);
         workingRegion = new Region(60, 20, 200, 400);
@@ -50,16 +52,18 @@ public class GameScreen extends Screen {
     @Override
     public void update(float deltaTime) {
         Log.i(LOG_TAG, "update -- begin");
-        List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
-        game.getInput().getKeyEvents();
+        Input input = Gdx.input;
+
+        List<TouchEvent> touchEvents = input.getTouchEvents();
+        input.getKeyEvents();
 
         states.get(DroidsWorld.getInstance().getState()).update(touchEvents, deltaTime);
     }
 
     @Override
     public void draw(float deltaTime) {
-        Log.i(LOG_TAG, "present -- begin");
-        Graphics g = game.getGraphics();
+        Log.i(LOG_TAG, "draw -- begin");
+        Graphics g = Gdx.graphics;
 
         g.drawPixmap(Assets.gamescreen, 0, 0);
         drawTetris();
@@ -76,7 +80,7 @@ public class GameScreen extends Screen {
     }
 
     private void drawTetris() {
-        Graphics g = game.getGraphics();
+        Graphics g = Gdx.graphics;
 
         for (Block block : DroidsWorld.getInstance().getBlocks()) {
             int x = workingRegion.getX() + block.getX()*BLOCK_WIDTH;
@@ -123,8 +127,8 @@ public class GameScreen extends Screen {
                 continue;
             }
 
-            int srcX = 0;
-            int srcWidth = 0;
+            int srcX;
+            int srcWidth;
             if (character == '.') {
                 srcX = 200;
                 srcWidth = 10;
@@ -146,7 +150,7 @@ public class GameScreen extends Screen {
 
         if(DroidsWorld.getInstance().getState() == DroidsWorld.GameState.GameOver) {
             Settings.addScore(DroidsWorld.getInstance().getScore());
-            Settings.save(game.getFileIO());
+            Settings.save(Gdx.fileIO);
         }
     }
 
@@ -157,7 +161,7 @@ public class GameScreen extends Screen {
 
     class GameRunning extends GameState {
         void update(List<TouchEvent> touchEvents, float deltaTime) {
-            Log.i(LOG_TAG, "updateRunning -- begin");
+            Log.i(LOG_TAG, "GameRunning.update -- begin");
             int len = touchEvents.size();
             for(int i = 0; i < len; i++) {
                 TouchEvent event = touchEvents.get(i);
@@ -212,8 +216,8 @@ public class GameScreen extends Screen {
         }
 
         void draw() {
-            Log.i(LOG_TAG, "drawRunningUI -- begin");
-            Graphics g = game.getGraphics();
+            Log.i(LOG_TAG, "GameRunning.draw -- begin");
+            Graphics g = Gdx.graphics;
 
             g.drawPixmap(Assets.buttons, 5, 20, 50, 100, 51, 51); // pause button
             g.drawPixmap(Assets.buttons, 30, 425, 50, 50, 51, 51);  // left button
@@ -225,7 +229,9 @@ public class GameScreen extends Screen {
 
     class GamePaused extends GameState {
         void update(List<TouchEvent> touchEvents, float deltaTime) {
-            Log.i(LOG_TAG, "updatePaused -- begin");
+            Log.i(LOG_TAG, "GamePaused.update -- begin");
+            Game game = Gdx.game;
+
             int len = touchEvents.size();
             for(int i = 0; i < len; i++) {
                 TouchEvent event = touchEvents.get(i);
@@ -240,7 +246,7 @@ public class GameScreen extends Screen {
                         if(event.y > 148 && event.y < 196) {
                             if(Settings.soundEnabled)
                                 Assets.click.play(1);
-                            game.setScreen(new StartScreen(game));
+                        game.setScreen(new StartScreen());
                             return;
                         }
                     }
@@ -252,8 +258,8 @@ public class GameScreen extends Screen {
         }
 
         void draw() {
-            Log.i(LOG_TAG, "drawPausedUI -- begin");
-            Graphics g = game.getGraphics();
+            Log.i(LOG_TAG, "GamePaused.draw -- begin");
+            Graphics g = Gdx.graphics;
             g.drawPixmap(Assets.pausemenu, 100, 100);
 
             g.drawPixmap(Assets.buttons, 5, 20, 50, 100, 51, 51); // pause button
@@ -266,14 +272,14 @@ public class GameScreen extends Screen {
 
     class GameReady extends GameState {
         void update(List<TouchEvent> touchEvents, float deltaTime) {
-            Log.i(LOG_TAG, "updateReady -- begin");
+            Log.i(LOG_TAG, "GameReady.update -- begin");
             if(touchEvents.size() > 0)
                 DroidsWorld.getInstance().setState(DroidsWorld.GameState.Running);
         }
 
         void draw() {
-            Log.i(LOG_TAG, "drawReadyUI -- begin");
-            Graphics g = game.getGraphics();
+            Log.i(LOG_TAG, "GameReady.draw -- begin");
+            Graphics g = Gdx.graphics;
 
             g.drawPixmap(Assets.readymenu, 65, 100);
             g.drawPixmap(Assets.buttons, 30, 425, 50, 50, 51, 51); // left button
@@ -285,7 +291,8 @@ public class GameScreen extends Screen {
 
     class GameOver extends GameState {
         void update(List<TouchEvent> touchEvents, float deltaTime) {
-            Log.i(LOG_TAG, "updateGameOver -- begin");
+            Log.i(LOG_TAG, "GameOver.update -- begin");
+            Game game = Gdx.game;
             int len = touchEvents.size();
             for(int i = 0; i < len; i++) {
                 TouchEvent event = touchEvents.get(i);
@@ -293,7 +300,7 @@ public class GameScreen extends Screen {
                     if(event.x >= 128 && event.x <= 192 && event.y >= 200 && event.y <= 264) {
                         if(Settings.soundEnabled)
                             Assets.click.play(1);
-                        game.setScreen(new StartScreen(game));
+                        game.setScreen(new StartScreen());
                         DroidsWorld.getInstance().clear();
                         return;
                     }
@@ -305,8 +312,8 @@ public class GameScreen extends Screen {
         }
 
         void draw() {
-            Log.i(LOG_TAG, "drawGameOverUI -- begin");
-            Graphics g = game.getGraphics();
+            Log.i(LOG_TAG, "GameOver.draw -- begin");
+            Graphics g = Gdx.graphics;
 
             g.drawPixmap(Assets.gameoverscreen, 0, 0);
             g.drawPixmap(Assets.buttons, 128, 200, 0, 100, 51, 51);

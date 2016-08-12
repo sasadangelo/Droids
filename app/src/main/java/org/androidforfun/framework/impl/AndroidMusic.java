@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 
-import org.androidforfun.retrogames.framework.Music;
+import org.androidforfun.framework.Music;
 
 public class AndroidMusic implements Music, OnCompletionListener {
     MediaPlayer mediaPlayer;
@@ -65,9 +65,7 @@ public class AndroidMusic implements Music, OnCompletionListener {
                     mediaPlayer.prepare();
                 mediaPlayer.start();
             }
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,7 +10,7 @@ import java.io.OutputStream;
 import android.content.res.AssetManager;
 import android.os.Environment;
 
-import org.androidforfun.retrogames.framework.FileIO;
+import org.androidforfun.framework.FileIO;
 
 public class AndroidFileIO implements FileIO {
     AssetManager assets;

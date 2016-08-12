@@ -2,9 +2,6 @@ package org.androidforfun.retrogames.droids.model;
 
 import android.os.SystemClock;
 
-import org.androidforfun.retrogames.droids.model.Block;
-import org.androidforfun.retrogames.droids.model.DroidsWorld;
-
 /*
  Shape
 

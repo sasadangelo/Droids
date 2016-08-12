@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

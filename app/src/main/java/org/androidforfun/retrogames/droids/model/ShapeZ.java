@@ -1,8 +1,5 @@
 package org.androidforfun.retrogames.droids.model;
 
-import org.androidforfun.retrogames.droids.model.Block;
-import org.androidforfun.retrogames.droids.model.Shape;
-
 /*
  This is a Z shape.
  */

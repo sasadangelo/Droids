@@ -1,8 +1,5 @@
-package org.androidforfun.retrogames.framework;
+package org.androidforfun.framework;
 
-/**
- * Created by Administrator on 1/12/2016.
- */
 public class TextStyle {
     public enum Align {
         LEFT,
@@ -14,7 +11,6 @@ public class TextStyle {
     public enum Style {
         NORMAL,
         BOLD,
-        UNDERLINE,
         ITALIC
     }
 

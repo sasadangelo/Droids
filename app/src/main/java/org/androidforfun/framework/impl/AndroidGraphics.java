@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.framework.impl;
+package org.androidforfun.framework.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,13 +12,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 
-import org.androidforfun.retrogames.framework.Graphics;
-import org.androidforfun.retrogames.framework.Pixmap;
-import org.androidforfun.retrogames.framework.TextStyle;
+import org.androidforfun.framework.Graphics;
+import org.androidforfun.framework.Pixmap;
+import org.androidforfun.framework.TextStyle;
 
 public class AndroidGraphics implements Graphics {
-    AssetManager assets;
+    AndroidFileIO fileIO;
     Bitmap frameBuffer;
     Canvas canvas;
     Paint paint;
@@ -26,7 +27,7 @@ public class AndroidGraphics implements Graphics {
     Rect dstRect = new Rect();
 
     public AndroidGraphics(AssetManager assets, Bitmap frameBuffer) {
-        this.assets = assets;
+        fileIO= new AndroidFileIO(assets);
         this.frameBuffer = frameBuffer;
         this.canvas = new Canvas(frameBuffer);
         this.paint = new Paint();
@@ -34,7 +35,7 @@ public class AndroidGraphics implements Graphics {
 
     @Override
     public Pixmap newPixmap(String fileName, PixmapFormat format) {
-        Config config = null;
+        Config config;
         if (format == PixmapFormat.RGB565)
             config = Config.RGB_565;
         else if (format == PixmapFormat.ARGB4444)
@@ -48,7 +49,7 @@ public class AndroidGraphics implements Graphics {
         InputStream in = null;
         Bitmap bitmap = null;
         try {
-            in = assets.open(fileName);
+            in = fileIO.readAsset(fileName);
             bitmap = BitmapFactory.decodeStream(in);
             if (bitmap == null)
                 throw new RuntimeException("Couldn't load bitmap from asset '"
@@ -61,6 +62,7 @@ public class AndroidGraphics implements Graphics {
                 try {
                     in.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -137,6 +139,17 @@ public class AndroidGraphics implements Graphics {
         Paint paint = new Paint();
         paint.setColor(style.getColor());
         paint.setTextSize(style.getTextSize());
+
+        if (style.getStyle()==TextStyle.Style.BOLD) {
+            paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        } else if (style.getStyle()==TextStyle.Style.NORMAL) {
+            paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
+        } else if (style.getStyle()==TextStyle.Style.ITALIC) {
+            paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
+        } else {
+            paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
+        }
+
         Paint.Align align = null;
         if (style.getAlign()==TextStyle.Align.LEFT) {
             paint.setTextAlign(Paint.Align.LEFT);

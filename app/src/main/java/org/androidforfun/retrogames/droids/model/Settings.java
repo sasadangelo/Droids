@@ -1,6 +1,6 @@
 package org.androidforfun.retrogames.droids.model;
 
-import org.androidforfun.retrogames.framework.FileIO;
+import org.androidforfun.framework.FileIO;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

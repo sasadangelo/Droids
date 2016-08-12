@@ -1,10 +1,7 @@
 package org.androidforfun.retrogames.droids.view;
 
-import android.util.Log;
-
-import org.androidforfun.retrogames.droids.model.Shape;
-import org.androidforfun.retrogames.framework.Screen;
-import org.androidforfun.retrogames.framework.impl.AndroidGame;
+import org.androidforfun.framework.Screen;
+import org.androidforfun.framework.impl.AndroidGame;
 
 /*
  DroidsGame
@@ -23,6 +20,6 @@ public class DroidsGame extends AndroidGame {
 
     @Override
     public Screen getStartScreen() {
-        return new LoadingScreen(this);
+        return new LoadingScreen();
     }
 }
