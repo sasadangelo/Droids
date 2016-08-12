@@ -53,6 +53,9 @@ public class Block extends Actor {
                 return true;
             }
         }
+        if (x > DroidsWorld.getInstance().WORLD_WIDTH-1 || y > DroidsWorld.getInstance().WORLD_HEIGHT-1 ||
+                x < 0 || y < 0)
+            return true;
         return false;
     }
 

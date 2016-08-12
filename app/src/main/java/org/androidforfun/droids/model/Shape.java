@@ -4,6 +4,7 @@ import android.os.SystemClock;
 
 import org.androidforfun.framework.Actor;
 import org.androidforfun.framework.Rectangle;
+
 /*
  Shape
 
@@ -194,19 +195,19 @@ public abstract class Shape extends Actor {
         }
 
         // Check if the shape collide with main windows
-        int bounds[] = getMyBounds();
+        //int bounds[] = getMyBounds();
 
-        if (bounds[3] > DroidsWorld.getInstance().WORLD_HEIGHT-1)
-            return true;
+        //if (bounds[3] > DroidsWorld.getInstance().WORLD_HEIGHT-1)
+        //    return true;
 
-        if (bounds[2] > DroidsWorld.getInstance().WORLD_WIDTH-1)
-            return true;
+        //if (bounds[2] > DroidsWorld.getInstance().WORLD_WIDTH-1)
+        //    return true;
 
-        if (bounds[1] < 0)
-            return true;
+        //if (bounds[1] < 0)
+        //    return true;
 
-        if (bounds[0] < 0)
-            return true;
+        //if (bounds[0] < 0)
+        //    return true;
 
         return false;
     }
