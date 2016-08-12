@@ -7,7 +7,7 @@ public class ShapeT extends Shape {
     // An I-Shape has 2 rotation cycle, so it needs
     // to rotation to complete a cycle.
     public ShapeT() {
-        super();
+        super(3, 2);
         rotation_block = blocks[1];
         rotation_cycle = 4;
     }

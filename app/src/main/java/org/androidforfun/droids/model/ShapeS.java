@@ -5,7 +5,7 @@ package org.androidforfun.droids.model;
  */
 public class ShapeS extends Shape {
     public ShapeS() {
-        super();
+        super(3, 2);
         rotation_block = blocks[1];
         rotation_cycle = 2;
     }

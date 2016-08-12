@@ -2,16 +2,18 @@ package org.androidforfun.droids.model;
 
 import android.os.SystemClock;
 
+import org.androidforfun.framework.Actor;
+import org.androidforfun.framework.Rectangle;
 /*
  Shape
 
  It is the base class for all the DroidsWorld shapes (I-Shape, L-Shape, Z-Shape, Cube-Shape and so on).
  */
-public abstract class Shape {
+public abstract class Shape extends Actor {
     // The blocks belonging to a shape. Each shape is composed by 4 blocks.
     protected Block blocks[];
     // the shape position
-    protected int x, y;
+    //protected int x, y;
     // true if the shape is falling. At each moment only one shape at a time is falling.
     protected boolean falling;
     // when the user positioned correctly the falling shape he can press the down button to
@@ -31,7 +33,8 @@ public abstract class Shape {
     protected long last_fall_update;
     protected long last_move_update;
 
-    public Shape() {
+    protected Shape(int width, int height) {
+        super(0, 0, width, height);
         // A shape can move in two way:
         // 1. horizontally when user press left/right keys
         // 2. vertically when the shape falls
@@ -55,7 +58,7 @@ public abstract class Shape {
         // All the shapes are positioned in upper-left corner and
         // all of thems falls at the beginning. When the shape lay
         // on another shape the falling terminates.
-        x = y = 0;
+        //x = y = 0;
         falling = true;
 
         // Each shape rotate around the second block (block[1]). The second
@@ -91,7 +94,7 @@ public abstract class Shape {
     }
 
     // This method returns the minimum square that contains the shape.
-    public int[] getBounds() {
+    public int[] getMyBounds() {
         // Go throug all blocks to find the bounds of this shape
         int x_min = 0;
         int y_min = 0;
@@ -191,7 +194,7 @@ public abstract class Shape {
         }
 
         // Check if the shape collide with main windows
-        int bounds[] = getBounds();
+        int bounds[] = getMyBounds();
 
         if (bounds[3] > DroidsWorld.getInstance().WORLD_HEIGHT-1)
             return true;
@@ -212,7 +215,7 @@ public abstract class Shape {
         for (Block block : blocks) {
             block.moveDown();
         }
-        y += 1;
+        moveBy(0, 1);
         if (accelerateFalling) {
             softDropScore++;
         }
@@ -222,7 +225,7 @@ public abstract class Shape {
         for (Block block : blocks) {
             block.moveUp();
         }
-        y -= 1;
+        moveBy(0, -1);
         if (accelerateFalling) {
             softDropScore--;
         }
@@ -232,23 +235,27 @@ public abstract class Shape {
         for (Block block : blocks) {
             block.moveLeft();
         }
-        x -= 1;
+        moveBy(-1, 0);
     }
 
     public void moveRight() {
         for (Block block : blocks) {
             block.moveRight();
         }
-        x += 1;
+        moveBy(1, 0);
+        //x += 1;
     }
 
     public abstract Block[] getBlocks();
+
     public boolean isFalling() {
         return falling;
     }
+
     public int getSoftDropScore() {
         return softDropScore;
     }
+
     public void accelerateFalling() {
         this.accelerateFalling = true;
     }

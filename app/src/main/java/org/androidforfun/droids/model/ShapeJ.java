@@ -5,7 +5,7 @@ package org.androidforfun.droids.model;
  */
 public class ShapeJ extends Shape {
     public ShapeJ() {
-        super();
+        super(2, 3);
         rotation_block = blocks[1];
         rotation_cycle = 4;
     }

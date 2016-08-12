@@ -7,7 +7,7 @@ public class ShapeL extends Shape {
     // An L-Shape has 4 rotation cycle, so it needs
     // to rotation to complete a cycle.
     public ShapeL() {
-        super();
+        super(2, 3);
         rotation_block = blocks[1];
         rotation_cycle = 4;
     }

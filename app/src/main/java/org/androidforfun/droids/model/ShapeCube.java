@@ -5,7 +5,7 @@ package org.androidforfun.droids.model;
  */
 public class ShapeCube extends Shape {
     public ShapeCube() {
-        super();
+        super(2, 2);
     }
     // The x,y position of each block is adjusted according to
     // the shape position and size. The color of the shape is yellow.
