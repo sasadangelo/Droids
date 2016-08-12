@@ -29,6 +29,7 @@ public class Settings {
                 if (in != null)
                     in.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -44,11 +45,13 @@ public class Settings {
                 out.write("\n");
             }
         } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             try {
                 if (out != null)
                     out.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

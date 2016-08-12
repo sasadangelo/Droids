@@ -161,9 +161,9 @@ public class GameScreen implements Screen {
                     }
                     // Rotate falling shape, if possible
                     if(rotateButtonBounds.contains(event.x, event.y)) {
-                        DroidsWorld.getInstance().getFallingShape().rotateRight();
+                        DroidsWorld.getInstance().getFallingShape().rotate();
                         if (DroidsWorld.getInstance().getFallingShape().collide())
-                            DroidsWorld.getInstance().getFallingShape().rotateLeft();
+                            DroidsWorld.getInstance().getFallingShape().undoRotate();
                     }
                     // Accelerate falling of the falling shape
                     if(downButtonBounds.contains(event.x, event.y)) {

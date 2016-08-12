@@ -83,11 +83,10 @@ public abstract class Shape {
         }
     }
 
-    public void rotateRight() {
+    public void rotate() {
         rotation+=1;
     }
-
-    public void rotateLeft() {
+    public void undoRotate() {
         rotation-=1;
     }
 
