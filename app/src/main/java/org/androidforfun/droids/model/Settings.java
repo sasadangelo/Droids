@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.droids.model;
+package org.androidforfun.droids.model;
 
 import org.androidforfun.framework.FileIO;
 

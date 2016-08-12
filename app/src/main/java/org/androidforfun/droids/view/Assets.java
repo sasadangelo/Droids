@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.droids.view;
+package org.androidforfun.droids.view;
 
 import org.androidforfun.framework.Music;
 import org.androidforfun.framework.Pixmap;

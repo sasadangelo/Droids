@@ -1,22 +1,21 @@
 package org.androidforfun.droids.view;
 
-import org.androidforfun.retrogames.droids.model.Block;
-import org.androidforfun.retrogames.droids.model.DroidsWorld;
-import org.androidforfun.retrogames.droids.model.ShapeCube;
-import org.androidforfun.retrogames.droids.model.ShapeI;
-import org.androidforfun.retrogames.droids.model.ShapeJ;
-import org.androidforfun.retrogames.droids.model.ShapeL;
-import org.androidforfun.retrogames.droids.model.ShapeS;
-import org.androidforfun.retrogames.droids.model.ShapeT;
-import org.androidforfun.retrogames.droids.model.ShapeZ;
+import org.androidforfun.droids.model.Block;
+import org.androidforfun.droids.model.DroidsWorld;
+import org.androidforfun.droids.model.ShapeCube;
+import org.androidforfun.droids.model.ShapeI;
+import org.androidforfun.droids.model.ShapeJ;
+import org.androidforfun.droids.model.ShapeL;
+import org.androidforfun.droids.model.ShapeS;
+import org.androidforfun.droids.model.ShapeT;
+import org.androidforfun.droids.model.ShapeZ;
 import org.androidforfun.framework.Gdx;
-import org.androidforfun.retrogames.droids.view.GameScreen;
 
 public class DroidsWorldRenderer {
     public static int BLOCK_WIDTH=20;
     public static int BLOCK_HEIGHT=20;
 
-    public void draw() {/*
+    public void draw() {
         GameScreen gameScreen = (GameScreen) Gdx.game.getCurrentScreen();
 
         for (Block block : DroidsWorld.getInstance().getBlocks()) {
@@ -50,6 +49,6 @@ public class DroidsWorldRenderer {
             }
 
             Gdx.graphics.drawPixmap(Assets.getSmallBlockByColor(block.getColor()), gameScreen.getRightRegion().getX() + x, gameScreen.getRightRegion().getY() + 65 + y);
-        }*/
+        }
     }
 }

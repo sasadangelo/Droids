@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.droids.view;
+package org.androidforfun.droids.view;
 
 import android.util.Log;
 
@@ -7,7 +7,7 @@ import org.androidforfun.framework.Gdx;
 import org.androidforfun.framework.Graphics;
 import org.androidforfun.framework.Graphics.PixmapFormat;
 import org.androidforfun.framework.Screen;
-import org.androidforfun.retrogames.droids.model.Settings;
+import org.androidforfun.droids.model.Settings;
 
 public class LoadingScreen implements Screen {
     private static final String LOG_TAG = "Droids.LoadingScreen";

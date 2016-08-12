@@ -1,4 +1,4 @@
-package org.androidforfun.retrogames.droids.model;
+package org.androidforfun.droids.model;
 
 import java.util.ArrayList;
 import java.util.Iterator;
