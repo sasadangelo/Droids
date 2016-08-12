@@ -185,7 +185,7 @@ public abstract class Shape {
         // For each block of the shape, check if it collides with
         // another block in the game.
         for (Block block : getBlocks()) {
-            if (block.collideWithOtherBlocks() != null) {
+            if (block.collide()) {
                 return true;
             }
         }

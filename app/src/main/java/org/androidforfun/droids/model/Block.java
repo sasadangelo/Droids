@@ -25,6 +25,7 @@ public class Block extends Actor {
     private boolean falling;
 
     // the block position, size and color.
+    //private int x, y, color;
     private int color;
 
     public Block() {
@@ -46,13 +47,13 @@ public class Block extends Actor {
     // sufficient scan them and check if one them collide with current block.
     // The method returns the first block found that collide with this one, nil
     // otherwise.
-    public Block collideWithOtherBlocks() {
+    public boolean collide() {
         for (Block block : DroidsWorld.getInstance().getBlocks()) {
             if (collide(block)) {
-                return block;
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     // When user move a shape, each block of the shape must be moved.
