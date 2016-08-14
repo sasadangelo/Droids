@@ -1,3 +1,19 @@
+/*
+ *  Copyright (C) 2016 Salvatore D'Angelo
+ *  This file is part of Droids project.
+ *
+ *  Droids is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Droids is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License.
+ */
 package org.androidforfun.droids.view;
 
 import org.androidforfun.framework.Gdx;
@@ -10,12 +26,23 @@ import org.androidforfun.framework.Screen;
 
 import java.util.List;
 
+/*
+ * GameScreen
+ *
+ * This class represents the highscores screen. The screen show the top five scores achieved by the
+ * user.
+ *
+ * @author Salvatore D'Angelo
+ */
 public class HighscoreScreen implements Screen {
     private Rectangle backgroundBounds;
     private Rectangle backButtonBounds;
 
     String lines[] = new String[5];
 
+    /*
+     * Initialize the screen with the following scores: 100, 80, 50, 30, 10.
+     */
     public HighscoreScreen() {
         for (int i = 0; i < 5; i++) {
             lines[i] = "" + (i + 1) + ". " + Settings.highscores[i];
@@ -25,7 +52,9 @@ public class HighscoreScreen implements Screen {
         backButtonBounds=new Rectangle(32, 370, 50, 50);
     }
 
-    @Override
+    /*
+     * Check the user input and if he press the back button go back to the start screen.
+     */
     public void update(float deltaTime) {
         Game game = Gdx.game;
         List<TouchEvent> touchEvents = Gdx.input.getTouchEvents();
@@ -45,16 +74,21 @@ public class HighscoreScreen implements Screen {
         }
     }
 
-    @Override
+    /*
+     * Draw the highscores screen.
+     */
     public void draw(float deltaTime) {
         Graphics g = Gdx.graphics;
 
+        // draw the background.
         g.drawPixmap(Assets.highscoresscreen, backgroundBounds.getX(), backgroundBounds.getY());
+        // draw the 5 scores.
         int y = 100;
         for (int i = 0; i < 5; i++) {
             drawText(g, lines[i], 20, y);
             y += 50;
         }
+        // draw the back button.
         g.drawPixmap(Assets.buttons, backButtonBounds.getX(), backButtonBounds.getY(), 50, 50,
                 backButtonBounds.getWidth()+1, backButtonBounds.getHeight()+1);
     }
@@ -84,17 +118,23 @@ public class HighscoreScreen implements Screen {
         }
     }
 
-    @Override
+    /*
+     * The screen is paused.
+     */
     public void pause() {
 
     }
 
-    @Override
+    /*
+     * The screen is resumed.
+     */
     public void resume() {
 
     }
 
-    @Override
+    /*
+     * The screen is disposed.
+     */
     public void dispose() {
 
     }
