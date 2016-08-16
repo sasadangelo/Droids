@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Random;
 
 /*
- This is the main model class. It is the entry point that describe the DroidsWorld world.
+ * This is the main model class. It is the entry point that describe the DroidsWorld world.
  */
 public class DroidsWorld {
     // The droids world is a grid of 10x20 cells

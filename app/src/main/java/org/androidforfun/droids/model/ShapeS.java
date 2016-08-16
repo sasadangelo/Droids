@@ -17,7 +17,7 @@
 package org.androidforfun.droids.model;
 
 /*
- This is a S shape.
+ * This is a S shape.
  */
 public class ShapeS extends Shape {
     public ShapeS() {

@@ -17,7 +17,7 @@
 package org.androidforfun.droids.model;
 
 /*
- This is a L shape.
+ * This is a L shape.
  */
 public class ShapeL extends Shape {
     // An L-Shape has 4 rotation cycle, so it needs

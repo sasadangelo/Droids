@@ -26,6 +26,13 @@ import org.androidforfun.framework.Input.KeyEvent;
 import org.androidforfun.framework.Pool;
 import org.androidforfun.framework.Pool.PoolObjectFactory;
 
+/*
+ * This is the handler used to manage keyword events. The class does not allocate a KeyEvent object
+ * for each key event. It uses the Object Pool pattern to allocate 100 KeyEvent and reuse them
+ * avoiding waste of memory.
+ *
+ * @author mzechner
+ */
 public class KeyboardHandler implements OnKeyListener {
     boolean[] pressedKeys = new boolean[128];
     Pool<KeyEvent> keyEventPool;

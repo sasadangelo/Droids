@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+/*
+ * Manage scores on the filesystem.
+ */
 public class Settings {
     public static boolean soundEnabled = true;
     public static int[] highscores = new int[] { 100, 80, 50, 30, 10 };
@@ -36,9 +39,7 @@ public class Settings {
             for (int i = 0; i < 5; i++) {
                 highscores[i] = Integer.parseInt(in.readLine());
             }
-        } catch (IOException e) {
-            // :( It's ok we have defaults
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             // :/ It's ok, defaults save our day
         } finally {
             try {

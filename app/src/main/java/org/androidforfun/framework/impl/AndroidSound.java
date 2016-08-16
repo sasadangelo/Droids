@@ -20,6 +20,12 @@ import android.media.SoundPool;
 
 import org.androidforfun.framework.Sound;
 
+/*
+ * This class represents a brief sound like beep, explosion, etc. A sound file can be played at
+ * a specific volume. The Android SoundPool class will be used to manage these sounds.
+ *
+ * @author mzechner
+ */
 public class AndroidSound implements Sound {
     int soundId;
     SoundPool soundPool;
@@ -29,12 +35,16 @@ public class AndroidSound implements Sound {
         this.soundPool = soundPool;
     }
 
-    @Override
+    /*
+     * Plays the sound file at the specified volume.
+     */
     public void play(float volume) {
         soundPool.play(soundId, volume, volume, 0, 0, 1);
     }
 
-    @Override
+    /*
+     * Disposes a sound file.
+     */
     public void dispose() {
         soundPool.unload(soundId);
     }

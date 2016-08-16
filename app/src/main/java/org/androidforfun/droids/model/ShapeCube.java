@@ -17,7 +17,7 @@
 package org.androidforfun.droids.model;
 
 /*
- This is a Cube shape.
+ * This is a Cube shape.
  */
 public class ShapeCube extends Shape {
     public ShapeCube() {

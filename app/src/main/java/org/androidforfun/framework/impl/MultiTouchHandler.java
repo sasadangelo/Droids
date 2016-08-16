@@ -26,6 +26,11 @@ import org.androidforfun.framework.Input.TouchEvent;
 import org.androidforfun.framework.Pool;
 import org.androidforfun.framework.Pool.PoolObjectFactory;
 
+/*
+ * This is the handler used to manage touch events on newer Android versions.
+ *
+ * @author mzechner
+ */
 public class MultiTouchHandler implements TouchHandler {
     boolean[] isTouched = new boolean[20];
     int[] touchX = new int[20];

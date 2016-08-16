@@ -35,6 +35,13 @@ import org.androidforfun.framework.Graphics;
 import org.androidforfun.framework.Input;
 import org.androidforfun.framework.Screen;
 
+/*
+ * On Android a Game interface is implemented by an Activity. It will manage the game lifecycle and
+ * also it will manage the subsystem of the game library (Graphics, FileIO, Audio and Input).
+ * It will create the frame buffer.
+ *
+ * @author mzechner
+ */
 public abstract class AndroidGame extends Activity implements Game {
     AndroidFastRenderView renderView;
     Graphics graphics;
@@ -44,7 +51,10 @@ public abstract class AndroidGame extends Activity implements Game {
     Screen screen;
     WakeLock wakeLock;
 
-    @Override
+    /*
+     * Initialize the Game subsystems and frame buffer. It will create also the first screen of
+     * the game: the start screen.
+     */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -82,7 +92,10 @@ public abstract class AndroidGame extends Activity implements Game {
         wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "GLGame");
     }
 
-    @Override
+    /*
+     * Called when game is resumed. The screen is locked, the current screen will be resumed and
+     * also the render surface.
+     */
     public void onResume() {
         super.onResume();
         wakeLock.acquire();
@@ -90,7 +103,10 @@ public abstract class AndroidGame extends Activity implements Game {
         renderView.resume();
     }
 
-    @Override
+    /*
+     * Called when game is paused. The screen is unlocked, the current screen will be paused and
+     * also the render surface.
+     */
     public void onPause() {
         super.onPause();
         wakeLock.release();
@@ -101,38 +117,53 @@ public abstract class AndroidGame extends Activity implements Game {
             screen.dispose();
     }
 
-    @Override
+    /*
+     * Returns the Input subsystem.
+     */
     public Input getInput() {
         return input;
     }
 
-    @Override
+    /*
+     * Returns the FileIO subsystem.
+     */
     public FileIO getFileIO() {
         return fileIO;
     }
 
-    @Override
+    /*
+     * Returns the Graphics subsystem.
+     */
     public Graphics getGraphics() {
         return graphics;
     }
 
-    @Override
+    /*
+     * Returns the Audio subsystem.
+     */
     public Audio getAudio() {
         return audio;
     }
 
-    @Override
+    /*
+     * Sets the current screen.
+     */
     public void setScreen(Screen screen) {
         if (screen == null)
             throw new IllegalArgumentException("Screen must not be null");
 
+        // current screen is paused and disposed
         this.screen.pause();
         this.screen.dispose();
+        // input screen is resumed and update and it will be the new current screen.
         screen.resume();
         screen.update(0);
         this.screen = screen;
     }
-    
+
+    /*
+     * Returns the current screen.
+     */
     public Screen getCurrentScreen() {
         return screen;
     }

@@ -24,7 +24,19 @@ import android.view.View;
 
 import org.androidforfun.framework.Input;
 
-public class AndroidInput implements Input {    
+/*
+ * This class implements the Input subsystem for Android. On Android inputs come from:
+ *     accelerometer
+ *     keyboard
+ *     touch screen
+ *
+ * Each subsystem is managed by a specific handler (AccelerometerHandler, KeyboardHandler and
+ * SingleTouchHandler/MultiTouchHandler). For touch screen events modern hardware are managed by
+ * MultiTouchHandler class. Very old hardware are managed by SingleTouchHandler.
+ *
+ * @author mzechner
+ */
+public class AndroidInput implements Input {
     AccelerometerHandler accelHandler;
     KeyboardHandler keyHandler;
     TouchHandler touchHandler;

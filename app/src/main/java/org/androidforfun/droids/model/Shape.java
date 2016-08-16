@@ -20,15 +20,13 @@ import android.os.SystemClock;
 import org.androidforfun.framework.Actor;
 
 /*
- Shape
-
- It is the base class for all the DroidsWorld shapes (I-Shape, L-Shape, Z-Shape, Cube-Shape and so on).
+ * Shape
+ *
+ * It is the base class for all the DroidsWorld shapes (I-Shape, L-Shape, Z-Shape, Cube-Shape and so on).
  */
 public abstract class Shape extends Actor {
     // The blocks belonging to a shape. Each shape is composed by 4 blocks.
     protected Block blocks[];
-    // the shape position
-    //protected int x, y;
     // true if the shape is falling. At each moment only one shape at a time is falling.
     protected boolean falling;
     // when the user positioned correctly the falling shape he can press the down button to
@@ -71,9 +69,8 @@ public abstract class Shape extends Actor {
         blocks[3] = new Block();
 
         // All the shapes are positioned in upper-left corner and
-        // all of thems falls at the beginning. When the shape lay
+        // all of them falls at the beginning. When the shape lay
         // on another shape the falling terminates.
-        //x = y = 0;
         falling = true;
 
         // Each shape rotate around the second block (block[1]). The second
@@ -134,7 +131,7 @@ public abstract class Shape extends Actor {
     }
 
     // This method returns true if the time passed from last horizontal movement of the shape
-    // (    Gosu::milliseconds - @last_move_update) is > than 100 ms.
+    // (    SystemClock.uptimeMillis() - @last_move_update) is > than 100 ms.
     public boolean needsMoveUpdate() {
         if (SystemClock.uptimeMillis() - last_move_update > 100) {
             last_move_update = SystemClock.uptimeMillis();

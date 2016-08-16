@@ -1,0 +1,17 @@
+# This is the official list of the AUTHORS of Droids for copyright purposes.
+# This file is distinct from the CONTRIBUTORS files.
+# See the latter for an explanation.
+
+# Names should be added to this file as
+#	Name or Organization <email address>
+# The email address is not required for organizations.
+
+# Droids is a Tetris clone for Android developed originally by Salvatore D'Angelo on top of a
+# library written by Mario Zechner for the book Begginning Android Games (Chapter 6) that released,
+# according to page XVI, the source code under the GPL 3 license.
+# The library has been modified a little bit to fit the need of the project and some classes like
+# Actor and Rectangle have been inspired by libgdx a library written by Mario Zechner and Nathan
+# Sweet here mention as co author of the code.
+Salvatore D'Angelo <sasadangelo@gmail.com>
+Mario Zechner <badlogicgames@gmail.com>
+Nathan Sweet <nathan.sweet@gmail.com>

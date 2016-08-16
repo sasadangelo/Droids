@@ -17,7 +17,7 @@
 package org.androidforfun.droids.model;
 
 /*
- This is a I shape.
+ * This is a I shape.
  */
 public class ShapeI extends Shape {
     // An I-Shape has 2 rotation cycle, so it needs

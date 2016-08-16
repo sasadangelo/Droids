@@ -22,6 +22,12 @@ import android.view.View.OnTouchListener;
 
 import org.androidforfun.framework.Input.TouchEvent;
 
+/*
+ * This is the handler used to manage touch events. This class is specialized by SingleTouchHandler
+ * or MultiTouchHandler depending on Android version.
+ *
+ * @author mzechner
+ */
 public interface TouchHandler extends OnTouchListener {
     boolean isTouchDown(int pointer);
     int getTouchX(int pointer);
