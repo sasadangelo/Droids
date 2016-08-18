@@ -24,6 +24,7 @@ package org.androidforfun.framework;
  * Note that {@link #dispose()} is not called automatically.
  * </p>
  * @see Game
+ *
  * @author mzechner
  */
 public interface Screen {

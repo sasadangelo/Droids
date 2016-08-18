@@ -1,6 +1,8 @@
 /*
  *  Copyright (C) 2016 Salvatore D'Angelo
  *  This file is part of Droids project.
+ *  This file derives from the Mr Nom project developed by Mario Zechner for the Beginning Android
+ *  Games book (chapter 6).
  *
  *  Droids is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,8 +22,6 @@ import org.androidforfun.framework.Screen;
 import org.androidforfun.framework.impl.AndroidGame;
 
 /*
- * DroidsGame
- *
  * This class represents the main activity of the Droids game.
  *
  * @author Salvatore D'Angelo

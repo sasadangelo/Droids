@@ -23,6 +23,7 @@ package org.androidforfun.framework;
  * rendering thread.
  * <p>
  * This is normally a design faux pas but in this case is better than the alternatives.
+ *
  * @author mzechner
  * @author Salvatore D'Angelo (to fit Gdx library)
  */

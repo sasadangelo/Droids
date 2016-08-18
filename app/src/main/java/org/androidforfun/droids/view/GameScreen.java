@@ -1,6 +1,8 @@
 /*
  *  Copyright (C) 2016 Salvatore D'Angelo
  *  This file is part of Droids project.
+ *  This file derives from the Mr Nom project developed by Mario Zechner for the Beginning Android
+ *  Games book (chapter 6).
  *
  *  Droids is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,10 +22,8 @@ import android.util.Log;
 
 import org.androidforfun.droids.model.DroidsWorld;
 import org.androidforfun.droids.model.Settings;
-import org.androidforfun.framework.Game;
 import org.androidforfun.framework.Gdx;
 import org.androidforfun.framework.Graphics;
-import org.androidforfun.framework.Input;
 import org.androidforfun.framework.Input.TouchEvent;
 import org.androidforfun.framework.Rectangle;
 import org.androidforfun.framework.Screen;
@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 /*
- * GameScreen
- *
  * This class represents the game screen. The processing and rendering depends on the game state managed
  * by State pattern. The update and draw method are delegated to:
  *    GamePause.update, GamePause.draw
@@ -65,7 +63,6 @@ public class GameScreen implements Screen {
     private Rectangle downButtonBounds;
     private Rectangle xButtonBounds;
     private Rectangle pauseMenuBounds;
-    private Rectangle resumeMenuBounds;
     private Rectangle readyMenuBounds;
     private Rectangle homeMenuBounds;
 
@@ -91,8 +88,7 @@ public class GameScreen implements Screen {
         rightButtonBounds=new Rectangle(240, 425, 50, 50);
         rotateButtonBounds=new Rectangle(100, 425, 50, 50);
         downButtonBounds=new Rectangle(170, 425, 50, 50);
-        pauseMenuBounds=new Rectangle(100, 100, 105, 68);
-        resumeMenuBounds=new Rectangle(80, 100, 160, 48);
+        pauseMenuBounds=new Rectangle(80, 100, 160, 48);
         readyMenuBounds=new Rectangle(65, 100, 188, 70);
         homeMenuBounds=new Rectangle(80, 148, 160, 48);
         xButtonBounds=new Rectangle(128, 200, 50, 50);
@@ -111,11 +107,8 @@ public class GameScreen implements Screen {
      */
     public void update(float deltaTime) {
         Log.i(LOG_TAG, "update -- begin");
-        Input input = Gdx.input;
-
-        List<TouchEvent> touchEvents = input.getTouchEvents();
-        input.getKeyEvents();
-
+        List<TouchEvent> touchEvents = Gdx.input.getTouchEvents();
+        Gdx.input.getKeyEvents();
         states.get(DroidsWorld.getInstance().getState()).update(touchEvents, deltaTime);
     }
 
@@ -130,11 +123,37 @@ public class GameScreen implements Screen {
      */
     public void draw(float deltaTime) {
         Log.i(LOG_TAG, "draw -- begin");
+        // draw the background
+        Gdx.graphics.drawPixmap(Assets.gamescreen, gameScreenBounds.getX(), gameScreenBounds.getY());
+        // render the game world.
+        renderer.draw();
+        // draw buttons
+        Gdx.graphics.drawPixmap(Assets.buttons, pauseButtonBounds.getX(), pauseButtonBounds.getY(), 50, 100,
+                pauseButtonBounds.getWidth()+1, pauseButtonBounds.getHeight()+1); // pause button
+        Gdx.graphics.drawPixmap(Assets.buttons, leftButtonBounds.getX(), leftButtonBounds.getY(), 50, 50,
+                leftButtonBounds.getWidth()+1, leftButtonBounds.getHeight()+1);  // left button
+        Gdx.graphics.drawPixmap(Assets.buttons, rightButtonBounds.getX(), rightButtonBounds.getY(), 0, 50,
+                rightButtonBounds.getWidth()+1, rightButtonBounds.getHeight()+1); // right button
+        Gdx.graphics.drawPixmap(Assets.buttons, rotateButtonBounds.getX(), rotateButtonBounds.getY(), 50, 150,
+                rotateButtonBounds.getWidth()+1, rotateButtonBounds.getHeight()+1); // rotate button
+        Gdx.graphics.drawPixmap(Assets.buttons, downButtonBounds.getX(), downButtonBounds.getY(), 0, 150,
+                downButtonBounds.getWidth()+1, downButtonBounds.getHeight()+1); // down button
+
+        // draw the goal, score and level.
+        TextStyle style = new TextStyle();
+        style.setColor(0xffffffff);
+        style.setTextSize(10);
+        style.setAlign(TextStyle.Align.CENTER);
+        Gdx.graphics.drawText("" + DroidsWorld.getInstance().getLevel(), 30 + leftRegion.getX(), 165 + leftRegion.getY(), style);
+        Gdx.graphics.drawText("" + DroidsWorld.getInstance().getGoal(), 30 + leftRegion.getX(), 265 + leftRegion.getY(), style);
+        Gdx.graphics.drawText("" + DroidsWorld.getInstance().getScore(), 30 + rightRegion.getX(), 265 + rightRegion.getY(), style);
+
+        // draw the state specific element
         states.get(DroidsWorld.getInstance().getState()).draw();
     }
 
     /*
-     * Draw text on the scree in the (x, y) position.
+     * Draw text on the screen in the (x, y) position.
      */
     public void drawText(String text, int x, int y) {
         Log.i(LOG_TAG, "drawText -- begin");
@@ -186,8 +205,6 @@ public class GameScreen implements Screen {
     }
 
     /*
-     * GameRunning
-     *
      * This class represents the game screen in running state. It will be responsible to update and
      * draw when the game is running.
      *
@@ -195,7 +212,7 @@ public class GameScreen implements Screen {
      */
     class GameRunning extends GameState {
         /*
-         * Update the game when it is in running state. The method catch the user input and
+         * Update the game when it is in running state. The method catch the user input and,
          * depending on it will move, rotate or accelerate the falling shape. It can also pause the
          * game and check for game over.
          */
@@ -204,37 +221,39 @@ public class GameScreen implements Screen {
             int len = touchEvents.size();
             for(int i = 0; i < len; i++) {
                 TouchEvent event = touchEvents.get(i);
-                if(event.type == TouchEvent.TOUCH_UP) {
-                    if(pauseButtonBounds.contains(event.x, event.y)) {
-                        if(Settings.soundEnabled)
-                            Assets.click.play(1);
-                        DroidsWorld.getInstance().setState(DroidsWorld.GameState.Paused);
-                        return;
-                    }
-                }
-                if(event.type == TouchEvent.TOUCH_DOWN) {
-                    // Move falling shape on the left, if possible
-                    if(leftButtonBounds.contains(event.x, event.y)) {
-                        DroidsWorld.getInstance().getFallingShape().moveLeft();
-                        if (DroidsWorld.getInstance().getFallingShape().collide())
-                            DroidsWorld.getInstance().getFallingShape().moveRight();
-                    }
-                    // Move falling shape on the right, if possible
-                    if(rightButtonBounds.contains(event.x, event.y)) {
-                        DroidsWorld.getInstance().getFallingShape().moveRight();
-                        if (DroidsWorld.getInstance().getFallingShape().collide())
+                switch(event.type) {
+                    case TouchEvent.TOUCH_UP:
+                        if(pauseButtonBounds.contains(event.x, event.y)) {
+                            if(Settings.soundEnabled)
+                                Assets.click.play(1);
+                            DroidsWorld.getInstance().setState(DroidsWorld.GameState.Paused);
+                            return;
+                        }
+                        break;
+                    case TouchEvent.TOUCH_DOWN:
+                        // Move falling shape on the left, if possible
+                        if(leftButtonBounds.contains(event.x, event.y)) {
                             DroidsWorld.getInstance().getFallingShape().moveLeft();
-                    }
-                    // Rotate falling shape, if possible
-                    if(rotateButtonBounds.contains(event.x, event.y)) {
-                        DroidsWorld.getInstance().getFallingShape().rotate();
-                        if (DroidsWorld.getInstance().getFallingShape().collide())
-                            DroidsWorld.getInstance().getFallingShape().undoRotate();
-                    }
-                    // Accelerate falling of the falling shape
-                    if(downButtonBounds.contains(event.x, event.y)) {
-                        DroidsWorld.getInstance().getFallingShape().accelerateFalling();
-                    }
+                            if (DroidsWorld.getInstance().getFallingShape().collide())
+                                DroidsWorld.getInstance().getFallingShape().moveRight();
+                        }
+                        // Move falling shape on the right, if possible
+                        if(rightButtonBounds.contains(event.x, event.y)) {
+                            DroidsWorld.getInstance().getFallingShape().moveRight();
+                            if (DroidsWorld.getInstance().getFallingShape().collide())
+                                DroidsWorld.getInstance().getFallingShape().moveLeft();
+                        }
+                        // Rotate falling shape, if possible
+                        if(rotateButtonBounds.contains(event.x, event.y)) {
+                            DroidsWorld.getInstance().getFallingShape().rotate();
+                            if (DroidsWorld.getInstance().getFallingShape().collide())
+                                DroidsWorld.getInstance().getFallingShape().undoRotate();
+                        }
+                        // Accelerate falling of the falling shape
+                        if(downButtonBounds.contains(event.x, event.y)) {
+                            DroidsWorld.getInstance().getFallingShape().accelerateFalling();
+                        }
+                        break;
                 }
             }
 
@@ -255,38 +274,10 @@ public class GameScreen implements Screen {
          */
         void draw() {
             Log.i(LOG_TAG, "GameRunning.draw -- begin");
-            Graphics g = Gdx.graphics;
-
-            // draw the background
-            g.drawPixmap(Assets.gamescreen, gameScreenBounds.getX(), gameScreenBounds.getY());
-            // render the game world.
-            renderer.draw();
-            // draw the buttons.
-            g.drawPixmap(Assets.buttons, pauseButtonBounds.getX(), pauseButtonBounds.getY(), 50, 100,
-                    pauseButtonBounds.getWidth()+1, pauseButtonBounds.getHeight()+1); // pause button
-            g.drawPixmap(Assets.buttons, leftButtonBounds.getX(), leftButtonBounds.getY(), 50, 50,
-                    leftButtonBounds.getWidth()+1, leftButtonBounds.getHeight()+1);  // left button
-            g.drawPixmap(Assets.buttons, rightButtonBounds.getX(), rightButtonBounds.getY(), 0, 50,
-                    rightButtonBounds.getWidth()+1, rightButtonBounds.getHeight()+1); // right button
-            g.drawPixmap(Assets.buttons, rotateButtonBounds.getX(), rotateButtonBounds.getY(), 50, 150,
-                    rotateButtonBounds.getWidth()+1, rotateButtonBounds.getHeight()+1); // rotate button
-            g.drawPixmap(Assets.buttons, downButtonBounds.getX(), downButtonBounds.getY(), 0, 150,
-                    downButtonBounds.getWidth()+1, downButtonBounds.getHeight()+1); // down button
-
-            // draw the goal, score and level.
-            TextStyle style = new TextStyle();
-            style.setColor(0xffffffff);
-            style.setTextSize(10);
-            style.setAlign(TextStyle.Align.CENTER);
-            g.drawText("" + DroidsWorld.getInstance().getLevel(), 30 + leftRegion.getX(), 165 + leftRegion.getY(), style);
-            g.drawText("" + DroidsWorld.getInstance().getGoal(), 30 + leftRegion.getX(), 265 + leftRegion.getY(), style);
-            g.drawText("" + DroidsWorld.getInstance().getScore(), 30 + rightRegion.getX(), 265 + rightRegion.getY(), style);
         }
     }
 
     /*
-     * GamePaused
-     *
      * This class represents the game screen in pause state. It will be responsible to update and
      * draw when the game is paused.
      *
@@ -299,14 +290,13 @@ public class GameScreen implements Screen {
          */
         void update(List<TouchEvent> touchEvents, float deltaTime) {
             Log.i(LOG_TAG, "GamePaused.update -- begin");
-            Game game = Gdx.game;
 
             // Check if user asked to resume the game or come back to the start screen.
             int len = touchEvents.size();
             for(int i = 0; i < len; i++) {
                 TouchEvent event = touchEvents.get(i);
                 if(event.type == TouchEvent.TOUCH_UP) {
-                    if(resumeMenuBounds.contains(event.x, event.y)) {
+                    if(pauseMenuBounds.contains(event.x, event.y)) {
                         if(Settings.soundEnabled)
                             Assets.click.play(1);
                         DroidsWorld.getInstance().setState(DroidsWorld.GameState.Running);
@@ -315,7 +305,7 @@ public class GameScreen implements Screen {
                     if(homeMenuBounds.contains(event.x, event.y)) {
                         if(Settings.soundEnabled)
                             Assets.click.play(1);
-                        game.setScreen(new StartScreen());
+                        Gdx.game.setScreen(new StartScreen());
                         return;
                     }
                 }
@@ -331,38 +321,12 @@ public class GameScreen implements Screen {
          */
         void draw() {
             Log.i(LOG_TAG, "GamePaused.draw -- begin");
-            Graphics g = Gdx.graphics;
-
-            // draw the background
-            g.drawPixmap(Assets.gamescreen, gameScreenBounds.getX(), gameScreenBounds.getY());
             // draw the pause menu
-            g.drawPixmap(Assets.pausemenu, pauseMenuBounds.getX(), pauseMenuBounds.getY());
-            // draw buttons
-            g.drawPixmap(Assets.buttons, pauseButtonBounds.getX(), pauseButtonBounds.getY(), 50, 100,
-                    pauseButtonBounds.getWidth()+1, pauseButtonBounds.getHeight()+1); // pause button
-            g.drawPixmap(Assets.buttons, leftButtonBounds.getX(), leftButtonBounds.getY(), 50, 50,
-                    leftButtonBounds.getWidth()+1, leftButtonBounds.getHeight()+1);  // left button
-            g.drawPixmap(Assets.buttons, rightButtonBounds.getX(), rightButtonBounds.getY(), 0, 50,
-                    rightButtonBounds.getWidth()+1, rightButtonBounds.getHeight()+1); // right button
-            g.drawPixmap(Assets.buttons, rotateButtonBounds.getX(), rotateButtonBounds.getY(), 50, 150,
-                    rotateButtonBounds.getWidth()+1, rotateButtonBounds.getHeight()+1); // rotate button
-            g.drawPixmap(Assets.buttons, downButtonBounds.getX(), downButtonBounds.getY(), 0, 150,
-                    downButtonBounds.getWidth()+1, downButtonBounds.getHeight()+1); // down button
-
-            // draw the goal, score and level.
-            TextStyle style = new TextStyle();
-            style.setColor(0xffffffff);
-            style.setTextSize(10);
-            style.setAlign(TextStyle.Align.CENTER);
-            g.drawText("" + DroidsWorld.getInstance().getLevel(), 30 + leftRegion.getX(), 165 + leftRegion.getY(), style);
-            g.drawText("" + DroidsWorld.getInstance().getGoal(), 30 + leftRegion.getX(), 265 + leftRegion.getY(), style);
-            g.drawText("" + DroidsWorld.getInstance().getScore(), 30 + rightRegion.getX(), 265 + rightRegion.getY(), style);
+            Gdx.graphics.drawPixmap(Assets.pausemenu, pauseMenuBounds.getX(), pauseMenuBounds.getY());
         }
     }
 
     /*
-     * GameReady
-     *
      * This class represents the game screen in ready state. It will be responsible to update and
      * draw when the game is ready.
      *
@@ -386,27 +350,12 @@ public class GameScreen implements Screen {
             Log.i(LOG_TAG, "GameReady.draw -- begin");
             Graphics g = Gdx.graphics;
 
-            // draw the background
-            g.drawPixmap(Assets.gamescreen, gameScreenBounds.getX(), gameScreenBounds.getY());
             // draw the ready menu
             g.drawPixmap(Assets.readymenu, readyMenuBounds.getX(), readyMenuBounds.getY());
-            // draw buttons
-            g.drawPixmap(Assets.buttons, pauseButtonBounds.getX(), pauseButtonBounds.getY(), 50, 100,
-                    pauseButtonBounds.getWidth()+1, pauseButtonBounds.getHeight()+1); // pause button
-            g.drawPixmap(Assets.buttons, leftButtonBounds.getX(), leftButtonBounds.getY(), 50, 50,
-                    leftButtonBounds.getWidth()+1, leftButtonBounds.getHeight()+1);  // left button
-            g.drawPixmap(Assets.buttons, rightButtonBounds.getX(), rightButtonBounds.getY(), 0, 50,
-                    rightButtonBounds.getWidth()+1, rightButtonBounds.getHeight()+1); // right button
-            g.drawPixmap(Assets.buttons, rotateButtonBounds.getX(), rotateButtonBounds.getY(), 50, 150,
-                    rotateButtonBounds.getWidth()+1, rotateButtonBounds.getHeight()+1); // rotate button
-            g.drawPixmap(Assets.buttons, downButtonBounds.getX(), downButtonBounds.getY(), 0, 150,
-                    downButtonBounds.getWidth()+1, downButtonBounds.getHeight()+1); // down button
         }
     }
 
     /*
-     * GameOver
-     *
      * This class represents the game screen when it is over. It will be responsible to update and
      * draw when the game is over.
      *
@@ -419,8 +368,6 @@ public class GameScreen implements Screen {
          */
         void update(List<TouchEvent> touchEvents, float deltaTime) {
             Log.i(LOG_TAG, "GameOver.update -- begin");
-            Game game = Gdx.game;
-
             // check if the x button is pressed.
             int len = touchEvents.size();
             for(int i = 0; i < len; i++) {
@@ -429,7 +376,7 @@ public class GameScreen implements Screen {
                     if(xButtonBounds.contains(event.x, event.y)) {
                         if(Settings.soundEnabled)
                             Assets.click.play(1);
-                        game.setScreen(new StartScreen());
+                        Gdx.game.setScreen(new StartScreen());
                         DroidsWorld.getInstance().clear();
                         return;
                     }
@@ -442,13 +389,15 @@ public class GameScreen implements Screen {
         }
 
         /*
-         * Draw the game when it si over.
+         * Draw the game when it is over.
          */
         void draw() {
             Log.i(LOG_TAG, "GameOver.draw -- begin");
             Graphics g = Gdx.graphics;
 
+            // draw game over transparent black background
             g.drawPixmap(Assets.gameoverscreen, gameoverScreenBounds.getX(), gameoverScreenBounds.getY());
+            // draw the X button
             g.drawPixmap(Assets.buttons, xButtonBounds.getX(), xButtonBounds.getY(), 0, 100,
                     xButtonBounds.getWidth()+1, xButtonBounds.getHeight()+1); // down button
             drawText("" + DroidsWorld.getInstance().getScore(), 180, 280);
@@ -467,9 +416,6 @@ public class GameScreen implements Screen {
     public void dispose() {
     }
 
-    /*
-     * The screen is disposed.
-     */
     public Rectangle getLeftRegion() {
         return leftRegion;
     }
@@ -479,7 +425,5 @@ public class GameScreen implements Screen {
     public Rectangle getWorkingRegion() {
         return workingRegion;
     }
-    public Rectangle getCommandRegion() {
-        return commandRegion;
-    }
+    public Rectangle getCommandRegion() { return commandRegion; }
 }

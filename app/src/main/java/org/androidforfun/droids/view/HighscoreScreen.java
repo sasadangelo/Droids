@@ -1,6 +1,8 @@
 /*
  *  Copyright (C) 2016 Salvatore D'Angelo
  *  This file is part of Droids project.
+ *  This file derives from the Mr Nom project developed by Mario Zechner for the Beginning Android
+ *  Games book (chapter 6).
  *
  *  Droids is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,8 +29,6 @@ import org.androidforfun.framework.Screen;
 import java.util.List;
 
 /*
- * GameScreen
- *
  * This class represents the highscores screen. The screen show the top five scores achieved by the
  * user.
  *
@@ -56,9 +56,8 @@ public class HighscoreScreen implements Screen {
      * Check the user input and if he press the back button go back to the start screen.
      */
     public void update(float deltaTime) {
-        Game game = Gdx.game;
         List<TouchEvent> touchEvents = Gdx.input.getTouchEvents();
-        game.getInput().getKeyEvents();
+        Gdx.input.getKeyEvents();
 
         int len = touchEvents.size();
         for (int i = 0; i < len; i++) {
@@ -67,7 +66,7 @@ public class HighscoreScreen implements Screen {
                 if (backButtonBounds.contains(event.x, event.y)) {
                     if(Settings.soundEnabled)
                         Assets.click.play(1);
-                    game.setScreen(new StartScreen());
+                    Gdx.game.setScreen(new StartScreen());
                     return;
                 }
             }

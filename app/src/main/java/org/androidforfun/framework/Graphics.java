@@ -21,6 +21,7 @@ package org.androidforfun.framework;
  * <p>
  * If supported by the backend, this interface lets you query the available display modes (graphics
  * resolution and color depth) and change it.
+ *
  * @author mzechner */
 public interface Graphics {
     /**

@@ -55,6 +55,7 @@ package org.androidforfun.framework;
  * you to have operating system dependent code paths. It is however not recommended to use this
  * facilities.
  * </p>
+ *
  * @author mzechner
  */
 public interface Game {

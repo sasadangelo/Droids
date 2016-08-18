@@ -21,7 +21,7 @@ package org.androidforfun.framework;
  * Represents the style of a text. A text has a size, a color, an alignment and a style (normal,
  * bold, italic).
  * </p>
-
+ *
  * @author Salvatore D'Angelo
  */
 public class TextStyle {

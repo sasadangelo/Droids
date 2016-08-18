@@ -23,7 +23,9 @@ package org.androidforfun.framework;
  * <p>
  * All resources created via this interface have to be disposed as soon as they are no longer used.
  * </p>
- * @author mzechner */
+ *
+ * @author mzechner
+ */
 public interface Audio {
     /**
      * Creates a new {@link Music} instance which is used to play back a music stream from a file.

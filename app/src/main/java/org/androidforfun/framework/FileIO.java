@@ -23,6 +23,7 @@ import java.io.OutputStream;
 /**
  * Provides standard access to the filesystem, classpath, Android SD card, and Android assets
  * directory.
+ *
  * @author mzechner
  */
 public interface FileIO {

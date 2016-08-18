@@ -1,6 +1,8 @@
 /*
  *  Copyright (C) 2016 Salvatore D'Angelo
  *  This file is part of Droids project.
+ *  This file derives from the Mr Nom project developed by Mario Zechner for the Beginning Android
+ *  Games book (chapter 6).
  *
  *  Droids is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,8 +28,6 @@ import org.androidforfun.framework.Screen;
 import org.androidforfun.droids.model.Settings;
 
 /*
- * LoadingScreen
- *
  * This class represents the loading screen. It load in memory all the assets used by the game.
  * Usually games show a progress bar in this screen. To simplify the code and since the assets are
  * loaded very quickly I avoided this complication.
@@ -40,16 +40,17 @@ public class LoadingScreen implements Screen {
     @Override
     public void update(float deltaTime) {
         Log.i(LOG_TAG, "update -- begin");
-        Game game = Gdx.game;
         Graphics g = Gdx.graphics;
 
         Assets.logo = g.newPixmap("logo.png", PixmapFormat.RGB565);
 
+        // Screens
         Assets.startscreen = g.newPixmap("startscreen.png", PixmapFormat.RGB565);
         Assets.gamescreen = g.newPixmap("gamescreen.png", PixmapFormat.RGB565);
         Assets.highscoresscreen = Assets.startscreen;
         Assets.gameoverscreen = g.newPixmap("gameover.png", PixmapFormat.RGB565);
 
+        // Menus
         Assets.mainmenu = g.newPixmap("mainmenu.png", PixmapFormat.RGB565);
         Assets.pausemenu = g.newPixmap("pausemenu.png", PixmapFormat.RGB565);
         Assets.readymenu = g.newPixmap("ready.png", PixmapFormat.ARGB4444);
@@ -73,12 +74,15 @@ public class LoadingScreen implements Screen {
         Assets.buttons = g.newPixmap("buttons.png", PixmapFormat.RGB565);
         Assets.numbers = g.newPixmap("numbers.png", PixmapFormat.ARGB4444);
 
-        Assets.click = game.getAudio().newSound("click.ogg");
-        Assets.bitten = game.getAudio().newSound("bitten.ogg");
-        Assets.music = game.getAudio().newMusic("Korobeiniki.ogg");
+        // Audio effects
+        Assets.click = Gdx.audio.newSound("click.ogg");
+        Assets.bitten = Gdx.audio.newSound("bitten.ogg");
+
+        // Music
+        Assets.music = Gdx.audio.newMusic("Korobeiniki.ogg");
 
         Settings.load(Gdx.fileIO);
-        game.setScreen(new StartScreen());
+        Gdx.game.setScreen(new StartScreen());
     }
 
     /*

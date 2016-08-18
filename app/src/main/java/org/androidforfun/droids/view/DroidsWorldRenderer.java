@@ -28,8 +28,6 @@ import org.androidforfun.droids.model.ShapeZ;
 import org.androidforfun.framework.Gdx;
 
 /*
- * DroidsWorldRenderer
- *
  * The responsibility of this class is to draw the model representation of Droids world.
  *
  * @author Salvatore D'Angelo
@@ -37,6 +35,9 @@ import org.androidforfun.framework.Gdx;
 public class DroidsWorldRenderer {
     public static int BLOCK_WIDTH=20;
     public static int BLOCK_HEIGHT=20;
+
+
+
 
     /*
      This method draw the model representation of Droids world.

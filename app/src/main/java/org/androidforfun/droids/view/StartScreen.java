@@ -1,6 +1,8 @@
 /*
  *  Copyright (C) 2016 Salvatore D'Angelo
  *  This file is part of Droids project.
+ *  This file derives from the Mr Nom project developed by Mario Zechner for the Beginning Android
+ *  Games book (chapter 6).
  *
  *  Droids is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,8 +29,6 @@ import org.androidforfun.framework.Screen;
 import java.util.List;
 
 /*
- * StartScreen
- *
  * This class represents the start screen. It contains the logo and the main menu with three
  * options:
  *     Play
@@ -66,7 +66,6 @@ public class StartScreen implements Screen {
      *     - Activate/deactivate sound
      */
     public void update(float deltaTime) {
-        Game game = Gdx.game;
         List<Input.TouchEvent> touchEvents = Gdx.input.getTouchEvents();
 
         int len = touchEvents.size();
@@ -81,14 +80,14 @@ public class StartScreen implements Screen {
                 }
                 // play the game
                 if(playMenuBounds.contains(event.x, event.y)) {
-                    game.setScreen(new GameScreen());
+                    Gdx.game.setScreen(new GameScreen());
                     if (Settings.soundEnabled)
                         Assets.click.play(1);
                     return;
                 }
                 // see highscores.
                 if(highscoresMenuBounds.contains(event.x, event.y)) {
-                    game.setScreen(new HighscoreScreen());
+                    Gdx.game.setScreen(new HighscoreScreen());
                     if(Settings.soundEnabled)
                         Assets.click.play(1);
                     return;
