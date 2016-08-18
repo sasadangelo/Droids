@@ -52,7 +52,7 @@ public class StartScreen implements Screen {
         backgroundBounds=new Rectangle(0, 0, 320, 480);
         logoBounds=new Rectangle(32, 20, 256, 160);
         soundButtonBounds=new Rectangle(32, 370, 50, 50);
-        mainMenuBounds=new Rectangle(64, 220, 153, 124);
+        mainMenuBounds=new Rectangle(84, 220, 153, 124);
         playMenuBounds=new Rectangle(64, 220, 192, 42);
         highscoresMenuBounds=new Rectangle(64, 220 + 42, 192, 42);
         quitMenuBounds=new Rectangle(64, 220 + 84, 192, 42);

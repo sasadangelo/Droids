@@ -88,7 +88,7 @@ public class GameScreen implements Screen {
         rightButtonBounds=new Rectangle(240, 425, 50, 50);
         rotateButtonBounds=new Rectangle(100, 425, 50, 50);
         downButtonBounds=new Rectangle(170, 425, 50, 50);
-        pauseMenuBounds=new Rectangle(80, 100, 160, 48);
+        pauseMenuBounds=new Rectangle(100, 100, 160, 48);
         readyMenuBounds=new Rectangle(65, 100, 188, 70);
         homeMenuBounds=new Rectangle(80, 148, 160, 48);
         xButtonBounds=new Rectangle(128, 200, 50, 50);
@@ -128,8 +128,6 @@ public class GameScreen implements Screen {
         // render the game world.
         renderer.draw();
         // draw buttons
-        Gdx.graphics.drawPixmap(Assets.buttons, pauseButtonBounds.getX(), pauseButtonBounds.getY(), 50, 100,
-                pauseButtonBounds.getWidth()+1, pauseButtonBounds.getHeight()+1); // pause button
         Gdx.graphics.drawPixmap(Assets.buttons, leftButtonBounds.getX(), leftButtonBounds.getY(), 50, 50,
                 leftButtonBounds.getWidth()+1, leftButtonBounds.getHeight()+1);  // left button
         Gdx.graphics.drawPixmap(Assets.buttons, rightButtonBounds.getX(), rightButtonBounds.getY(), 0, 50,
@@ -274,6 +272,8 @@ public class GameScreen implements Screen {
          */
         void draw() {
             Log.i(LOG_TAG, "GameRunning.draw -- begin");
+            Gdx.graphics.drawPixmap(Assets.buttons, pauseButtonBounds.getX(), pauseButtonBounds.getY(), 50, 100,
+                    pauseButtonBounds.getWidth()+1, pauseButtonBounds.getHeight()+1); // pause button
         }
     }
 
@@ -350,6 +350,8 @@ public class GameScreen implements Screen {
             Log.i(LOG_TAG, "GameReady.draw -- begin");
             Graphics g = Gdx.graphics;
 
+            Gdx.graphics.drawPixmap(Assets.buttons, pauseButtonBounds.getX(), pauseButtonBounds.getY(), 50, 100,
+                    pauseButtonBounds.getWidth()+1, pauseButtonBounds.getHeight()+1); // pause button
             // draw the ready menu
             g.drawPixmap(Assets.readymenu, readyMenuBounds.getX(), readyMenuBounds.getY());
         }
@@ -395,6 +397,9 @@ public class GameScreen implements Screen {
             Log.i(LOG_TAG, "GameOver.draw -- begin");
             Graphics g = Gdx.graphics;
 
+            // pause button
+            Gdx.graphics.drawPixmap(Assets.buttons, pauseButtonBounds.getX(), pauseButtonBounds.getY(), 50, 100,
+                    pauseButtonBounds.getWidth()+1, pauseButtonBounds.getHeight()+1); // pause button
             // draw game over transparent black background
             g.drawPixmap(Assets.gameoverscreen, gameoverScreenBounds.getX(), gameoverScreenBounds.getY());
             // draw the X button
