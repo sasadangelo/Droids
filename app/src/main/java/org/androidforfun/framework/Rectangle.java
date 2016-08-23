@@ -106,8 +106,8 @@ public class Rectangle {
      * detection and the methods collide of the {@link Actor} class are based on it.
      */
     public boolean overlaps(Rectangle r) {
-        return (contains(r.x, r.y) || contains(r.x+r.width-1, r.y) || contains(r.x, r.y+r.width-1) ||
-                contains(r.x+r.width-1, r.y+r.width-1));
+        return (contains(r.x, r.y) || contains(r.x+r.width-1, r.y) || contains(r.x, r.y+r.height-1) ||
+                contains(r.x+r.width-1, r.y+r.height-1));
     }
 
     /**

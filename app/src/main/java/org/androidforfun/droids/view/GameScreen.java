@@ -350,7 +350,7 @@ public class GameScreen implements Screen {
             Log.i(LOG_TAG, "GameReady.draw -- begin");
             Graphics g = Gdx.graphics;
 
-            Gdx.graphics.drawPixmap(Assets.buttons, pauseButtonBounds.getX(), pauseButtonBounds.getY(), 50, 100,
+            g.drawPixmap(Assets.buttons, pauseButtonBounds.getX(), pauseButtonBounds.getY(), 50, 100,
                     pauseButtonBounds.getWidth()+1, pauseButtonBounds.getHeight()+1); // pause button
             // draw the ready menu
             g.drawPixmap(Assets.readymenu, readyMenuBounds.getX(), readyMenuBounds.getY());
