@@ -26,6 +26,7 @@ Download and install [Android Studio](https://developer.android.com/studio/index
 Fill the following fields:
 
 Git Repository URL: https://github.com/sasadangelo/Droids.git
+
 Parent Directory: "an empty directory previously created"
 Directory Name: Droids
 
