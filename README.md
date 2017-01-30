@@ -26,7 +26,7 @@ Download and install [Android Studio](https://developer.android.com/studio/index
 Fill the following fields:
 
 Git Repository URL: https://github.com/sasadangelo/Droids.git
-Parent Directory: <an empty directory previously created>
+Parent Directory: "an empty directory previously created"
 Directory Name: Droids
 
 The source code will be downloaded and the MrSnake project will be created. Now you can run the code doing Run->Run. You can execute the code on Physical or Virtual device. For more details you can read the last section of the following [article](http://www.androidforfun.it/crea-la-tua-prima-app-android/). It is in italian but you can translate it with Google Translator.
