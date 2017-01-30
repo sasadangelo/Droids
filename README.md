@@ -14,10 +14,14 @@ Currently the game could go on forever and it is not expected that the player fi
 
 # Credits
 
-The author of the framework code, later modified by me, is [Mario Zachner](https://github.com/badlogic) (@badlogic) that released the code with GPL3 license as a resource of the Beginning Android Games book. The framework is a very simplified version of the open source library Libgdx released under GPL3 license. 
+The author of the framework code, later modified by me, is [Mario Zachner](https://github.com/badlogic) (@github.com/badlogic) that released the code with GPL3 license as a resource of the Beginning Android Games book. The framework is a very simplified version of the open source library Libgdx released under GPL3 license. 
 
 # License
 [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+# Related Projects
+
+[Alien Invaders](https://github.com/sasadangelo/AlienInvaders), [Mr Snake](https://github.com/sasadangelo/MrSnake)
 
 # How to run the source code
 
