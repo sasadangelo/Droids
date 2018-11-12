@@ -8,6 +8,9 @@ This game has been created only for educational purpose, it has no claim to be a
 
 ![Main Menu](https://raw.githubusercontent.com/wiki/sasadangelo/Droids/img/Screenshot_Droids_Home.png) ![Game](https://raw.githubusercontent.com/wiki/sasadangelo/Droids/img/Screenshot_Droids.png)
 
+# Video Demo
+[![Video Demo](https://raw.githubusercontent.com/wiki/sasadangelo/Droids/img/Droids_Video.png)](https://www.youtube.com/watch?v=zvO1ws1oZQE "Video Demo")
+
 # Limitations
 
 Currently the game could go on forever and it is not expected that the player finish the game after a certain number of levels. The level change does not result in a change of graphics, simply at each level the game difficulty increases because the tetrominoes descend faster.
