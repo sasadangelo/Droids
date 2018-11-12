@@ -1,6 +1,6 @@
 # Droids
 
-Droids is a Tetris clone. The game includes a playing field consisting of a 12 × 10 grid and 7 geometric figures called "tetrominoes". The aimof the game is to fit these tetrominoes between them in order to complete lines that will be deleted. Each level has a goal (Goal) of lines to complete. Exceeded this goal, the level increases and with it the speed of tetrominoes. The ultimate goal is to be able to gain the highest score possible before the game ends. The game ends when a tetramino reaches the top edge of the playing field. The player wins points every time you complete a line or accelerates the fall of a tetromino.
+Droids is a Tetris clone for Android. The game includes a playing field consisting of a 12 × 10 grid and 7 geometric figures called "tetrominoes". The aim of the game is to fit these tetrominoes between them in order to complete lines that will be deleted. Each level has a goal (Goal) of lines to complete. Exceeded this goal, the level increases and with it the speed of tetrominoes. The ultimate goal is to be able to gain the highest score possible before the game ends. The game ends when a tetramino reaches the top edge of the playing field. The player wins points every time you complete a line or accelerates the fall of a tetromino.
 
 This game has been created only for educational purpose, it has no claim to be a complete game distributable through the Android market. It's my belief that you can get inspiration from this source code to implement your own video games.
 
