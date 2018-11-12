@@ -6,7 +6,7 @@ This game has been created only for educational purpose, it has no claim to be a
 
 # Screenshots
 
-![Main Menu](http://www.androidforfun.it/wp-content/uploads/2016/12/Screenshot_Droids_Home.png) ![Game](http://www.androidforfun.it/wp-content/uploads/2016/12/Screenshot_Droids.png)
+![Main Menu](https://raw.githubusercontent.com/wiki/sasadangelo/Droids/img/Screenshot_Droids_Home.png) ![Game](https://raw.githubusercontent.com/wiki/sasadangelo/Droids/img/Screenshot_Droids.png)
 
 # Limitations
 
