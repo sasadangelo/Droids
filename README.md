@@ -28,6 +28,14 @@ The author of the framework code, later modified by me, is [Mario Zachner](https
 
 # Installation & Run
 
+Enable USB Debugging mode that on many devices from 3.2 up to 4.0 (excluded) is in Settings>Applications>Development. On devices from Android 4.0 and later, you’ll find them in Settings>Developer Options. On Android 4.2 and later the option is hidden by default. To make it reappear, go to Setting->Info on the device and tap Version Build 7 times, the option will become visible.
+
+Enable installation from Unknown Sources clicking on Settings->Security.
+
+Download the application [clicking here](https://github.com/sasadangelo/Droids/releases/download/0.0.4/droids.apk) and install it.
+
+# Installation & Run from source code
+
 [Download and install Android Studio](http://code4projects.altervista.org/how-to-install-android-studio/). If you already have Android Studio installed, make sure it is at the latest level. Once Android Studio is up and running make sure all projects are closed (if a project is open do File->Close Project), the "Welcome to Android Studio" Panel appears. Select the option "Check out project from version control" and then GitHub. 
 
 Fill the following fields:
