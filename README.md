@@ -20,7 +20,11 @@ Currently the game could go on forever and it is not expected that the player fi
 The author of the framework code, later modified by me, is [Mario Zachner](https://github.com/badlogic) (@github.com/badlogic) that released the code with GPL3 license as a resource of the Beginning Android Games book. The framework is a very simplified version of the open source library Libgdx released under GPL3 license. 
 
 # License
-[GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+This project uses two licenses:
+
+- The Droids game code (`org.androidforfun.droids`, i.e. the model and view classes specific to this game) is original work by Salvatore D'Angelo, released under the [MIT license](LICENSE-MIT).
+- The underlying game framework (`org.androidforfun.framework`), derived from Mario Zechner's library for the "Beginning Android Games" book, remains under [GPL3](LICENSE), as required by the license of the original code it is derived from.
 
 # Related Projects
 
@@ -36,16 +40,58 @@ Download the application [clicking here](https://github.com/sasadangelo/Droids/r
 
 # Installation & Run from source code
 
-[Download and install Android Studio](http://code4projects.altervista.org/how-to-install-android-studio/). If you already have Android Studio installed, make sure it is at the latest level. Once Android Studio is up and running make sure all projects are closed (if a project is open do File->Close Project), the "Welcome to Android Studio" Panel appears. Select the option "Check out project from version control" and then GitHub. 
+The project is built from the command line with Gradle and does not require Android Studio — any editor (e.g. VS Code) is enough.
 
-Fill the following fields:
+## Prerequisites
 
-    Git Repository URL: https://github.com/sasadangelo/Droids.git
-    Parent Directory: "an empty directory previously created"
-    Directory Name: Droids
+- **JDK 17** (required by the Android Gradle Plugin)
+- **Android SDK command-line tools**, with the following packages installed:
+  - `platform-tools`
+  - `platforms;android-37` (or the `compileSdk` version set in `app/build.gradle`)
+  - `build-tools;37.0.0` (or the matching `buildToolsVersion`)
+  - `emulator` and a system image, only if you want to run the game on a virtual device
+- Git
 
-The source code will be downloaded and the Droids project will be created. Now you can run the code doing Run->Run. You can execute the code on Physical or Virtual device. For more details, you can read the last three sections of the following [article](http://code4projects.altervista.org/how-to-create-an-android-application/).
+On macOS these can be installed with [Homebrew](https://brew.sh):
+
+```bash
+brew install openjdk@17
+brew install --cask android-commandlinetools
+
+sdkmanager --licenses
+sdkmanager "platform-tools" "platforms;android-37" "build-tools;37.0.0" "emulator"
+```
+
+## Get the source and configure the SDK path
+
+```bash
+git clone https://github.com/sasadangelo/Droids.git
+cd Droids
+echo "sdk.dir=$(brew --prefix)/share/android-commandlinetools" > local.properties
+```
+
+## Build and run
+
+Use the provided `droids.sh` helper script:
+
+```bash
+./droids.sh            # uses a connected physical device if there is one, otherwise the emulator
+./droids.sh device      # forces a connected physical device (enable USB debugging on it first)
+./droids.sh emulator    # forces the emulator, starting it if it isn't already running
+```
+
+The script compiles the debug APK with `./gradlew assembleDebug`, then installs and launches Droids automatically.
+
+If you don't have an emulator (AVD) yet, create one first, for example:
+
+```bash
+avdmanager create avd -n Pixel_3_AVD_ARM -k "system-images;android-30;google_apis;arm64-v8a" -d pixel_3
+```
+
+To run on a physical device instead, enable Developer Options (Settings > About phone > tap "Build number" 7 times), turn on USB Debugging in Settings > Developer Options, connect the phone via a USB **data** cable, and accept the "Allow USB debugging" prompt on the phone.
 
 # Troubleshooting
 
-Sometime could happen that there is incompatibility between the level of gradle declared in the source code with the one installed in the development environment. When this occurs Android Studio will show also a link to fix it. Click the link to solve the issue.
+- `./gradlew: Permission denied` — run `chmod +x gradlew` once.
+- `adb devices` shows nothing for a physical device — the most common cause is a charge-only USB cable; try a cable known to transfer data, and check the phone's USB connection mode is set to "File Transfer" rather than "Charging only".
+- Gradle/Android Gradle Plugin version mismatches — the project uses the Gradle wrapper (`./gradlew`), which downloads the exact Gradle version declared in `gradle/wrapper/gradle-wrapper.properties` automatically, so no manual Gradle installation is needed.
