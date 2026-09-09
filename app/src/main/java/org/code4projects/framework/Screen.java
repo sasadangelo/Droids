@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework;
+package org.code4projects.framework;
 
 /** <p>
  * Represents one of many application screens, such as a main menu, a settings menu, the game screen

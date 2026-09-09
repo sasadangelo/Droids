@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework.impl;
+package org.code4projects.framework.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,9 +31,9 @@ import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 
-import org.androidforfun.framework.Graphics;
-import org.androidforfun.framework.Pixmap;
-import org.androidforfun.framework.TextStyle;
+import org.code4projects.framework.Graphics;
+import org.code4projects.framework.Pixmap;
+import org.code4projects.framework.TextStyle;
 
 /*
  * This class implements the Graphics subsystem for Android. The framebuffer (that in Android is

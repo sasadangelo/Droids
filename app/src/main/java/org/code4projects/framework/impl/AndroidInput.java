@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework.impl;
+package org.code4projects.framework.impl;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ import android.content.Context;
 import android.os.Build.VERSION;
 import android.view.View;
 
-import org.androidforfun.framework.Input;
+import org.code4projects.framework.Input;
 
 /*
  * This class implements the Input subsystem for Android. On Android inputs come from:

@@ -14,11 +14,11 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework.impl;
+package org.code4projects.framework.impl;
 
 import android.media.SoundPool;
 
-import org.androidforfun.framework.Sound;
+import org.code4projects.framework.Sound;
 
 /*
  * This class represents a brief sound like beep, explosion, etc. A sound file can be played at

@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework.impl;
+package org.code4projects.framework.impl;
 
 import android.content.Context;
 import android.hardware.Sensor;

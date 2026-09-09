@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework;
+package org.code4projects.framework;
 
 /** <p>
  * A Sound is a short audio clip that can be played numerous times in parallel. It's completely

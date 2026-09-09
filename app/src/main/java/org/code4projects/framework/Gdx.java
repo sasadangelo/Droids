@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework;
+package org.code4projects.framework;
 
 /**
  * Environment class holding references to the {@link Game}, {@link Graphics}, {@link Audio},

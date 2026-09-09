@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework.impl;
+package org.code4projects.framework.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +27,7 @@ import java.io.OutputStream;
 import android.content.res.AssetManager;
 import android.os.Environment;
 
-import org.androidforfun.framework.FileIO;
+import org.code4projects.framework.FileIO;
 
 /*
  * This class implements the FileIO interface used to manage assets and files. The implementation is

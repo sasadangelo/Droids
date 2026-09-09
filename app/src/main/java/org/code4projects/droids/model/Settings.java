@@ -14,9 +14,9 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.droids.model;
+package org.code4projects.droids.model;
 
-import org.androidforfun.framework.FileIO;
+import org.code4projects.framework.FileIO;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

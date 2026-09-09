@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework;
+package org.code4projects.framework;
 
 /** <p>
  * An <code>Game</code> is the main entry point of your project. It sets up a window and rendering

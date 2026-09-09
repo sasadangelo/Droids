@@ -14,13 +14,13 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework.impl;
+package org.code4projects.framework.impl;
 
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 
-import org.androidforfun.framework.Music;
+import org.code4projects.framework.Music;
 
 /*
  * This class represents a stream of music to play. A music file can be played, stopped, paused.

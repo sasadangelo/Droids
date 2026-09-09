@@ -14,10 +14,10 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.droids.model;
+package org.code4projects.droids.model;
 
 import android.os.SystemClock;
-import org.androidforfun.framework.Actor;
+import org.code4projects.framework.Actor;
 
 /*
  * Shape

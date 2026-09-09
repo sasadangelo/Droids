@@ -14,7 +14,7 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
 
 AVD_NAME="Pixel_3_AVD_ARM"
-APP_ID="org.androidforfun.droids"
+APP_ID="org.code4projects.droids"
 MAIN_ACTIVITY="$APP_ID/.view.DroidsGame"
 APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
 MODE="${1:-auto}"

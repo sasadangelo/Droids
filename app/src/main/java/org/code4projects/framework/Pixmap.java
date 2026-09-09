@@ -14,9 +14,9 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework;
+package org.code4projects.framework;
 
-import org.androidforfun.framework.Graphics.PixmapFormat;
+import org.code4projects.framework.Graphics.PixmapFormat;
 
 /** <p>
  * A Pixmap represents an image in memory. It has a width and height expressed in pixels as well as

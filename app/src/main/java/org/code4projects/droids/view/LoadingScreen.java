@@ -16,16 +16,16 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.droids.view;
+package org.code4projects.droids.view;
 
 import android.util.Log;
 
-import org.androidforfun.framework.Game;
-import org.androidforfun.framework.Gdx;
-import org.androidforfun.framework.Graphics;
-import org.androidforfun.framework.Graphics.PixmapFormat;
-import org.androidforfun.framework.Screen;
-import org.androidforfun.droids.model.Settings;
+import org.code4projects.framework.Game;
+import org.code4projects.framework.Gdx;
+import org.code4projects.framework.Graphics;
+import org.code4projects.framework.Graphics.PixmapFormat;
+import org.code4projects.framework.Screen;
+import org.code4projects.droids.model.Settings;
 
 /*
  * This class represents the loading screen. It load in memory all the assets used by the game.

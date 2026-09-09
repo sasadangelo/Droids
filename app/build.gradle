@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace 'org.androidforfun.droids'
+    namespace 'org.code4projects.droids'
     compileSdk 37
     buildToolsVersion '37.0.0'
 
     defaultConfig {
-        applicationId "org.androidforfun.droids"
+        applicationId "org.code4projects.droids"
         minSdkVersion 21
         targetSdkVersion 37
         versionCode 1

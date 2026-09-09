@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework.impl;
+package org.code4projects.framework.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +22,9 @@ import java.util.List;
 import android.view.View;
 import android.view.View.OnKeyListener;
 
-import org.androidforfun.framework.Input.KeyEvent;
-import org.androidforfun.framework.Pool;
-import org.androidforfun.framework.Pool.PoolObjectFactory;
+import org.code4projects.framework.Input.KeyEvent;
+import org.code4projects.framework.Pool;
+import org.code4projects.framework.Pool.PoolObjectFactory;
 
 /*
  * This is the handler used to manage keyword events. The class does not allocate a KeyEvent object

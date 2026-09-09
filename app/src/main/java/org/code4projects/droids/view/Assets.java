@@ -16,11 +16,11 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.droids.view;
+package org.code4projects.droids.view;
 
-import org.androidforfun.framework.Music;
-import org.androidforfun.framework.Pixmap;
-import org.androidforfun.framework.Sound;
+import org.code4projects.framework.Music;
+import org.code4projects.framework.Pixmap;
+import org.code4projects.framework.Sound;
 
 /*
  * This class contains the global references to all the assets used in DroidsWorld game.

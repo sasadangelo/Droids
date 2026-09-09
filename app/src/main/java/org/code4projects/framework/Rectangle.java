@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework;
+package org.code4projects.framework;
 
 /**
  * A a 2D rectangle defined by its corner point in the top left and its extents in x

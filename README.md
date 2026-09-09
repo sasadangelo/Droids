@@ -23,8 +23,8 @@ The author of the framework code, later modified by me, is [Mario Zachner](https
 
 This project uses two licenses:
 
-- The Droids game code (`org.androidforfun.droids`, i.e. the model and view classes specific to this game) is original work by Salvatore D'Angelo, released under the [MIT license](LICENSE-MIT).
-- The underlying game framework (`org.androidforfun.framework`), derived from Mario Zechner's library for the "Beginning Android Games" book, remains under [GPL3](LICENSE), as required by the license of the original code it is derived from.
+- The Droids game code (`org.code4projects.droids`, i.e. the model and view classes specific to this game) is original work by Salvatore D'Angelo, released under the [MIT license](LICENSE-MIT).
+- The underlying game framework (`org.code4projects.framework`), derived from Mario Zechner's library for the "Beginning Android Games" book, remains under [GPL3](LICENSE), as required by the license of the original code it is derived from.
 
 # Related Projects
 

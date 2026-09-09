@@ -14,18 +14,18 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.droids.view;
+package org.code4projects.droids.view;
 
-import org.androidforfun.droids.model.Block;
-import org.androidforfun.droids.model.DroidsWorld;
-import org.androidforfun.droids.model.ShapeCube;
-import org.androidforfun.droids.model.ShapeI;
-import org.androidforfun.droids.model.ShapeJ;
-import org.androidforfun.droids.model.ShapeL;
-import org.androidforfun.droids.model.ShapeS;
-import org.androidforfun.droids.model.ShapeT;
-import org.androidforfun.droids.model.ShapeZ;
-import org.androidforfun.framework.Gdx;
+import org.code4projects.droids.model.Block;
+import org.code4projects.droids.model.DroidsWorld;
+import org.code4projects.droids.model.ShapeCube;
+import org.code4projects.droids.model.ShapeI;
+import org.code4projects.droids.model.ShapeJ;
+import org.code4projects.droids.model.ShapeL;
+import org.code4projects.droids.model.ShapeS;
+import org.code4projects.droids.model.ShapeT;
+import org.code4projects.droids.model.ShapeZ;
+import org.code4projects.framework.Gdx;
 
 /*
  * The responsibility of this class is to draw the model representation of Droids world.

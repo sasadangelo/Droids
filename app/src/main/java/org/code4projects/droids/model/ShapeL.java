@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.droids.model;
+package org.code4projects.droids.model;
 
 /*
  * This is a L shape.

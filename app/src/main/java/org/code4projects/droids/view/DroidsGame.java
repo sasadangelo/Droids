@@ -16,10 +16,10 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.droids.view;
+package org.code4projects.droids.view;
 
-import org.androidforfun.framework.Screen;
-import org.androidforfun.framework.impl.AndroidGame;
+import org.code4projects.framework.Screen;
+import org.code4projects.framework.impl.AndroidGame;
 
 /*
  * This class represents the main activity of the Droids game.

@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework.impl;
+package org.code4projects.framework.impl;
 
 import java.io.IOException;
 
@@ -24,9 +24,9 @@ import android.content.res.AssetManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
 
-import org.androidforfun.framework.Audio;
-import org.androidforfun.framework.Music;
-import org.androidforfun.framework.Sound;
+import org.code4projects.framework.Audio;
+import org.code4projects.framework.Music;
+import org.code4projects.framework.Sound;
 
 /*
  * Implement the Audio interface for Android. The class create a SoundPool to manage brief Sound

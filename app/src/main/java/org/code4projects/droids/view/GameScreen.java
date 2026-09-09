@@ -16,18 +16,18 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.droids.view;
+package org.code4projects.droids.view;
 
 import android.util.Log;
 
-import org.androidforfun.droids.model.DroidsWorld;
-import org.androidforfun.droids.model.Settings;
-import org.androidforfun.framework.Gdx;
-import org.androidforfun.framework.Graphics;
-import org.androidforfun.framework.Input.TouchEvent;
-import org.androidforfun.framework.Rectangle;
-import org.androidforfun.framework.Screen;
-import org.androidforfun.framework.TextStyle;
+import org.code4projects.droids.model.DroidsWorld;
+import org.code4projects.droids.model.Settings;
+import org.code4projects.framework.Gdx;
+import org.code4projects.framework.Graphics;
+import org.code4projects.framework.Input.TouchEvent;
+import org.code4projects.framework.Rectangle;
+import org.code4projects.framework.Screen;
+import org.code4projects.framework.TextStyle;
 
 import java.util.EnumMap;
 import java.util.List;

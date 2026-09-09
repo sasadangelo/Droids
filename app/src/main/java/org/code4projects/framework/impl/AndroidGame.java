@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License.
  */
-package org.androidforfun.framework.impl;
+package org.code4projects.framework.impl;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,13 +27,13 @@ import android.os.PowerManager.WakeLock;
 import android.view.Window;
 import android.view.WindowManager;
 
-import org.androidforfun.framework.Audio;
-import org.androidforfun.framework.FileIO;
-import org.androidforfun.framework.Game;
-import org.androidforfun.framework.Gdx;
-import org.androidforfun.framework.Graphics;
-import org.androidforfun.framework.Input;
-import org.androidforfun.framework.Screen;
+import org.code4projects.framework.Audio;
+import org.code4projects.framework.FileIO;
+import org.code4projects.framework.Game;
+import org.code4projects.framework.Gdx;
+import org.code4projects.framework.Graphics;
+import org.code4projects.framework.Input;
+import org.code4projects.framework.Screen;
 
 /*
  * On Android a Game interface is implemented by an Activity. It will manage the game lifecycle and
