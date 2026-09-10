@@ -15,6 +15,10 @@ This game has been created only for educational purpose, it has no claim to be a
 
 Currently the game could go on forever and it is not expected that the player finish the game after a certain number of levels. The level change does not result in a change of graphics, simply at each level the game difficulty increases because the tetrominoes descend faster.
 
+# Roadmap
+
+See [docs/ROADMAP.md](docs/ROADMAP.md) for what's planned next: visual polish, gameplay features to make it a fuller Tetris, and — eventually — a Google Play Store release.
+
 # Credits
 
 The game framework (`org.code4projects.framework`) was written by Salvatore D'Angelo, taking inspiration from the framework presented by [Mario Zechner](https://github.com/badlogic) (@github.com/badlogic) in the book Beginning Android Games, and from the open source library libGDX. No code from those sources was copied; the architecture and class layout follow the same concepts as a learning reference.
