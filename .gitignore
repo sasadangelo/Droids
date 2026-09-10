@@ -1,9 +1,9 @@
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
+/.idea/
+*.iml
+.kotlin/
 .DS_Store
 /build
 /captures
 /javadoc
-
