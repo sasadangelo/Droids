@@ -28,9 +28,7 @@ class DroidsWorldRenderer {
     /*
      This method draw the model representation of Droids world.
      */
-    fun draw() {
-        val gameScreen = Gdx.game!!.getCurrentScreen() as GameScreen
-
+    fun draw(gameScreen: GameScreen) {
         /*
          * First we draw all the blocks laying on the bottom of the game screen.
          */

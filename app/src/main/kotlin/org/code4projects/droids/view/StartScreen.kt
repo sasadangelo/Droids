@@ -10,6 +10,7 @@ import org.code4projects.framework.Graphics
 import org.code4projects.framework.Input
 import org.code4projects.framework.Rectangle
 import org.code4projects.framework.Screen
+import org.code4projects.framework.impl.FadeTransitionScreen
 
 /*
  * This class represents the start screen. It contains the logo and the main menu with three
@@ -53,14 +54,14 @@ class StartScreen : Screen {
                 }
                 // play the game
                 if (playMenuBounds.contains(event.x, event.y)) {
-                    Gdx.game!!.setScreen(GameScreen())
+                    Gdx.game!!.setScreen(FadeTransitionScreen(this, GameScreen()))
                     if (Settings.soundEnabled)
                         Assets.click!!.play(1f)
                     return
                 }
                 // see highscores.
                 if (highscoresMenuBounds.contains(event.x, event.y)) {
-                    Gdx.game!!.setScreen(HighscoreScreen())
+                    Gdx.game!!.setScreen(FadeTransitionScreen(this, HighscoreScreen()))
                     if (Settings.soundEnabled)
                         Assets.click!!.play(1f)
                     return

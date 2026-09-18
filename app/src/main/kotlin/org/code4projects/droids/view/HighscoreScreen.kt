@@ -10,6 +10,7 @@ import org.code4projects.framework.Graphics
 import org.code4projects.framework.Input.TouchEvent
 import org.code4projects.framework.Rectangle
 import org.code4projects.framework.Screen
+import org.code4projects.framework.impl.FadeTransitionScreen
 
 /*
  * This class represents the highscores screen. The screen show the top five scores achieved by the
@@ -46,7 +47,7 @@ class HighscoreScreen : Screen {
                 if (backButtonBounds.contains(event.x, event.y)) {
                     if (Settings.soundEnabled)
                         Assets.click!!.play(1f)
-                    Gdx.game!!.setScreen(StartScreen())
+                    Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
                     return
                 }
             }

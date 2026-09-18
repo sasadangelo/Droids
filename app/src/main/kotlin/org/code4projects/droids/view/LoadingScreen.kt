@@ -10,6 +10,7 @@ import org.code4projects.droids.model.Settings
 import org.code4projects.framework.Gdx
 import org.code4projects.framework.Graphics
 import org.code4projects.framework.Screen
+import org.code4projects.framework.impl.FadeTransitionScreen
 
 /*
  * This class represents the loading screen. It load in memory all the assets used by the game.
@@ -67,7 +68,7 @@ class LoadingScreen : Screen {
         Assets.music = Gdx.audio!!.newMusic("Korobeiniki.ogg")
 
         Settings.load(Gdx.fileIO!!)
-        Gdx.game!!.setScreen(StartScreen())
+        Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
     }
 
     /*

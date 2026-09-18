@@ -105,7 +105,7 @@ class AndroidGraphics(assets: AssetManager, private val frameBuffer: Bitmap) : G
         paint.color = color
         paint.style = Paint.Style.FILL
         canvas.drawRect(
-            x.toFloat(), y.toFloat(), (x + width - 1).toFloat(), (y + width - 1).toFloat(), paint
+            x.toFloat(), y.toFloat(), (x + width - 1).toFloat(), (y + height - 1).toFloat(), paint
         )
     }
 

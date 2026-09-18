@@ -14,6 +14,7 @@ import org.code4projects.framework.Input.TouchEvent
 import org.code4projects.framework.Rectangle
 import org.code4projects.framework.Screen
 import org.code4projects.framework.TextStyle
+import org.code4projects.framework.impl.FadeTransitionScreen
 
 import java.util.EnumMap
 
@@ -93,7 +94,7 @@ class GameScreen : Screen {
         // draw the background
         Gdx.graphics!!.drawPixmap(Assets.gamescreen!!, gameScreenBounds.x, gameScreenBounds.y)
         // render the game world.
-        renderer.draw()
+        renderer.draw(this)
         // draw buttons
         Gdx.graphics!!.drawPixmap(
             Assets.buttons!!, leftButtonBounds.x, leftButtonBounds.y, 100, 100,
@@ -289,7 +290,7 @@ class GameScreen : Screen {
                     if (homeMenuBounds.contains(event.x, event.y)) {
                         if (Settings.soundEnabled)
                             Assets.click!!.play(1f)
-                        Gdx.game!!.setScreen(StartScreen())
+                        Gdx.game!!.setScreen(FadeTransitionScreen(this@GameScreen, StartScreen()))
                         return
                     }
                 }
@@ -364,7 +365,7 @@ class GameScreen : Screen {
                     if (xButtonBounds.contains(event.x, event.y)) {
                         if (Settings.soundEnabled)
                             Assets.click!!.play(1f)
-                        Gdx.game!!.setScreen(StartScreen())
+                        Gdx.game!!.setScreen(FadeTransitionScreen(this@GameScreen, StartScreen()))
                         DroidsWorld.getInstance().clear()
                         return
                     }
