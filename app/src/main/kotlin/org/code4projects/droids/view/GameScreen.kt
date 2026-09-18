@@ -35,22 +35,22 @@ class GameScreen : Screen {
     }
 
     private val states: MutableMap<DroidsWorld.GameState, GameState> = EnumMap(DroidsWorld.GameState::class.java)
-    val leftRegion = Rectangle(0, 0, 60, 400)
-    val rightRegion = Rectangle(260, 0, 60, 400)
-    val workingRegion = Rectangle(60, 20, 200, 400)
-    val commandRegion = Rectangle(0, 400, 320, 80)
+    val leftRegion = Rectangle(0, 0, 120, 800)
+    val rightRegion = Rectangle(520, 0, 120, 800)
+    val workingRegion = Rectangle(120, 40, 400, 800)
+    val commandRegion = Rectangle(0, 800, 640, 160)
 
-    private val gameoverScreenBounds = Rectangle(0, 0, 320, 480)
-    private val gameScreenBounds = Rectangle(0, 0, 320, 480)
-    private val pauseButtonBounds = Rectangle(5, 20, 50, 50)
-    private val leftButtonBounds = Rectangle(30, 425, 50, 50)
-    private val rightButtonBounds = Rectangle(240, 425, 50, 50)
-    private val rotateButtonBounds = Rectangle(100, 425, 50, 50)
-    private val downButtonBounds = Rectangle(170, 425, 50, 50)
-    private val xButtonBounds = Rectangle(128, 200, 50, 50)
-    private val pauseMenuBounds = Rectangle(100, 100, 160, 48)
-    private val readyMenuBounds = Rectangle(65, 100, 188, 70)
-    private val homeMenuBounds = Rectangle(80, 148, 160, 48)
+    private val gameoverScreenBounds = Rectangle(0, 0, 640, 960)
+    private val gameScreenBounds = Rectangle(0, 0, 640, 960)
+    private val pauseButtonBounds = Rectangle(10, 40, 100, 100)
+    private val leftButtonBounds = Rectangle(60, 850, 100, 100)
+    private val rightButtonBounds = Rectangle(480, 850, 100, 100)
+    private val rotateButtonBounds = Rectangle(200, 850, 100, 100)
+    private val downButtonBounds = Rectangle(340, 850, 100, 100)
+    private val xButtonBounds = Rectangle(256, 400, 100, 100)
+    private val pauseMenuBounds = Rectangle(200, 200, 320, 96)
+    private val readyMenuBounds = Rectangle(130, 200, 376, 140)
+    private val homeMenuBounds = Rectangle(160, 296, 320, 96)
 
     private val renderer = DroidsWorldRenderer()
 
@@ -96,35 +96,35 @@ class GameScreen : Screen {
         renderer.draw()
         // draw buttons
         Gdx.graphics!!.drawPixmap(
-            Assets.buttons!!, leftButtonBounds.x, leftButtonBounds.y, 50, 50,
+            Assets.buttons!!, leftButtonBounds.x, leftButtonBounds.y, 100, 100,
             leftButtonBounds.width + 1, leftButtonBounds.height + 1
         ) // left button
         Gdx.graphics!!.drawPixmap(
-            Assets.buttons!!, rightButtonBounds.x, rightButtonBounds.y, 0, 50,
+            Assets.buttons!!, rightButtonBounds.x, rightButtonBounds.y, 0, 100,
             rightButtonBounds.width + 1, rightButtonBounds.height + 1
         ) // right button
         Gdx.graphics!!.drawPixmap(
-            Assets.buttons!!, rotateButtonBounds.x, rotateButtonBounds.y, 50, 150,
+            Assets.buttons!!, rotateButtonBounds.x, rotateButtonBounds.y, 100, 300,
             rotateButtonBounds.width + 1, rotateButtonBounds.height + 1
         ) // rotate button
         Gdx.graphics!!.drawPixmap(
-            Assets.buttons!!, downButtonBounds.x, downButtonBounds.y, 0, 150,
+            Assets.buttons!!, downButtonBounds.x, downButtonBounds.y, 0, 300,
             downButtonBounds.width + 1, downButtonBounds.height + 1
         ) // down button
 
         // draw the goal, score and level.
         val style = TextStyle()
         style.color = 0xffffffffL.toInt()
-        style.textSize = 10
+        style.textSize = 20
         style.align = TextStyle.Align.CENTER
         Gdx.graphics!!.drawText(
-            "" + DroidsWorld.getInstance().level, 30 + leftRegion.x, 165 + leftRegion.y, style
+            "" + DroidsWorld.getInstance().level, 60 + leftRegion.x, 330 + leftRegion.y, style
         )
         Gdx.graphics!!.drawText(
-            "" + DroidsWorld.getInstance().goal, 30 + leftRegion.x, 265 + leftRegion.y, style
+            "" + DroidsWorld.getInstance().goal, 60 + leftRegion.x, 530 + leftRegion.y, style
         )
         Gdx.graphics!!.drawText(
-            "" + DroidsWorld.getInstance().score, 30 + rightRegion.x, 265 + rightRegion.y, style
+            "" + DroidsWorld.getInstance().score, 60 + rightRegion.x, 530 + rightRegion.y, style
         )
 
         // draw the state specific element
@@ -142,21 +142,21 @@ class GameScreen : Screen {
             val character = text[i]
 
             if (character == ' ') {
-                posX += 20
+                posX += 40
                 continue
             }
 
             val srcX: Int
             val srcWidth: Int
             if (character == '.') {
-                srcX = 200
-                srcWidth = 10
-            } else {
-                srcX = (character - '0') * 20
+                srcX = 400
                 srcWidth = 20
+            } else {
+                srcX = (character - '0') * 40
+                srcWidth = 40
             }
 
-            Gdx.graphics!!.drawPixmap(Assets.numbers!!, posX, y, srcX, 0, srcWidth, 32)
+            Gdx.graphics!!.drawPixmap(Assets.numbers!!, posX, y, srcX, 0, srcWidth, 64)
             posX += srcWidth
         }
     }
@@ -255,7 +255,7 @@ class GameScreen : Screen {
         override fun draw() {
             Log.i(LOG_TAG, "GameRunning.draw -- begin")
             Gdx.graphics!!.drawPixmap(
-                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 50, 100,
+                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 100, 200,
                 pauseButtonBounds.width + 1, pauseButtonBounds.height + 1
             ) // pause button
         }
@@ -335,7 +335,7 @@ class GameScreen : Screen {
             val g: Graphics = Gdx.graphics!!
 
             g.drawPixmap(
-                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 50, 100,
+                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 100, 200,
                 pauseButtonBounds.width + 1, pauseButtonBounds.height + 1
             ) // pause button
             // draw the ready menu
@@ -385,17 +385,17 @@ class GameScreen : Screen {
 
             // pause button
             Gdx.graphics!!.drawPixmap(
-                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 50, 100,
+                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 100, 200,
                 pauseButtonBounds.width + 1, pauseButtonBounds.height + 1
             ) // pause button
             // draw game over transparent black background
             g.drawPixmap(Assets.gameoverscreen!!, gameoverScreenBounds.x, gameoverScreenBounds.y)
             // draw the X button
             g.drawPixmap(
-                Assets.buttons!!, xButtonBounds.x, xButtonBounds.y, 0, 100,
+                Assets.buttons!!, xButtonBounds.x, xButtonBounds.y, 0, 200,
                 xButtonBounds.width + 1, xButtonBounds.height + 1
             ) // down button
-            drawText("" + DroidsWorld.getInstance().score, 180, 280)
+            drawText("" + DroidsWorld.getInstance().score, 360, 560)
         }
     }
 

@@ -21,8 +21,8 @@ import org.code4projects.framework.Gdx
  */
 class DroidsWorldRenderer {
     companion object {
-        const val BLOCK_WIDTH = 20
-        const val BLOCK_HEIGHT = 20
+        const val BLOCK_WIDTH = 40
+        const val BLOCK_HEIGHT = 40
     }
 
     /*
@@ -52,20 +52,20 @@ class DroidsWorldRenderer {
         // This for loop draw the Next Shape in the Game Screen on the top right side
         val nextShape = DroidsWorld.getInstance().nextShape!!
         for (block in nextShape.getBlocks()) {
-            var x = block.x * 16
-            val y = block.y * 16
+            var x = block.x * 32
+            val y = block.y * 32
 
             when (nextShape) {
-                is ShapeCube, is ShapeJ -> x += 15
-                is ShapeI -> x += 25
-                is ShapeL -> x += 20
-                is ShapeS, is ShapeT, is ShapeZ -> x += 5
+                is ShapeCube, is ShapeJ -> x += 30
+                is ShapeI -> x += 50
+                is ShapeL -> x += 40
+                is ShapeS, is ShapeT, is ShapeZ -> x += 10
             }
 
             Gdx.graphics!!.drawPixmap(
                 Assets.getSmallBlockByColor(block.color)!!,
                 gameScreen.rightRegion.x + x,
-                gameScreen.rightRegion.y + 65 + y
+                gameScreen.rightRegion.y + 130 + y
             )
         }
     }

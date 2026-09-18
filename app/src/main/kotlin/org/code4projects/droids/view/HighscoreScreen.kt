@@ -18,8 +18,8 @@ import org.code4projects.framework.Screen
  * @author Salvatore D'Angelo
  */
 class HighscoreScreen : Screen {
-    private val backgroundBounds = Rectangle(0, 0, 320, 480)
-    private val backButtonBounds = Rectangle(32, 370, 50, 50)
+    private val backgroundBounds = Rectangle(0, 0, 640, 960)
+    private val backButtonBounds = Rectangle(64, 740, 100, 100)
 
     private val lines = Array(5) { "" }
 
@@ -62,14 +62,14 @@ class HighscoreScreen : Screen {
         // draw the background.
         g.drawPixmap(Assets.highscoresscreen!!, backgroundBounds.x, backgroundBounds.y)
         // draw the 5 scores.
-        var y = 100
+        var y = 200
         for (i in 0 until 5) {
-            drawText(g, lines[i], 20, y)
-            y += 50
+            drawText(g, lines[i], 40, y)
+            y += 100
         }
         // draw the back button.
         g.drawPixmap(
-            Assets.buttons!!, backButtonBounds.x, backButtonBounds.y, 50, 50,
+            Assets.buttons!!, backButtonBounds.x, backButtonBounds.y, 100, 100,
             backButtonBounds.width + 1, backButtonBounds.height + 1
         )
     }
@@ -81,21 +81,21 @@ class HighscoreScreen : Screen {
             val character = line[i]
 
             if (character == ' ') {
-                posX += 20
+                posX += 40
                 continue
             }
 
             val srcX: Int
             val srcWidth: Int
             if (character == '.') {
-                srcX = 200
-                srcWidth = 10
-            } else {
-                srcX = (character - '0') * 20
+                srcX = 400
                 srcWidth = 20
+            } else {
+                srcX = (character - '0') * 40
+                srcWidth = 40
             }
 
-            g.drawPixmap(Assets.numbers!!, posX, y, srcX, 0, srcWidth, 32)
+            g.drawPixmap(Assets.numbers!!, posX, y, srcX, 0, srcWidth, 64)
             posX += srcWidth
         }
     }

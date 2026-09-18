@@ -23,13 +23,13 @@ import org.code4projects.framework.Screen
  * @author Salvatore D'Angelo
  */
 class StartScreen : Screen {
-    private val backgroundBounds = Rectangle(0, 0, 320, 480)
-    private val logoBounds = Rectangle(32, 20, 256, 160)
-    private val soundButtonBounds = Rectangle(32, 370, 50, 50)
-    private val mainMenuBounds = Rectangle(84, 220, 153, 124)
-    private val playMenuBounds = Rectangle(64, 220, 192, 42)
-    private val highscoresMenuBounds = Rectangle(64, 220 + 42, 192, 42)
-    private val quitMenuBounds = Rectangle(64, 220 + 84, 192, 42)
+    private val backgroundBounds = Rectangle(0, 0, 640, 960)
+    private val logoBounds = Rectangle(64, 40, 512, 320)
+    private val soundButtonBounds = Rectangle(64, 740, 100, 100)
+    private val mainMenuBounds = Rectangle(168, 440, 306, 248)
+    private val playMenuBounds = Rectangle(128, 440, 384, 84)
+    private val highscoresMenuBounds = Rectangle(128, 440 + 84, 384, 84)
+    private val quitMenuBounds = Rectangle(128, 440 + 168, 384, 84)
 
     /*
      * Check the user input and if one the the folloing things could occurs:
@@ -97,7 +97,7 @@ class StartScreen : Screen {
             )
         else
             g.drawPixmap(
-                Assets.buttons!!, soundButtonBounds.x, soundButtonBounds.y, 50, 0,
+                Assets.buttons!!, soundButtonBounds.x, soundButtonBounds.y, 100, 0,
                 soundButtonBounds.width + 1, soundButtonBounds.height + 1
             )
     }

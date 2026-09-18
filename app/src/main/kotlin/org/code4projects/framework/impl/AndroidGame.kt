@@ -49,8 +49,8 @@ abstract class AndroidGame : Activity(), Game {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        val frameBufferWidth = if (isLandscape) 480 else 320
-        val frameBufferHeight = if (isLandscape) 320 else 480
+        val frameBufferWidth = if (isLandscape) 960 else 640
+        val frameBufferHeight = if (isLandscape) 640 else 960
         val frameBuffer = Bitmap.createBitmap(frameBufferWidth, frameBufferHeight, Bitmap.Config.RGB_565)
 
         // The frame buffer is drawn letterboxed/pillarboxed (see AndroidFastRenderView.run()) to
