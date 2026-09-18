@@ -95,8 +95,14 @@ the second as valuable but deferrable.
   `FadeTransitionScreen` fall back to default/no-op. `AndroidGame.onBackPressed()` just delegates
   to the current screen. Uses the deprecated `Activity.onBackPressed()` rather than
   `OnBackPressedCallback`, since the project has no AndroidX dependency to unlock it.
-- **Visual level progression.** Change background/block palette every N levels instead of only
-  speed — cheap relative to its impact on making "level 5" feel different from "level 1."
+- ~~**Visual level progression.**~~ **Done.** Added five hue-shifted variants of `gamescreen.png`
+  (`gamescreen_purple/teal/amber/crimson/olive.png`, generated from the original via a hue
+  rotation plus a flat color blend so even the near-black playfield picks up a visible tint, not
+  just the border gradient). `GameScreen` cycles through the original plus these five every
+  `LEVELS_PER_BACKGROUND` (3) levels rather than growing unbounded with level. An earlier attempt
+  at a runtime semi-transparent overlay instead of real art was tried and dropped — the effect was
+  too subtle to read as "different," especially over the mostly-black playfield. Falling/settled
+  block colors are untouched, since those are what tells shapes apart during play.
 
 **Good to have, can follow after v1:**
 - **Hold piece** — stash the current shape once per drop; new model state, moderate effort.
