@@ -86,9 +86,15 @@ the second as valuable but deferrable.
   the shape's position — no new collision rules, no score side effects. `DroidsWorldRenderer` draws
   a translucent copy of the falling shape's blocks offset by that distance (skipped when the piece
   is already resting), reusing the existing `drawRect` primitive rather than adding new art assets.
-- **System back button.** Confirmed there is no `onBackPressed`/`KEYCODE_BACK` handling anywhere
-  in the codebase — pressing back mid-game just kills the Activity instantly, no pause/confirm,
-  no state saved.
+- ~~**System back button.**~~ **Done.** Added `Screen.backPressed()` to the framework interface and
+  implemented it per screen: `GameScreen` pauses on back if running/ready, and goes home from the
+  pause or game-over state (matching the existing pause/home/X buttons exactly, so game state is
+  saved the same way pausing already saves it); `HighscoreScreen` goes home like its own back
+  button; `StartScreen` now asks for confirmation before exiting via a new `Game.confirmExit()`
+  (also wired into the previously-unconfirmed Quit menu item); `LoadingScreen` and
+  `FadeTransitionScreen` fall back to default/no-op. `AndroidGame.onBackPressed()` just delegates
+  to the current screen. Uses the deprecated `Activity.onBackPressed()` rather than
+  `OnBackPressedCallback`, since the project has no AndroidX dependency to unlock it.
 - **Visual level progression.** Change background/block palette every N levels instead of only
   speed — cheap relative to its impact on making "level 5" feel different from "level 1."
 
