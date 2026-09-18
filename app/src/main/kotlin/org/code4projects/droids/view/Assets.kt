@@ -19,6 +19,15 @@ object Assets {
 
     // the screen used in DroidsWorld game
     @JvmField var gamescreen: Pixmap? = null
+
+    // hue-shifted variants of gamescreen, cycled through as the level goes up so the
+    // playfield's look visibly changes over time, not just the fall speed.
+    @JvmField var gamescreenPurple: Pixmap? = null
+    @JvmField var gamescreenTeal: Pixmap? = null
+    @JvmField var gamescreenAmber: Pixmap? = null
+    @JvmField var gamescreenCrimson: Pixmap? = null
+    @JvmField var gamescreenOlive: Pixmap? = null
+
     @JvmField var startscreen: Pixmap? = null
     @JvmField var highscoresscreen: Pixmap? = null
     @JvmField var gameoverscreen: Pixmap? = null

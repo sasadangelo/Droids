@@ -33,7 +33,18 @@ import java.util.EnumMap
 class GameScreen : Screen {
     companion object {
         private const val LOG_TAG = "Droids.GameScreen"
+
+        // How many levels the game stays on one background before rotating to the next, so
+        // progress reads as more than just a faster fall speed.
+        private const val LEVELS_PER_BACKGROUND = 3
     }
+
+    // The set of background art cycled through as the level goes up (rather than growing
+    // unbounded with level). Each is a hue-shifted variant of the original gamescreen art.
+    private val backgrounds = arrayOf(
+        Assets.gamescreen!!, Assets.gamescreenPurple!!, Assets.gamescreenTeal!!,
+        Assets.gamescreenAmber!!, Assets.gamescreenCrimson!!, Assets.gamescreenOlive!!
+    )
 
     private val states: MutableMap<DroidsWorld.GameState, GameState> = EnumMap(DroidsWorld.GameState::class.java)
     val leftRegion = Rectangle(0, 0, 120, 800)
@@ -91,8 +102,9 @@ class GameScreen : Screen {
      */
     override fun draw(deltaTime: Float) {
         Log.i(LOG_TAG, "draw -- begin")
-        // draw the background
-        Gdx.graphics!!.drawPixmap(Assets.gamescreen!!, gameScreenBounds.x, gameScreenBounds.y)
+        // draw the background, picking the variant for the current level tier
+        val background = backgrounds[(DroidsWorld.getInstance().level / LEVELS_PER_BACKGROUND) % backgrounds.size]
+        Gdx.graphics!!.drawPixmap(background, gameScreenBounds.x, gameScreenBounds.y)
         // render the game world.
         renderer.draw(this)
         // draw buttons

@@ -29,6 +29,11 @@ class LoadingScreen : Screen {
         val g: Graphics = Gdx.graphics!!
 
         Assets.gamescreen = g.newPixmap("gamescreen.png", Graphics.PixmapFormat.RGB565)
+        Assets.gamescreenPurple = g.newPixmap("gamescreen_purple.png", Graphics.PixmapFormat.RGB565)
+        Assets.gamescreenTeal = g.newPixmap("gamescreen_teal.png", Graphics.PixmapFormat.RGB565)
+        Assets.gamescreenAmber = g.newPixmap("gamescreen_amber.png", Graphics.PixmapFormat.RGB565)
+        Assets.gamescreenCrimson = g.newPixmap("gamescreen_crimson.png", Graphics.PixmapFormat.RGB565)
+        Assets.gamescreenOlive = g.newPixmap("gamescreen_olive.png", Graphics.PixmapFormat.RGB565)
         Assets.logo = g.newPixmap("logo.png", Graphics.PixmapFormat.RGB565)
 
         // Screens
