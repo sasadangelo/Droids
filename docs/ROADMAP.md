@@ -56,10 +56,10 @@ the art need to be addressed together.
 - ~~**Screen transitions.**~~ **Done.** Start → Loading → Game → Highscore used to cut instantly;
   added a reusable `FadeTransitionScreen` in the framework layer that cross-fades through black
   between any two screens, wired into every screen switch.
-- **New adaptive app icon.** Only a single flat `icon.png` exists in `drawable/`,
-  `drawable-ldpi/`, `-mdpi/`, `-hdpi/` — no `-xhdpi`/`-xxhdpi`/`-xxxhdpi`, no adaptive icon
-  (`foreground` + `background` + optional `monochrome` layers), no round variant.
-  `assetstemplate/icon-*.svg` has sources to start from.
+- ~~**New adaptive app icon.**~~ **Done.** Replaced the single flat `drawable/icon.png` with a
+  proper adaptive icon (solid navy background + foreground/monochrome layers rasterized from
+  `assetstemplate/icon-hdpi.svg`) covering every density bucket (`mdpi`→`xxxhdpi`), plus legacy
+  square/round PNGs and `mipmap-anydpi-v26/ic_launcher(_round).xml` for modern launchers.
 - **Palette refresh.** Consider a less dated color scheme for menus (`mainmenu.png`,
   `pausemenu.png`, etc.) while redoing the art anyway.
 
