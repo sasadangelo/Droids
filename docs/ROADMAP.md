@@ -49,7 +49,10 @@ the art need to be addressed together.
   avoid baking in a wrong fallback font. Flat-color block sprites (no vector source) were
   upscaled with nearest-neighbor filtering to keep their edges crisp. 3x/density-aware buckets
   were deliberately left out of scope — see rationale in code review / commit history.
-- **Redesign the HUD layout.** Level/Goal/Score panels are currently plain flat rectangles.
+- ~~**Redesign the HUD layout.**~~ **Done.** Level/Goal/Score panels used to be plain flat
+  rectangles drawn in code; they were rounded, gradient-filled panels baked into the new
+  `gamescreen.png`/`startscreen.png` artwork as part of the previous item, so no separate
+  `drawRect`-based HUD code remained to update.
 - **Screen transitions.** Start → Loading → Game → Highscore currently cut instantly; even a
   simple fade/slide reads as much more finished.
 - **New adaptive app icon.** Only a single flat `icon.png` exists in `drawable/`,
