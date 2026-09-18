@@ -73,11 +73,14 @@ land before v1 — treat the first group as what actually changes how the game *
 the second as valuable but deferrable.
 
 **Worth having before the first release:**
-- **Wall kicks.** `Shape.applyRotation()` rotates around a fixed block with no attempt to nudge
-  the piece away from a wall or floor if the naive rotation would collide — near an edge, rotation
-  probably just silently fails (`undoRotate()` in `GameScreen.GameRunning.update()`). This is the
-  single biggest "feel" difference from a real Tetris for anyone who's played one before, and the
-  most involved logic change in this phase.
+- ~~**Wall kicks.**~~ **Done.** `Shape.applyRotation()` still rotates around a fixed block with no
+  awareness of walls, floor or other pieces, but rotation no longer just fails near an edge:
+  `Shape.rotateWithWallKick()` retries a short list of offsets (±1 and ±2 columns, then one row up)
+  after a colliding rotation, keeping the first one that clears, and only falls back to
+  `undoRotate()` if none of them do. `GameScreen.GameRunning.update()`'s rotate handler now calls
+  this instead of the old rotate/collide/undoRotate sequence. Not full SRS (no per-shape,
+  per-transition kick tables) — a simpler generic offset list, since this project's shapes don't
+  use SRS rotation states to begin with.
 - **Ghost piece.** A preview of where the falling shape will land, reusing the existing collision
   logic in `Shape`/`DroidsWorld`. Standard expectation in any modern Tetris.
 - **System back button.** Confirmed there is no `onBackPressed`/`KEYCODE_BACK` handling anywhere
