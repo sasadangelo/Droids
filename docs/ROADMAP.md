@@ -106,8 +106,13 @@ the second as valuable but deferrable.
 
 **Good to have, can follow after v1:**
 - **Hold piece** — stash the current shape once per drop; new model state, moderate effort.
-- **Next-piece queue** — currently shows exactly one next shape; showing 2–3 is a small
-  `DroidsWorld` + `DroidsWorldRenderer` change.
+- ~~**Next-piece queue.**~~ **Done.** `DroidsWorld.nextShape` (a single `Shape?`) became
+  `nextShapes` (a `List<Shape>` backed by a queue); `makeNextShapeFalling()` dequeues the front
+  and enqueues one fresh random shape to keep it topped up. `DroidsWorldRenderer` draws the queue
+  stacked vertically under "Next". Capped at 2, not 3: on-device testing showed the "Next" column
+  only has room for two worst-case-height (the 4-block I piece) shapes before the next one
+  collides with the Score panel below it — the roadmap's own 2–3 range, at the end that actually
+  fits.
 - **Game modes** — e.g. Marathon (current) vs. Sprint (40 lines) vs. Endless; reuses the existing
   `DroidsWorld` state machine, mostly a win/end-condition variant.
 - **Settings screen** — currently one on/off toggle for all audio (`Settings.soundEnabled`); a
