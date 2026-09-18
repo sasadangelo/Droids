@@ -32,18 +32,23 @@ The current art (`app/src/main/assets/*.png`) is small, low-resolution bitmaps d
 fixed 320×480 screen. "Nicer buttons" alone won't fix the blurriness — the rendering pipeline and
 the art need to be addressed together.
 
-- **Stop stretching the frame buffer.** `AndroidGame.kt` allocates a hardcoded 320×480 bitmap
-  frame buffer (the landscape 480×320 branch is dead code — the manifest locks portrait), and
-  `AndroidFastRenderView.run()` stretches it to fill the full screen via `canvas.drawBitmap`. This
-  was reasonable when phones were close to 3:2; no current phone is (they're 19.5:9 to 20:9), so
-  today every block and button is visibly egg-shaped instead of square on any modern device. Fix
-  by computing `dstRect` to preserve aspect ratio (letterbox/pillarbox) instead of filling the
-  whole clip bounds — small, contained change, but a prerequisite for any art redesign to actually
-  look right.
-- **Redesign the art at a higher resolution.** Buttons, HUD panels, menu backgrounds — source as
-  SVG in `assetstemplate/` (already has vector originals for some assets) and export at 2x/3x the
-  current pixel size, like a normal Android density-aware resource set, instead of one
-  fixed-size PNG per asset.
+- ~~**Stop stretching the frame buffer.**~~ **Done.** `AndroidGame.kt` allocated a hardcoded
+  320×480 bitmap frame buffer (the landscape 480×320 branch is dead code — the manifest locks
+  portrait), and `AndroidFastRenderView.run()` stretched it to fill the full screen via
+  `canvas.drawBitmap`. This was reasonable when phones were close to 3:2; no current phone is
+  (they're 19.5:9 to 20:9), so every block and button used to be visibly egg-shaped instead of
+  square on any modern device. Fixed by computing `dstRect` to preserve aspect ratio
+  (letterbox/pillarbox) instead of filling the whole clip bounds, and mapping touch coordinates
+  through the same offset/scale.
+- ~~**Redesign the art at a higher resolution.**~~ **Done.** Buttons, HUD panels, menu
+  backgrounds — sourced as SVG in `assetstemplate/` (already had vector originals for some
+  assets) and exported at 2x the previous pixel size (framebuffer doubled to 640×960 to match).
+  Text-bearing assets that depend on proprietary fonts not available in this environment
+  (`gameover.png`, `mainmenu.png`, `pausemenu.png`, `ready.png`) were instead upscaled from the
+  existing bitmaps with high-quality (Lanczos) filtering rather than re-rendered from SVG, to
+  avoid baking in a wrong fallback font. Flat-color block sprites (no vector source) were
+  upscaled with nearest-neighbor filtering to keep their edges crisp. 3x/density-aware buckets
+  were deliberately left out of scope — see rationale in code review / commit history.
 - **Redesign the HUD layout.** Level/Goal/Score panels are currently plain flat rectangles.
 - **Screen transitions.** Start → Loading → Game → Highscore currently cut instantly; even a
   simple fade/slide reads as much more finished.
