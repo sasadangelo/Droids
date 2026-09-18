@@ -4,6 +4,7 @@
  */
 package org.code4projects.droids.view
 
+import android.os.SystemClock
 import android.util.Log
 
 import org.code4projects.droids.model.DroidsWorld
@@ -17,6 +18,7 @@ import org.code4projects.framework.TextStyle
 import org.code4projects.framework.impl.FadeTransitionScreen
 
 import java.util.EnumMap
+import kotlin.math.abs
 
 /*
  * This class represents the game screen. The processing and rendering depends on the game state managed
@@ -37,6 +39,15 @@ class GameScreen : Screen {
         // How many levels the game stays on one background before rotating to the next, so
         // progress reads as more than just a faster fall speed.
         private const val LEVELS_PER_BACKGROUND = 3
+
+        // Gesture tuning for the play field, replacing the old left/right/rotate/down buttons:
+        // dragging a full block width moves the piece one column, dragging down two block
+        // heights soft-drops it, and anything that stays within the tap thresholds (barely
+        // moved, released quickly) is treated as a tap-to-rotate instead of a drag.
+        private const val MOVE_STEP_PX = DroidsWorldRenderer.BLOCK_WIDTH
+        private const val DROP_SWIPE_PX = DroidsWorldRenderer.BLOCK_HEIGHT * 2
+        private const val TAP_MAX_DISTANCE_PX = 20
+        private const val TAP_MAX_DURATION_MS = 250L
     }
 
     // The set of background art cycled through as the level goes up (rather than growing
@@ -55,10 +66,6 @@ class GameScreen : Screen {
     private val gameoverScreenBounds = Rectangle(0, 0, 640, 960)
     private val gameScreenBounds = Rectangle(0, 0, 640, 960)
     private val pauseButtonBounds = Rectangle(10, 40, 100, 100)
-    private val leftButtonBounds = Rectangle(60, 850, 100, 100)
-    private val rightButtonBounds = Rectangle(480, 850, 100, 100)
-    private val rotateButtonBounds = Rectangle(200, 850, 100, 100)
-    private val downButtonBounds = Rectangle(340, 850, 100, 100)
     private val xButtonBounds = Rectangle(256, 400, 100, 100)
     private val pauseMenuBounds = Rectangle(200, 200, 320, 96)
     private val readyMenuBounds = Rectangle(130, 200, 376, 140)
@@ -107,23 +114,6 @@ class GameScreen : Screen {
         Gdx.graphics!!.drawPixmap(background, gameScreenBounds.x, gameScreenBounds.y)
         // render the game world.
         renderer.draw(this)
-        // draw buttons
-        Gdx.graphics!!.drawPixmap(
-            Assets.buttons!!, leftButtonBounds.x, leftButtonBounds.y, 100, 100,
-            leftButtonBounds.width + 1, leftButtonBounds.height + 1
-        ) // left button
-        Gdx.graphics!!.drawPixmap(
-            Assets.buttons!!, rightButtonBounds.x, rightButtonBounds.y, 0, 100,
-            rightButtonBounds.width + 1, rightButtonBounds.height + 1
-        ) // right button
-        Gdx.graphics!!.drawPixmap(
-            Assets.buttons!!, rotateButtonBounds.x, rotateButtonBounds.y, 100, 300,
-            rotateButtonBounds.width + 1, rotateButtonBounds.height + 1
-        ) // rotate button
-        Gdx.graphics!!.drawPixmap(
-            Assets.buttons!!, downButtonBounds.x, downButtonBounds.y, 0, 300,
-            downButtonBounds.width + 1, downButtonBounds.height + 1
-        ) // down button
 
         // draw the goal, score and level.
         val style = TextStyle()
@@ -204,10 +194,21 @@ class GameScreen : Screen {
      * @author Salvatore D'Angelo
      */
     inner class GameRunning : GameState() {
+        // Tracks the touch gesture in progress over the play field: where/when it started, the
+        // x position the last horizontal move step was taken from, and whether this gesture
+        // already triggered a soft drop - so a single drag steps the piece at most once per
+        // block crossed and drops it at most once, instead of repeating every event.
+        private var gestureActive = false
+        private var gestureStartX = 0
+        private var gestureStartY = 0
+        private var gestureStepX = 0
+        private var gestureStartTime = 0L
+        private var softDropTriggered = false
+
         /*
-         * Update the game when it is in running state. The method catch the user input and,
-         * depending on it will move, rotate or accelerate the falling shape. It can also pause the
-         * game and check for game over.
+         * Update the game when it is in running state. The method catches the user's touch
+         * gestures on the play field - drag to move, tap to rotate, swipe down to soft-drop -
+         * and can also pause the game and check for game over.
          */
         override fun update(touchEvents: List<TouchEvent>, deltaTime: Float) {
             Log.i(LOG_TAG, "GameRunning.update -- begin")
@@ -215,6 +216,39 @@ class GameScreen : Screen {
             for (i in 0 until len) {
                 val event = touchEvents[i]
                 when (event.type) {
+                    TouchEvent.TOUCH_DOWN -> {
+                        if (workingRegion.contains(event.x, event.y)) {
+                            gestureActive = true
+                            gestureStartX = event.x
+                            gestureStartY = event.y
+                            gestureStepX = event.x
+                            gestureStartTime = SystemClock.uptimeMillis()
+                            softDropTriggered = false
+                        }
+                    }
+                    TouchEvent.TOUCH_DRAGGED -> {
+                        if (gestureActive) {
+                            // Step the falling shape one column per block width crossed, so a
+                            // continuous drag slides it left/right across multiple columns.
+                            while (event.x - gestureStepX >= MOVE_STEP_PX) {
+                                DroidsWorld.getInstance().fallingShape!!.moveRight()
+                                if (DroidsWorld.getInstance().fallingShape!!.collide())
+                                    DroidsWorld.getInstance().fallingShape!!.moveLeft()
+                                gestureStepX += MOVE_STEP_PX
+                            }
+                            while (gestureStepX - event.x >= MOVE_STEP_PX) {
+                                DroidsWorld.getInstance().fallingShape!!.moveLeft()
+                                if (DroidsWorld.getInstance().fallingShape!!.collide())
+                                    DroidsWorld.getInstance().fallingShape!!.moveRight()
+                                gestureStepX -= MOVE_STEP_PX
+                            }
+                            // Soft-drop once the finger has dragged down far enough.
+                            if (!softDropTriggered && event.y - gestureStartY >= DROP_SWIPE_PX) {
+                                DroidsWorld.getInstance().fallingShape!!.accelerateFalling()
+                                softDropTriggered = true
+                            }
+                        }
+                    }
                     TouchEvent.TOUCH_UP -> {
                         if (pauseButtonBounds.contains(event.x, event.y)) {
                             if (Settings.soundEnabled)
@@ -222,28 +256,17 @@ class GameScreen : Screen {
                             DroidsWorld.getInstance().state = DroidsWorld.GameState.Paused
                             return
                         }
-                    }
-                    TouchEvent.TOUCH_DOWN -> {
-                        // Move falling shape on the left, if possible
-                        if (leftButtonBounds.contains(event.x, event.y)) {
-                            DroidsWorld.getInstance().fallingShape!!.moveLeft()
-                            if (DroidsWorld.getInstance().fallingShape!!.collide())
-                                DroidsWorld.getInstance().fallingShape!!.moveRight()
-                        }
-                        // Move falling shape on the right, if possible
-                        if (rightButtonBounds.contains(event.x, event.y)) {
-                            DroidsWorld.getInstance().fallingShape!!.moveRight()
-                            if (DroidsWorld.getInstance().fallingShape!!.collide())
-                                DroidsWorld.getInstance().fallingShape!!.moveLeft()
-                        }
-                        // Rotate falling shape, nudging it away from a wall/floor/stack if
-                        // the naive rotation would otherwise collide
-                        if (rotateButtonBounds.contains(event.x, event.y)) {
-                            DroidsWorld.getInstance().fallingShape!!.rotateWithWallKick()
-                        }
-                        // Accelerate falling of the falling shape
-                        if (downButtonBounds.contains(event.x, event.y)) {
-                            DroidsWorld.getInstance().fallingShape!!.accelerateFalling()
+                        if (gestureActive) {
+                            // A release that barely moved and happened quickly is a tap rather
+                            // than the end of a drag/swipe, so rotate instead.
+                            val elapsed = SystemClock.uptimeMillis() - gestureStartTime
+                            if (abs(event.x - gestureStartX) <= TAP_MAX_DISTANCE_PX &&
+                                abs(event.y - gestureStartY) <= TAP_MAX_DISTANCE_PX &&
+                                elapsed <= TAP_MAX_DURATION_MS
+                            ) {
+                                DroidsWorld.getInstance().fallingShape!!.rotateWithWallKick()
+                            }
+                            gestureActive = false
                         }
                     }
                 }
