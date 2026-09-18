@@ -60,8 +60,9 @@ the art need to be addressed together.
   proper adaptive icon (solid navy background + foreground/monochrome layers rasterized from
   `assetstemplate/icon-hdpi.svg`) covering every density bucket (`mdpi`→`xxxhdpi`), plus legacy
   square/round PNGs and `mipmap-anydpi-v26/ic_launcher(_round).xml` for modern launchers.
-- **Palette refresh.** Consider a less dated color scheme for menus (`mainmenu.png`,
-  `pausemenu.png`, etc.) while redoing the art anyway.
+- ~~**Palette refresh.**~~ **Done.** Hue-shifted the gold/brown menu text (`mainmenu.png`,
+  `pausemenu.png`, `ready.png`, `gameover.png`) to cyan, matching the cyan tetromino blocks and
+  the navy HUD palette instead of the dated gold clip-art look.
 
 ## Phase 2 — Gameplay depth (making it a real, competitive Tetris)
 
