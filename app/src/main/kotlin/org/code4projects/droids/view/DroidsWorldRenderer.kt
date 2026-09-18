@@ -23,6 +23,11 @@ class DroidsWorldRenderer {
     companion object {
         const val BLOCK_WIDTH = 40
         const val BLOCK_HEIGHT = 40
+
+        // Vertical space reserved per upcoming shape in the "Next" preview queue. Must clear
+        // the tallest shape (the 4-block-tall I piece, 4 * 32 = 128px) plus a small gap so
+        // consecutive slots never visually overlap regardless of which shapes land in them.
+        const val NEXT_QUEUE_SLOT_HEIGHT = 130
     }
 
     /*
@@ -64,24 +69,26 @@ class DroidsWorldRenderer {
             Gdx.graphics!!.drawPixmap(Assets.getBlockByColor(block.color)!!, x, y)
         }
 
-        // This for loop draw the Next Shape in the Game Screen on the top right side
-        val nextShape = DroidsWorld.getInstance().nextShape!!
-        for (block in nextShape.getBlocks()) {
-            var x = block.x * 32
-            val y = block.y * 32
+        // Draw the upcoming shapes queue in the Game Screen on the top right side, stacked
+        // vertically with the very next shape to fall on top.
+        for ((index, nextShape) in DroidsWorld.getInstance().nextShapes.withIndex()) {
+            for (block in nextShape.getBlocks()) {
+                var x = block.x * 32
+                val y = block.y * 32
 
-            when (nextShape) {
-                is ShapeCube, is ShapeJ -> x += 30
-                is ShapeI -> x += 50
-                is ShapeL -> x += 40
-                is ShapeS, is ShapeT, is ShapeZ -> x += 10
+                when (nextShape) {
+                    is ShapeCube, is ShapeJ -> x += 30
+                    is ShapeI -> x += 50
+                    is ShapeL -> x += 40
+                    is ShapeS, is ShapeT, is ShapeZ -> x += 10
+                }
+
+                Gdx.graphics!!.drawPixmap(
+                    Assets.getSmallBlockByColor(block.color)!!,
+                    gameScreen.rightRegion.x + x,
+                    gameScreen.rightRegion.y + 130 + index * NEXT_QUEUE_SLOT_HEIGHT + y
+                )
             }
-
-            Gdx.graphics!!.drawPixmap(
-                Assets.getSmallBlockByColor(block.color)!!,
-                gameScreen.rightRegion.x + x,
-                gameScreen.rightRegion.y + 130 + y
-            )
         }
     }
 }

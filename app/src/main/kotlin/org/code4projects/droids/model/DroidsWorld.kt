@@ -33,10 +33,11 @@ class DroidsWorld private constructor() {
     var fallingShape: Shape? = null
         private set
 
-    // To help user the game shows also the next shape that will fall after the current one completed
-    // its falling.
-    var nextShape: Shape? = null
-        private set
+    // To help user the game shows also a queue of upcoming shapes that will fall after the
+    // current one completes its falling. Index 0 is the very next shape to fall.
+    private val nextShapesQueue: MutableList<Shape> = ArrayList()
+    val nextShapes: List<Shape>
+        get() = nextShapesQueue
 
     // the remaining number of lines to fill to complete the current level
     var goal: Int = 0
@@ -46,7 +47,7 @@ class DroidsWorld private constructor() {
     var score: Int = 0
 
     init {
-        spawnNextShape()
+        repeat(NEXT_QUEUE_SIZE) { enqueueNextShape() }
         makeNextShapeFalling()
         goal = 5
     }
@@ -55,6 +56,13 @@ class DroidsWorld private constructor() {
         // The droids world is a grid of 10x20 cells
         const val WORLD_WIDTH = 10
         const val WORLD_HEIGHT = 20
+
+        // How many upcoming shapes are shown/kept queued ahead of the falling one. Capped at 2
+        // (the low end of the roadmap's suggested 2-3): the "Next" preview column only has
+        // room, before it runs into the Score panel below it, for two worst-case-height (the
+        // 4-block-tall I piece) shapes stacked without overlapping - confirmed by testing 3
+        // on-device, where the third slot's shape visibly collided with the Score label.
+        const val NEXT_QUEUE_SIZE = 2
 
         // the private static instance used to implement the Singleton pattern.
         private var instance: DroidsWorld? = null
@@ -68,22 +76,20 @@ class DroidsWorld private constructor() {
         }
     }
 
-    // When the a shape finished to fall a new one must fall.
-    // This function is used to generate a new shape that will be the
-    // new falling shape.
-    fun spawnNextShape() {
+    // Adds one new random shape to the end of the upcoming-shapes queue.
+    private fun enqueueNextShape() {
         val r = Random()
         val index = r.nextInt(7)
 
         val shapes = arrayOf<Shape>(ShapeI(), ShapeL(), ShapeJ(), ShapeCube(), ShapeZ(), ShapeT(), ShapeS())
-        nextShape = shapes[index]
+        nextShapesQueue.add(shapes[index])
     }
 
     // When the a shape finished to fall a new one must fall.
     // This function is used to generate a new shape that will be the
     // new falling shape.
     fun makeNextShapeFalling() {
-        // Spawn a random shape and add the current falling shape' blocks to the "static" blocks list
+        // Add the current falling shape's blocks to the "static" blocks list
         val falling = fallingShape
         if (falling != null) {
             // The blocks of the falling shape will be added
@@ -93,8 +99,10 @@ class DroidsWorld private constructor() {
             }
         }
 
-        fallingShape = nextShape
-        spawnNextShape()
+        // The next falling shape is dequeued from the front, and a new random one is queued up
+        // at the back to keep the preview showing NEXT_QUEUE_SIZE shapes ahead.
+        fallingShape = nextShapesQueue.removeAt(0)
+        enqueueNextShape()
     }
 
     fun update(deltaTime: Float) {
@@ -179,7 +187,8 @@ class DroidsWorld private constructor() {
         fallingShape = null
         level = 0
         score = 0
-        spawnNextShape()
+        nextShapesQueue.clear()
+        repeat(NEXT_QUEUE_SIZE) { enqueueNextShape() }
         makeNextShapeFalling()
         state = GameState.Ready
         goal = 5
