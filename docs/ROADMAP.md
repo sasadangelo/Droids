@@ -81,8 +81,11 @@ the second as valuable but deferrable.
   this instead of the old rotate/collide/undoRotate sequence. Not full SRS (no per-shape,
   per-transition kick tables) — a simpler generic offset list, since this project's shapes don't
   use SRS rotation states to begin with.
-- **Ghost piece.** A preview of where the falling shape will land, reusing the existing collision
-  logic in `Shape`/`DroidsWorld`. Standard expectation in any modern Tetris.
+- ~~**Ghost piece.**~~ **Done.** `Shape.dropDistance()` probes downward from the falling shape's
+  current position using the same `collide()` logic the real fall relies on, then fully restores
+  the shape's position — no new collision rules, no score side effects. `DroidsWorldRenderer` draws
+  a translucent copy of the falling shape's blocks offset by that distance (skipped when the piece
+  is already resting), reusing the existing `drawRect` primitive rather than adding new art assets.
 - **System back button.** Confirmed there is no `onBackPressed`/`KEYCODE_BACK` handling anywhere
   in the codebase — pressing back mid-game just kills the Activity instantly, no pause/confirm,
   no state saved.
