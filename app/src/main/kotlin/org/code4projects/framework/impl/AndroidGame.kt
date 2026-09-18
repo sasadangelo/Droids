@@ -8,6 +8,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.PowerManager
 import android.view.Window
@@ -52,14 +53,22 @@ abstract class AndroidGame : Activity(), Game {
         val frameBufferHeight = if (isLandscape) 320 else 480
         val frameBuffer = Bitmap.createBitmap(frameBufferWidth, frameBufferHeight, Bitmap.Config.RGB_565)
 
-        val scaleX = frameBufferWidth.toFloat() / windowManager.defaultDisplay.width
-        val scaleY = frameBufferHeight.toFloat() / windowManager.defaultDisplay.height
+        // The frame buffer is drawn letterboxed/pillarboxed (see AndroidFastRenderView.run()) to
+        // preserve its aspect ratio instead of stretching it, so touch coordinates - which arrive
+        // in full display pixel space - must be mapped through the same offset/scale rather than
+        // scaled directly against the raw display size.
+        val displayBounds = Rect(0, 0, windowManager.defaultDisplay.width, windowManager.defaultDisplay.height)
+        val frameBufferBounds = Rect()
+        AndroidFastRenderView.calculateAspectFitRect(displayBounds, frameBufferWidth, frameBufferHeight, frameBufferBounds)
+
+        val scaleX = frameBufferWidth.toFloat() / frameBufferBounds.width()
+        val scaleY = frameBufferHeight.toFloat() / frameBufferBounds.height()
 
         renderView = AndroidFastRenderView(this, frameBuffer)
         graphics = AndroidGraphics(assets, frameBuffer)
         fileIO = AndroidFileIO(assets)
         audio = AndroidAudio(this)
-        input = AndroidInput(this, renderView, scaleX, scaleY)
+        input = AndroidInput(this, renderView, frameBufferBounds.left, frameBufferBounds.top, scaleX, scaleY)
 
         Gdx.game = this
         Gdx.graphics = graphics

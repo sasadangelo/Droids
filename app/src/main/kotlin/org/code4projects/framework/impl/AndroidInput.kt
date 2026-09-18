@@ -21,14 +21,14 @@ import org.code4projects.framework.Input
  *
  * @author mzechner
  */
-class AndroidInput(context: Context, view: View, scaleX: Float, scaleY: Float) : Input {
+class AndroidInput(context: Context, view: View, offsetX: Int, offsetY: Int, scaleX: Float, scaleY: Float) : Input {
     private val accelHandler = AccelerometerHandler(context)
     private val keyHandler = KeyboardHandler(view)
     private val touchHandler: TouchHandler =
         if (Integer.parseInt(android.os.Build.VERSION.SDK) < 5)
-            SingleTouchHandler(view, scaleX, scaleY)
+            SingleTouchHandler(view, offsetX, offsetY, scaleX, scaleY)
         else
-            MultiTouchHandler(view, scaleX, scaleY)
+            MultiTouchHandler(view, offsetX, offsetY, scaleX, scaleY)
 
     override fun isKeyPressed(keyCode: Int): Boolean = keyHandler.isKeyPressed(keyCode)
 

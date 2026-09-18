@@ -16,7 +16,13 @@ import org.code4projects.framework.Pool.PoolObjectFactory
  *
  * @author mzechner
  */
-class SingleTouchHandler(view: View, private val scaleX: Float, private val scaleY: Float) : TouchHandler {
+class SingleTouchHandler(
+    view: View,
+    private val offsetX: Int,
+    private val offsetY: Int,
+    private val scaleX: Float,
+    private val scaleY: Float
+) : TouchHandler {
     private var isTouched = false
     private var touchX = 0
     private var touchY = 0
@@ -50,9 +56,9 @@ class SingleTouchHandler(view: View, private val scaleX: Float, private val scal
                 }
             }
 
-            touchX = (event.x * scaleX).toInt()
+            touchX = ((event.x - offsetX) * scaleX).toInt()
             touchEvent.x = touchX
-            touchY = (event.y * scaleY).toInt()
+            touchY = ((event.y - offsetY) * scaleY).toInt()
             touchEvent.y = touchY
             touchEventsBuffer.add(touchEvent)
 

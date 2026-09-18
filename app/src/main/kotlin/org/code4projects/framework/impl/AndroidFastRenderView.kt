@@ -5,6 +5,7 @@
 package org.code4projects.framework.impl
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Rect
 import android.view.SurfaceView
 
@@ -39,6 +40,7 @@ class AndroidFastRenderView(private val game: AndroidGame, private val framebuff
      * @author mzechner
      */
     override fun run() {
+        val clipRect = Rect()
         val dstRect = Rect()
         var startTime = System.nanoTime()
         // This is the Game Loop
@@ -58,9 +60,13 @@ class AndroidFastRenderView(private val game: AndroidGame, private val framebuff
             game.getCurrentScreen().draw(deltaTime)
 
             // Once the frame buffer is ready the surface is locked and it will be drawn on the
-            // screen. When completed the lock is release.
+            // screen. The destination rect preserves the frame buffer's aspect ratio (instead of
+            // stretching it to fill the clip bounds) so the game isn't distorted on screens whose
+            // aspect ratio differs from the frame buffer's. When completed the lock is released.
             val canvas = surfaceHolder.lockCanvas()
-            canvas.getClipBounds(dstRect)
+            canvas.getClipBounds(clipRect)
+            calculateAspectFitRect(clipRect, framebuffer.width, framebuffer.height, dstRect)
+            canvas.drawColor(Color.BLACK)
             canvas.drawBitmap(framebuffer, null, dstRect, null)
             surfaceHolder.unlockCanvasAndPost(canvas)
         }
@@ -78,6 +84,23 @@ class AndroidFastRenderView(private val game: AndroidGame, private val framebuff
             } catch (e: InterruptedException) {
                 // retry
             }
+        }
+    }
+
+    companion object {
+        /*
+         * Computes the largest rect with the given source aspect ratio (srcWidth x srcHeight)
+         * that fits centered inside clipRect, storing the result in out. This letterboxes/
+         * pillarboxes the frame buffer instead of stretching it to clipRect's aspect ratio.
+         * Also used by AndroidGame to map touch coordinates through the same transform.
+         */
+        fun calculateAspectFitRect(clipRect: Rect, srcWidth: Int, srcHeight: Int, out: Rect) {
+            val scale = minOf(clipRect.width().toFloat() / srcWidth, clipRect.height().toFloat() / srcHeight)
+            val scaledWidth = (srcWidth * scale).toInt()
+            val scaledHeight = (srcHeight * scale).toInt()
+            val left = clipRect.left + (clipRect.width() - scaledWidth) / 2
+            val top = clipRect.top + (clipRect.height() - scaledHeight) / 2
+            out.set(left, top, left + scaledWidth, top + scaledHeight)
         }
     }
 }

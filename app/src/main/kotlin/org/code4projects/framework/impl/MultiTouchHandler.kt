@@ -16,7 +16,13 @@ import org.code4projects.framework.Pool.PoolObjectFactory
  *
  * @author mzechner
  */
-class MultiTouchHandler(view: View, private val scaleX: Float, private val scaleY: Float) : TouchHandler {
+class MultiTouchHandler(
+    view: View,
+    private val offsetX: Int,
+    private val offsetY: Int,
+    private val scaleX: Float,
+    private val scaleY: Float
+) : TouchHandler {
     private val isTouched = BooleanArray(20)
     private val touchX = IntArray(20)
     private val touchY = IntArray(20)
@@ -45,9 +51,9 @@ class MultiTouchHandler(view: View, private val scaleX: Float, private val scale
                     touchEvent = touchEventPool.newObject()
                     touchEvent.type = TouchEvent.TOUCH_DOWN
                     touchEvent.pointer = pointerId
-                    touchX[pointerId] = (event.getX(pointerIndex) * scaleX).toInt()
+                    touchX[pointerId] = ((event.getX(pointerIndex) - offsetX) * scaleX).toInt()
                     touchEvent.x = touchX[pointerId]
-                    touchY[pointerId] = (event.getY(pointerIndex) * scaleY).toInt()
+                    touchY[pointerId] = ((event.getY(pointerIndex) - offsetY) * scaleY).toInt()
                     touchEvent.y = touchY[pointerId]
                     isTouched[pointerId] = true
                     touchEventsBuffer.add(touchEvent)
@@ -57,9 +63,9 @@ class MultiTouchHandler(view: View, private val scaleX: Float, private val scale
                     touchEvent = touchEventPool.newObject()
                     touchEvent.type = TouchEvent.TOUCH_UP
                     touchEvent.pointer = pointerId
-                    touchX[pointerId] = (event.getX(pointerIndex) * scaleX).toInt()
+                    touchX[pointerId] = ((event.getX(pointerIndex) - offsetX) * scaleX).toInt()
                     touchEvent.x = touchX[pointerId]
-                    touchY[pointerId] = (event.getY(pointerIndex) * scaleY).toInt()
+                    touchY[pointerId] = ((event.getY(pointerIndex) - offsetY) * scaleY).toInt()
                     touchEvent.y = touchY[pointerId]
                     isTouched[pointerId] = false
                     touchEventsBuffer.add(touchEvent)
@@ -74,9 +80,9 @@ class MultiTouchHandler(view: View, private val scaleX: Float, private val scale
                         touchEvent = touchEventPool.newObject()
                         touchEvent.type = TouchEvent.TOUCH_DRAGGED
                         touchEvent.pointer = pointerId
-                        touchX[pointerId] = (event.getX(pointerIndex) * scaleX).toInt()
+                        touchX[pointerId] = ((event.getX(pointerIndex) - offsetX) * scaleX).toInt()
                         touchEvent.x = touchX[pointerId]
-                        touchY[pointerId] = (event.getY(pointerIndex) * scaleY).toInt()
+                        touchY[pointerId] = ((event.getY(pointerIndex) - offsetY) * scaleY).toInt()
                         touchEvent.y = touchY[pointerId]
                         touchEventsBuffer.add(touchEvent)
                     }
