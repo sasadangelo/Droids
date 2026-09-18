@@ -410,4 +410,26 @@ class GameScreen : Screen {
      */
     override fun dispose() {
     }
+
+    /*
+     * Back button behavior depends on the game state: pause an in-progress game (same as the
+     * pause button) rather than killing the app outright; from the pause menu or game over, go
+     * back to the start screen (same as their own "home"/"X" buttons).
+     */
+    override fun backPressed(): Boolean {
+        if (Settings.soundEnabled)
+            Assets.click!!.play(1f)
+
+        when (DroidsWorld.getInstance().state) {
+            DroidsWorld.GameState.Running, DroidsWorld.GameState.Ready ->
+                DroidsWorld.getInstance().state = DroidsWorld.GameState.Paused
+            DroidsWorld.GameState.Paused ->
+                Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
+            DroidsWorld.GameState.GameOver -> {
+                Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
+                DroidsWorld.getInstance().clear()
+            }
+        }
+        return true
+    }
 }

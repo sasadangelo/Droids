@@ -68,4 +68,10 @@ interface Game {
      * Set the first screen of the game. This is usually implemented by the source code of the game.
      */
     fun getStartScreen(): Screen
+
+    /**
+     * Ask the user to confirm before exiting the application (e.g. from a back-press or a quit
+     * menu), running [onConfirm] only if they accept.
+     */
+    fun confirmExit(onConfirm: () -> Unit)
 }

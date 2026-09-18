@@ -40,4 +40,11 @@ interface Screen {
      * Called when the screen is disposed.
      */
     fun dispose()
+
+    /**
+     * Called when the system back button/gesture is triggered.
+     * @return true if the screen handled it (e.g. by pausing or navigating to another screen),
+     * false to fall back to the default platform behavior (closing the application).
+     */
+    fun backPressed(): Boolean
 }

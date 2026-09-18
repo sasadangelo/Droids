@@ -66,12 +66,11 @@ class StartScreen : Screen {
                         Assets.click!!.play(1f)
                     return
                 }
-                // quit the game.
+                // quit the game, after confirmation.
                 if (quitMenuBounds.contains(event.x, event.y)) {
-                    android.os.Process.killProcess(android.os.Process.myPid())
                     if (Settings.soundEnabled)
                         Assets.click!!.play(1f)
-                    System.exit(1)
+                    Gdx.game!!.confirmExit { exitGame() }
                     return
                 }
             }
@@ -120,5 +119,21 @@ class StartScreen : Screen {
      * The screen is disposed.
      */
     override fun dispose() {
+    }
+
+    /*
+     * Ask for confirmation before exiting, same as the quit menu item.
+     */
+    override fun backPressed(): Boolean {
+        Gdx.game!!.confirmExit { exitGame() }
+        return true
+    }
+
+    /*
+     * Terminates the app. Called once the user has confirmed they want to quit.
+     */
+    private fun exitGame() {
+        android.os.Process.killProcess(android.os.Process.myPid())
+        System.exit(1)
     }
 }

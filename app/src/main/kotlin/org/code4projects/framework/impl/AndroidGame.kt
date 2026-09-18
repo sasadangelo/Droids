@@ -5,6 +5,7 @@
 package org.code4projects.framework.impl
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -146,4 +147,28 @@ abstract class AndroidGame : Activity(), Game {
      * Returns the current screen.
      */
     override fun getCurrentScreen(): Screen = screen
+
+    /*
+     * Shows a Yes/No confirmation dialog and only runs onConfirm if the user accepts. Kept here,
+     * rather than in the droids.view screens, since building a dialog needs an Android Context.
+     */
+    override fun confirmExit(onConfirm: () -> Unit) {
+        AlertDialog.Builder(this)
+            .setMessage("Exit the game?")
+            .setPositiveButton(android.R.string.yes) { _, _ -> onConfirm() }
+            .setNegativeButton(android.R.string.no, null)
+            .show()
+    }
+
+    /*
+     * Called when the system back button/gesture is triggered. Delegated to the current screen so
+     * each one can decide what "back" means for it (pause, navigate away, ask before exiting); if
+     * the screen doesn't handle it, fall back to the default platform behavior.
+     */
+    @Suppress("DEPRECATION")
+    override fun onBackPressed() {
+        if (!screen.backPressed()) {
+            super.onBackPressed()
+        }
+    }
 }

@@ -63,4 +63,8 @@ class FadeTransitionScreen(
 
     override fun dispose() {
     }
+
+    // Swallow back presses while a transition is in flight rather than letting either the
+    // outgoing or incoming screen react mid-fade.
+    override fun backPressed(): Boolean = true
 }

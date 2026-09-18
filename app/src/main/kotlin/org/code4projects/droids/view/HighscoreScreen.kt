@@ -118,4 +118,14 @@ class HighscoreScreen : Screen {
      */
     override fun dispose() {
     }
+
+    /*
+     * Same as tapping the back button: return to the start screen.
+     */
+    override fun backPressed(): Boolean {
+        if (Settings.soundEnabled)
+            Assets.click!!.play(1f)
+        Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
+        return true
+    }
 }

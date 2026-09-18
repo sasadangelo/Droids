@@ -95,4 +95,10 @@ class LoadingScreen : Screen {
      */
     override fun dispose() {
     }
+
+    /*
+     * There is nothing to go back to from the loading screen, so let the default behavior
+     * (closing the app) happen.
+     */
+    override fun backPressed(): Boolean = false
 }
