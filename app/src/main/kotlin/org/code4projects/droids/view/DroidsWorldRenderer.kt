@@ -24,10 +24,16 @@ class DroidsWorldRenderer {
         const val BLOCK_WIDTH = 40
         const val BLOCK_HEIGHT = 40
 
-        // Vertical space reserved per upcoming shape in the "Next" preview queue. Must clear
-        // the tallest shape (the 4-block-tall I piece, 4 * 32 = 128px) plus a small gap so
-        // consecutive slots never visually overlap regardless of which shapes land in them.
-        const val NEXT_QUEUE_SLOT_HEIGHT = 130
+        // The "Next" preview blocks are drawn smaller than their native 32px size, both to look
+        // a little less chunky and to leave more room for a visible gap between queued shapes.
+        private const val NEXT_BLOCK_SRC_SIZE = 32
+        const val NEXT_BLOCK_SIZE = 24
+        private const val NEXT_BLOCK_SCALE = NEXT_BLOCK_SIZE.toFloat() / NEXT_BLOCK_SRC_SIZE
+
+        // Vertical space reserved per upcoming shape in the "Next" preview queue. Must clear the
+        // tallest shape (the 4-block-tall I piece, 4 * NEXT_BLOCK_SIZE = 96px) plus a visible
+        // gap, so consecutive shapes never look like they're touching/merging.
+        const val NEXT_QUEUE_SLOT_HEIGHT = 120
     }
 
     /*
@@ -70,11 +76,13 @@ class DroidsWorldRenderer {
         }
 
         // Draw the upcoming shapes queue in the Game Screen on the top right side, stacked
-        // vertically with the very next shape to fall on top.
+        // vertically with the very next shape to fall on top. Positions/offsets are computed at
+        // the assets' native 32px block size, then scaled down together so each shape stays
+        // centered the same way it was before, just smaller.
         for ((index, nextShape) in DroidsWorld.getInstance().nextShapes.withIndex()) {
             for (block in nextShape.getBlocks()) {
-                var x = block.x * 32
-                val y = block.y * 32
+                var x = block.x * NEXT_BLOCK_SRC_SIZE
+                val y = block.y * NEXT_BLOCK_SRC_SIZE
 
                 when (nextShape) {
                     is ShapeCube, is ShapeJ -> x += 30
@@ -85,8 +93,10 @@ class DroidsWorldRenderer {
 
                 Gdx.graphics!!.drawPixmap(
                     Assets.getSmallBlockByColor(block.color)!!,
-                    gameScreen.rightRegion.x + x,
-                    gameScreen.rightRegion.y + 130 + index * NEXT_QUEUE_SLOT_HEIGHT + y
+                    gameScreen.rightRegion.x + (x * NEXT_BLOCK_SCALE).toInt(),
+                    gameScreen.rightRegion.y + 130 + index * NEXT_QUEUE_SLOT_HEIGHT +
+                        (y * NEXT_BLOCK_SCALE).toInt(),
+                    0, 0, NEXT_BLOCK_SRC_SIZE, NEXT_BLOCK_SRC_SIZE, NEXT_BLOCK_SIZE, NEXT_BLOCK_SIZE
                 )
             }
         }

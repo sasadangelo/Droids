@@ -131,6 +131,27 @@ class AndroidGraphics(assets: AssetManager, private val frameBuffer: Bitmap) : G
     }
 
     /*
+     * Same as the other region drawPixmap(), but scales the source region to (dstWidth,
+     * dstHeight) instead of drawing it at its native size.
+     */
+    override fun drawPixmap(
+        pixmap: Pixmap, x: Int, y: Int, srcX: Int, srcY: Int, srcWidth: Int, srcHeight: Int,
+        dstWidth: Int, dstHeight: Int
+    ) {
+        srcRect.left = srcX
+        srcRect.top = srcY
+        srcRect.right = srcX + srcWidth - 1
+        srcRect.bottom = srcY + srcHeight - 1
+
+        dstRect.left = x
+        dstRect.top = y
+        dstRect.right = x + dstWidth - 1
+        dstRect.bottom = y + dstHeight - 1
+
+        canvas.drawBitmap((pixmap as AndroidPixmap).bitmap, srcRect, dstRect, null)
+    }
+
+    /*
      * Draws bitmap on frame buffer in (x, y) position.
      */
     override fun drawPixmap(pixmap: Pixmap, x: Int, y: Int) {

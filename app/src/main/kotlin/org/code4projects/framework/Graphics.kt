@@ -53,6 +53,15 @@ interface Graphics {
     fun drawPixmap(pixmap: Pixmap, x: Int, y: Int, srcX: Int, srcY: Int, srcWidth: Int, srcHeight: Int)
 
     /**
+     * Same as [drawPixmap] with a source region, but scaled to (dstWidth, dstHeight) instead of
+     * being drawn at its native (srcWidth, srcHeight) size.
+     */
+    fun drawPixmap(
+        pixmap: Pixmap, x: Int, y: Int, srcX: Int, srcY: Int, srcWidth: Int, srcHeight: Int,
+        dstWidth: Int, dstHeight: Int
+    )
+
+    /**
      * Draw only the region of a bitmap delimited by rectangle having the top left corner in
      * (srcX, srcY) and size (srcWidth, srcHeight).
      */
