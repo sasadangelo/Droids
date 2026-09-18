@@ -161,6 +161,21 @@ abstract class Shape protected constructor(width: Int, height: Int) : Actor(0, 0
         return false
     }
 
+    // Returns how many rows below its current position the shape would fall before landing,
+    // by probing downward with the same collide() check the real fall uses, then restoring
+    // the shape to exactly where it started. Used to render a ghost preview of where the
+    // piece will come to rest without disturbing the actual falling shape or its score.
+    fun dropDistance(): Int {
+        var distance = 0
+        moveBy(0, 1)
+        while (!collide()) {
+            distance++
+            moveBy(0, 1)
+        }
+        moveBy(0, -(distance + 1))
+        return distance
+    }
+
     fun moveDown() {
         for (block in blockArray) {
             block.moveDown()

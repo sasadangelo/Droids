@@ -38,10 +38,27 @@ class DroidsWorldRenderer {
             Gdx.graphics!!.drawPixmap(Assets.getBlockByColor(block.color)!!, x, y)
         }
 
+        val fallingShape = DroidsWorld.getInstance().fallingShape!!
+
+        /*
+         * Draw a ghost preview of where the falling shape will land, using the same
+         * collision logic (Shape.dropDistance()) the real fall relies on. Skipped when the
+         * shape is already resting, since the ghost would then sit exactly under it.
+         */
+        val ghostDrop = fallingShape.dropDistance()
+        if (ghostDrop > 0) {
+            for (block in fallingShape.getBlocks()) {
+                val x = gameScreen.workingRegion.x + block.x * BLOCK_WIDTH
+                val y = gameScreen.workingRegion.y + (block.y + ghostDrop) * BLOCK_HEIGHT
+                val ghostColor = (block.color and 0x00ffffff) or 0x50000000
+                Gdx.graphics!!.drawRect(x, y, BLOCK_WIDTH, BLOCK_HEIGHT, ghostColor)
+            }
+        }
+
         /*
          * Draw the 4 blocks of the falling shape.
          */
-        for (block in DroidsWorld.getInstance().fallingShape!!.getBlocks()) {
+        for (block in fallingShape.getBlocks()) {
             val x = gameScreen.workingRegion.x + block.x * BLOCK_WIDTH
             val y = gameScreen.workingRegion.y + block.y * BLOCK_HEIGHT
             Gdx.graphics!!.drawPixmap(Assets.getBlockByColor(block.color)!!, x, y)
