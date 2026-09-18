@@ -53,8 +53,9 @@ the art need to be addressed together.
   rectangles drawn in code; they were rounded, gradient-filled panels baked into the new
   `gamescreen.png`/`startscreen.png` artwork as part of the previous item, so no separate
   `drawRect`-based HUD code remained to update.
-- **Screen transitions.** Start → Loading → Game → Highscore currently cut instantly; even a
-  simple fade/slide reads as much more finished.
+- ~~**Screen transitions.**~~ **Done.** Start → Loading → Game → Highscore used to cut instantly;
+  added a reusable `FadeTransitionScreen` in the framework layer that cross-fades through black
+  between any two screens, wired into every screen switch.
 - **New adaptive app icon.** Only a single flat `icon.png` exists in `drawable/`,
   `drawable-ldpi/`, `-mdpi/`, `-hdpi/` — no `-xhdpi`/`-xxhdpi`/`-xxxhdpi`, no adaptive icon
   (`foreground` + `background` + optional `monochrome` layers), no round variant.
