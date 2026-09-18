@@ -224,11 +224,10 @@ class GameScreen : Screen {
                             if (DroidsWorld.getInstance().fallingShape!!.collide())
                                 DroidsWorld.getInstance().fallingShape!!.moveLeft()
                         }
-                        // Rotate falling shape, if possible
+                        // Rotate falling shape, nudging it away from a wall/floor/stack if
+                        // the naive rotation would otherwise collide
                         if (rotateButtonBounds.contains(event.x, event.y)) {
-                            DroidsWorld.getInstance().fallingShape!!.rotate()
-                            if (DroidsWorld.getInstance().fallingShape!!.collide())
-                                DroidsWorld.getInstance().fallingShape!!.undoRotate()
+                            DroidsWorld.getInstance().fallingShape!!.rotateWithWallKick()
                         }
                         // Accelerate falling of the falling shape
                         if (downButtonBounds.contains(event.x, event.y)) {

@@ -61,6 +61,37 @@ abstract class Shape protected constructor(width: Int, height: Int) : Actor(0, 0
         rotation -= 1
     }
 
+    // Offsets tried, in order, when a rotation would otherwise collide with a wall, the
+    // floor or a settled block. Trying both directions on each axis means the shape gets
+    // nudged into free space regardless of which side it was crowding.
+    private val wallKickOffsets = arrayOf(-1 to 0, 1 to 0, -2 to 0, 2 to 0, 0 to -1)
+
+    // Rotates the shape and, if the naive rotation collides, tries the offsets above
+    // before giving up and reverting the rotation entirely.
+    fun rotateWithWallKick() {
+        rotate()
+        if (!collide()) {
+            return
+        }
+        for ((deltaX, deltaY) in wallKickOffsets) {
+            shiftBy(deltaX, deltaY)
+            if (!collide()) {
+                return
+            }
+            shiftBy(-deltaX, -deltaY)
+        }
+        undoRotate()
+    }
+
+    // Moves the shape by (deltaX, deltaY) without the score side effects moveUp()/moveDown()
+    // have, since this is used to probe candidate positions rather than to actually descend.
+    private fun shiftBy(deltaX: Int, deltaY: Int) {
+        for (block in blockArray) {
+            block.moveBy(deltaX, deltaY)
+        }
+        moveBy(deltaX, deltaY)
+    }
+
     // This method returns true if the time passed from last fall movement of the shape
     // is > than updateInterval. The updateInterval decrease with increase of game level and when
     // user press down key.
