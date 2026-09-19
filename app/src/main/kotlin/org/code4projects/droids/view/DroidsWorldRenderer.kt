@@ -25,11 +25,10 @@ class DroidsWorldRenderer {
         const val BLOCK_WIDTH = 40
         const val BLOCK_HEIGHT = 40
 
-        // The "Next" preview blocks are drawn smaller than their native 32px size, both to look
-        // a little less chunky and to leave more room for a visible gap between queued shapes.
+        // The "Next"/"Hold" preview blocks are drawn smaller than their native 32px size, both
+        // to look a little less chunky and to leave room for a visible gap between shapes.
         private const val NEXT_BLOCK_SRC_SIZE = 32
         const val NEXT_BLOCK_SIZE = 24
-        private const val NEXT_BLOCK_SCALE = NEXT_BLOCK_SIZE.toFloat() / NEXT_BLOCK_SRC_SIZE
 
         // Vertical space reserved per upcoming shape in the "Next" preview queue. Must clear the
         // tallest shape (the 4-block-tall I piece, 4 * NEXT_BLOCK_SIZE = 96px) plus a visible
@@ -39,6 +38,11 @@ class DroidsWorldRenderer {
         // Where the held-shape preview starts, just below the "Hold" label baked into the
         // background art (which sits right under the pause button, above the "Level" panel).
         const val HOLD_PREVIEW_Y = 172
+
+        // The "Hold" slot has much less vertical room than "Next" before it runs into the
+        // "Level" panel below it, so its blocks are drawn smaller still: at NEXT_BLOCK_SIZE an
+        // I piece (4 blocks tall) reached past the "Level" label.
+        const val HOLD_BLOCK_SIZE = 16
     }
 
     /*
@@ -84,23 +88,25 @@ class DroidsWorldRenderer {
         // vertically with the very next shape to fall on top.
         for ((index, nextShape) in DroidsWorld.getInstance().nextShapes.withIndex()) {
             drawShapePreview(
-                nextShape, gameScreen.rightRegion.x, gameScreen.rightRegion.y + 130 + index * NEXT_QUEUE_SLOT_HEIGHT
+                nextShape, gameScreen.rightRegion.x, gameScreen.rightRegion.y + 130 + index * NEXT_QUEUE_SLOT_HEIGHT,
+                NEXT_BLOCK_SIZE
             )
         }
 
         // Draw the held shape, if any, under the "Hold" label on the top left side.
         DroidsWorld.getInstance().heldShape?.let { heldShape ->
-            drawShapePreview(heldShape, gameScreen.leftRegion.x, gameScreen.leftRegion.y + HOLD_PREVIEW_Y)
+            drawShapePreview(heldShape, gameScreen.leftRegion.x, gameScreen.leftRegion.y + HOLD_PREVIEW_Y, HOLD_BLOCK_SIZE)
         }
     }
 
     /*
-     * Draws a small preview of a shape (same reduced scale as the "Next"/"Hold" slots) with its
-     * top-left corner at (baseX, baseY). Positions/offsets are computed at the assets' native
-     * 32px block size, then scaled down together so each shape stays centered the same way
-     * regardless of the smaller final size.
+     * Draws a small preview of a shape with its top-left corner at (baseX, baseY), scaled down to
+     * blockSize per block. Positions/offsets are computed at the assets' native 32px block size,
+     * then scaled down together so each shape stays centered the same way regardless of size.
      */
-    private fun drawShapePreview(shape: Shape, baseX: Int, baseY: Int) {
+    private fun drawShapePreview(shape: Shape, baseX: Int, baseY: Int, blockSize: Int) {
+        val scale = blockSize.toFloat() / NEXT_BLOCK_SRC_SIZE
+
         for (block in shape.getBlocks()) {
             var x = block.x * NEXT_BLOCK_SRC_SIZE
             val y = block.y * NEXT_BLOCK_SRC_SIZE
@@ -114,9 +120,9 @@ class DroidsWorldRenderer {
 
             Gdx.graphics!!.drawPixmap(
                 Assets.getSmallBlockByColor(block.color)!!,
-                baseX + (x * NEXT_BLOCK_SCALE).toInt(),
-                baseY + (y * NEXT_BLOCK_SCALE).toInt(),
-                0, 0, NEXT_BLOCK_SRC_SIZE, NEXT_BLOCK_SRC_SIZE, NEXT_BLOCK_SIZE, NEXT_BLOCK_SIZE
+                baseX + (x * scale).toInt(),
+                baseY + (y * scale).toInt(),
+                0, 0, NEXT_BLOCK_SRC_SIZE, NEXT_BLOCK_SRC_SIZE, blockSize, blockSize
             )
         }
     }
