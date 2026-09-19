@@ -75,6 +75,12 @@ class GameScreen : Screen {
 
     private val renderer = DroidsWorldRenderer()
 
+    private val gameOverScoreStyle = TextStyle().apply {
+        color = 0xffffffffL.toInt()
+        textSize = 48
+        style = TextStyle.Style.BOLD
+    }
+
     init {
         Log.i(LOG_TAG, "constructor -- begin")
 
@@ -134,36 +140,6 @@ class GameScreen : Screen {
 
         // draw the state specific element
         states[DroidsWorld.getInstance().state]!!.draw()
-    }
-
-    /*
-     * Draw text on the screen in the (x, y) position.
-     */
-    fun drawText(text: String, x: Int, y: Int) {
-        Log.i(LOG_TAG, "drawText -- begin")
-        var posX = x
-        val len = text.length
-        for (i in 0 until len) {
-            val character = text[i]
-
-            if (character == ' ') {
-                posX += 40
-                continue
-            }
-
-            val srcX: Int
-            val srcWidth: Int
-            if (character == '.') {
-                srcX = 400
-                srcWidth = 20
-            } else {
-                srcX = (character - '0') * 40
-                srcWidth = 40
-            }
-
-            Gdx.graphics!!.drawPixmap(Assets.numbers!!, posX, y, srcX, 0, srcWidth, 64)
-            posX += srcWidth
-        }
     }
 
     /*
@@ -440,7 +416,7 @@ class GameScreen : Screen {
                 Assets.buttons!!, xButtonBounds.x, xButtonBounds.y, 0, 200,
                 xButtonBounds.width + 1, xButtonBounds.height + 1
             ) // down button
-            drawText("" + DroidsWorld.getInstance().score, 360, 560)
+            g.drawText("" + DroidsWorld.getInstance().score, 360, 618, gameOverScoreStyle)
         }
     }
 

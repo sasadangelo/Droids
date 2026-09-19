@@ -10,6 +10,7 @@ import org.code4projects.framework.Graphics
 import org.code4projects.framework.Input.TouchEvent
 import org.code4projects.framework.Rectangle
 import org.code4projects.framework.Screen
+import org.code4projects.framework.TextStyle
 import org.code4projects.framework.impl.FadeTransitionScreen
 
 /*
@@ -23,6 +24,12 @@ class HighscoreScreen : Screen {
     private val backButtonBounds = Rectangle(64, 740, 100, 100)
 
     private val lines = Array(5) { "" }
+
+    private val lineStyle = TextStyle().apply {
+        color = 0xffffffffL.toInt()
+        textSize = 48
+        style = TextStyle.Style.BOLD
+    }
 
     /*
      * Initialize the screen with the following scores: 100, 80, 50, 30, 10.
@@ -63,9 +70,9 @@ class HighscoreScreen : Screen {
         // draw the background.
         g.drawPixmap(Assets.highscoresscreen!!, backgroundBounds.x, backgroundBounds.y)
         // draw the 5 scores.
-        var y = 200
+        var y = 240
         for (i in 0 until 5) {
-            drawText(g, lines[i], 40, y)
+            g.drawText(lines[i], 40, y, lineStyle)
             y += 100
         }
         // draw the back button.
@@ -73,32 +80,6 @@ class HighscoreScreen : Screen {
             Assets.buttons!!, backButtonBounds.x, backButtonBounds.y, 100, 100,
             backButtonBounds.width + 1, backButtonBounds.height + 1
         )
-    }
-
-    fun drawText(g: Graphics, line: String, x: Int, y: Int) {
-        var posX = x
-        val len = line.length
-        for (i in 0 until len) {
-            val character = line[i]
-
-            if (character == ' ') {
-                posX += 40
-                continue
-            }
-
-            val srcX: Int
-            val srcWidth: Int
-            if (character == '.') {
-                srcX = 400
-                srcWidth = 20
-            } else {
-                srcX = (character - '0') * 40
-                srcWidth = 40
-            }
-
-            g.drawPixmap(Assets.numbers!!, posX, y, srcX, 0, srcWidth, 64)
-            posX += srcWidth
-        }
     }
 
     /*

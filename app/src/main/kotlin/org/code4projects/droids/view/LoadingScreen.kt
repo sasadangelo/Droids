@@ -63,7 +63,6 @@ class LoadingScreen : Screen {
         Assets.smallorangeblock = g.newPixmap("smallorangeblock.png", Graphics.PixmapFormat.ARGB4444)
 
         Assets.buttons = g.newPixmap("buttons.png", Graphics.PixmapFormat.RGB565)
-        Assets.numbers = g.newPixmap("numbers.png", Graphics.PixmapFormat.ARGB4444)
 
         // Audio effects
         Assets.click = Gdx.audio!!.newSound("click.ogg")

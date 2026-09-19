@@ -56,9 +56,8 @@ object Assets {
     @JvmField var smallmagentablock: Pixmap? = null
     @JvmField var smallorangeblock: Pixmap? = null
 
-    // buttons and numbers
+    // buttons
     @JvmField var buttons: Pixmap? = null
-    @JvmField var numbers: Pixmap? = null
 
     // sounds
     @JvmField var click: Sound? = null
