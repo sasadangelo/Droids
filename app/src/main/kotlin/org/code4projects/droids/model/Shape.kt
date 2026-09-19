@@ -61,6 +61,14 @@ abstract class Shape protected constructor(width: Int, height: Int) : Actor(0, 0
         rotation -= 1
     }
 
+    // Resets the shape back to its spawn position and orientation. Used when a shape is stashed
+    // into or brought back from hold, so it doesn't carry over wherever the player had moved or
+    // rotated it before holding it.
+    fun resetSpawn() {
+        setPosition(0, 0)
+        rotation = 0
+    }
+
     // Offsets tried, in order, when a rotation would otherwise collide with a wall, the
     // floor or a settled block. Trying both directions on each axis means the shape gets
     // nudged into free space regardless of which side it was crowding.

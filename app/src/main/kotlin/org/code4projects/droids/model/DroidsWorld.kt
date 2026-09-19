@@ -39,6 +39,15 @@ class DroidsWorld private constructor() {
     val nextShapes: List<Shape>
         get() = nextShapesQueue
 
+    // The shape currently stashed via hold, if any.
+    var heldShape: Shape? = null
+        private set
+
+    // Whether hold can be used again for the shape that is currently falling - true right after
+    // a new shape starts falling, false once hold has already been used for it, so the player
+    // can't cycle the same piece in and out of hold indefinitely to stall for a better draw.
+    private var canHold = true
+
     // the remaining number of lines to fill to complete the current level
     var goal: Int = 0
         private set
@@ -103,6 +112,22 @@ class DroidsWorld private constructor() {
         // at the back to keep the preview showing NEXT_QUEUE_SIZE shapes ahead.
         fallingShape = nextShapesQueue.removeAt(0)
         enqueueNextShape()
+        canHold = true
+    }
+
+    // Stashes the falling shape into hold, once per falling shape. If hold was empty, the next
+    // queued shape becomes the new falling shape; otherwise the two swap. Either way the shape
+    // going into hold is reset to its spawn position/orientation so it doesn't carry over
+    // wherever the player had moved or rotated it.
+    fun holdFallingShape() {
+        if (!canHold) return
+        val falling = fallingShape ?: return
+
+        falling.resetSpawn()
+        val previousHeld = heldShape
+        heldShape = falling
+        fallingShape = previousHeld ?: nextShapesQueue.removeAt(0).also { enqueueNextShape() }
+        canHold = false
     }
 
     fun update(deltaTime: Float) {
@@ -185,6 +210,7 @@ class DroidsWorld private constructor() {
     fun clear() {
         blockList.clear()
         fallingShape = null
+        heldShape = null
         level = 0
         score = 0
         nextShapesQueue.clear()

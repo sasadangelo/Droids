@@ -42,10 +42,12 @@ class GameScreen : Screen {
 
         // Gesture tuning for the play field, replacing the old left/right/rotate/down buttons:
         // dragging a full block width moves the piece one column, dragging down two block
-        // heights soft-drops it, and anything that stays within the tap thresholds (barely
-        // moved, released quickly) is treated as a tap-to-rotate instead of a drag.
+        // heights soft-drops it, dragging up two block heights holds it, and anything that stays
+        // within the tap thresholds (barely moved, released quickly) is treated as a
+        // tap-to-rotate instead of a drag.
         private const val MOVE_STEP_PX = DroidsWorldRenderer.BLOCK_WIDTH
         private const val DROP_SWIPE_PX = DroidsWorldRenderer.BLOCK_HEIGHT * 2
+        private const val HOLD_SWIPE_PX = DroidsWorldRenderer.BLOCK_HEIGHT * 2
         private const val TAP_MAX_DISTANCE_PX = 20
         private const val TAP_MAX_DURATION_MS = 250L
     }
@@ -196,19 +198,21 @@ class GameScreen : Screen {
     inner class GameRunning : GameState() {
         // Tracks the touch gesture in progress over the play field: where/when it started, the
         // x position the last horizontal move step was taken from, and whether this gesture
-        // already triggered a soft drop - so a single drag steps the piece at most once per
-        // block crossed and drops it at most once, instead of repeating every event.
+        // already triggered a soft drop or a hold - so a single drag steps the piece at most
+        // once per block crossed and triggers each of those at most once, instead of repeating
+        // every event.
         private var gestureActive = false
         private var gestureStartX = 0
         private var gestureStartY = 0
         private var gestureStepX = 0
         private var gestureStartTime = 0L
         private var softDropTriggered = false
+        private var holdTriggered = false
 
         /*
          * Update the game when it is in running state. The method catches the user's touch
-         * gestures on the play field - drag to move, tap to rotate, swipe down to soft-drop -
-         * and can also pause the game and check for game over.
+         * gestures on the play field - drag to move, tap to rotate, swipe down to soft-drop,
+         * swipe up to hold - and can also pause the game and check for game over.
          */
         override fun update(touchEvents: List<TouchEvent>, deltaTime: Float) {
             Log.i(LOG_TAG, "GameRunning.update -- begin")
@@ -224,6 +228,7 @@ class GameScreen : Screen {
                             gestureStepX = event.x
                             gestureStartTime = SystemClock.uptimeMillis()
                             softDropTriggered = false
+                            holdTriggered = false
                         }
                     }
                     TouchEvent.TOUCH_DRAGGED -> {
@@ -246,6 +251,11 @@ class GameScreen : Screen {
                             if (!softDropTriggered && event.y - gestureStartY >= DROP_SWIPE_PX) {
                                 DroidsWorld.getInstance().fallingShape!!.accelerateFalling()
                                 softDropTriggered = true
+                            }
+                            // Hold once the finger has dragged up far enough.
+                            if (!holdTriggered && gestureStartY - event.y >= HOLD_SWIPE_PX) {
+                                DroidsWorld.getInstance().holdFallingShape()
+                                holdTriggered = true
                             }
                         }
                     }

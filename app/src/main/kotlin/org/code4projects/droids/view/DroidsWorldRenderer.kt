@@ -5,6 +5,7 @@
 package org.code4projects.droids.view
 
 import org.code4projects.droids.model.DroidsWorld
+import org.code4projects.droids.model.Shape
 import org.code4projects.droids.model.ShapeCube
 import org.code4projects.droids.model.ShapeI
 import org.code4projects.droids.model.ShapeJ
@@ -34,6 +35,10 @@ class DroidsWorldRenderer {
         // tallest shape (the 4-block-tall I piece, 4 * NEXT_BLOCK_SIZE = 96px) plus a visible
         // gap, so consecutive shapes never look like they're touching/merging.
         const val NEXT_QUEUE_SLOT_HEIGHT = 120
+
+        // Where the held-shape preview starts, just below the "Hold" label baked into the
+        // background art (which sits right under the pause button, above the "Level" panel).
+        const val HOLD_PREVIEW_Y = 172
     }
 
     /*
@@ -76,29 +81,43 @@ class DroidsWorldRenderer {
         }
 
         // Draw the upcoming shapes queue in the Game Screen on the top right side, stacked
-        // vertically with the very next shape to fall on top. Positions/offsets are computed at
-        // the assets' native 32px block size, then scaled down together so each shape stays
-        // centered the same way it was before, just smaller.
+        // vertically with the very next shape to fall on top.
         for ((index, nextShape) in DroidsWorld.getInstance().nextShapes.withIndex()) {
-            for (block in nextShape.getBlocks()) {
-                var x = block.x * NEXT_BLOCK_SRC_SIZE
-                val y = block.y * NEXT_BLOCK_SRC_SIZE
+            drawShapePreview(
+                nextShape, gameScreen.rightRegion.x, gameScreen.rightRegion.y + 130 + index * NEXT_QUEUE_SLOT_HEIGHT
+            )
+        }
 
-                when (nextShape) {
-                    is ShapeCube, is ShapeJ -> x += 30
-                    is ShapeI -> x += 50
-                    is ShapeL -> x += 40
-                    is ShapeS, is ShapeT, is ShapeZ -> x += 10
-                }
+        // Draw the held shape, if any, under the "Hold" label on the top left side.
+        DroidsWorld.getInstance().heldShape?.let { heldShape ->
+            drawShapePreview(heldShape, gameScreen.leftRegion.x, gameScreen.leftRegion.y + HOLD_PREVIEW_Y)
+        }
+    }
 
-                Gdx.graphics!!.drawPixmap(
-                    Assets.getSmallBlockByColor(block.color)!!,
-                    gameScreen.rightRegion.x + (x * NEXT_BLOCK_SCALE).toInt(),
-                    gameScreen.rightRegion.y + 130 + index * NEXT_QUEUE_SLOT_HEIGHT +
-                        (y * NEXT_BLOCK_SCALE).toInt(),
-                    0, 0, NEXT_BLOCK_SRC_SIZE, NEXT_BLOCK_SRC_SIZE, NEXT_BLOCK_SIZE, NEXT_BLOCK_SIZE
-                )
+    /*
+     * Draws a small preview of a shape (same reduced scale as the "Next"/"Hold" slots) with its
+     * top-left corner at (baseX, baseY). Positions/offsets are computed at the assets' native
+     * 32px block size, then scaled down together so each shape stays centered the same way
+     * regardless of the smaller final size.
+     */
+    private fun drawShapePreview(shape: Shape, baseX: Int, baseY: Int) {
+        for (block in shape.getBlocks()) {
+            var x = block.x * NEXT_BLOCK_SRC_SIZE
+            val y = block.y * NEXT_BLOCK_SRC_SIZE
+
+            when (shape) {
+                is ShapeCube, is ShapeJ -> x += 30
+                is ShapeI -> x += 50
+                is ShapeL -> x += 40
+                is ShapeS, is ShapeT, is ShapeZ -> x += 10
             }
+
+            Gdx.graphics!!.drawPixmap(
+                Assets.getSmallBlockByColor(block.color)!!,
+                baseX + (x * NEXT_BLOCK_SCALE).toInt(),
+                baseY + (y * NEXT_BLOCK_SCALE).toInt(),
+                0, 0, NEXT_BLOCK_SRC_SIZE, NEXT_BLOCK_SRC_SIZE, NEXT_BLOCK_SIZE, NEXT_BLOCK_SIZE
+            )
         }
     }
 }
