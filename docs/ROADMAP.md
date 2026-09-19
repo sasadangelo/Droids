@@ -105,7 +105,14 @@ the second as valuable but deferrable.
   block colors are untouched, since those are what tells shapes apart during play.
 
 **Good to have, can follow after v1:**
-- **Hold piece** — stash the current shape once per drop; new model state, moderate effort.
+- ~~**Hold piece.**~~ **Done.** `DroidsWorld.holdFallingShape()` stashes the falling shape (once
+  per shape, via a `canHold` flag reset each time a new one starts falling) and either pulls in
+  the next queued shape if hold was empty, or swaps with whatever was already held. `Shape.
+  resetSpawn()` resets position/rotation so a held shape doesn't carry over wherever the player
+  had moved or rotated it. Triggered by swiping up on the play field (previously unused, since
+  drag/tap/swipe-down already covered move/rotate/soft-drop). Rendered in a new "Hold" slot
+  above "Level" — added that label to `gamescreen.png` and all 5 level-tinted variants (matching
+  "Next"/"Level" style), since the game has no letter font to draw it at runtime.
 - ~~**Next-piece queue.**~~ **Done.** `DroidsWorld.nextShape` (a single `Shape?`) became
   `nextShapes` (a `List<Shape>` backed by a queue); `makeNextShapeFalling()` dequeues the front
   and enqueues one fresh random shape to keep it topped up. `DroidsWorldRenderer` draws the queue
@@ -120,8 +127,7 @@ the second as valuable but deferrable.
 
 ## Phase 3 — Robustness
 
-Things that don't affect how the game looks or plays today, but will bite before or shortly after
-it reaches real users.
+Things that don't affect how the game looks or plays today, but will bite before or shortly after it reaches real users.
 
 - **High scores / sound setting don't actually persist on modern Android.**
   `AndroidFileIO.kt` reads/writes via `Environment.getExternalStorageDirectory()`. Since Android
