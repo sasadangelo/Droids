@@ -26,8 +26,7 @@ import org.code4projects.framework.TextStyle
  * @author mzechner
  * @author Salvatore D'Angelo
  */
-class AndroidGraphics(assets: AssetManager, private val frameBuffer: Bitmap) : Graphics {
-    private val fileIO = AndroidFileIO(assets)
+class AndroidGraphics(private val assets: AssetManager, private val frameBuffer: Bitmap) : Graphics {
     private val canvas = Canvas(frameBuffer)
     private val paint = Paint()
     private val srcRect = Rect()
@@ -50,7 +49,7 @@ class AndroidGraphics(assets: AssetManager, private val frameBuffer: Bitmap) : G
         var input: InputStream? = null
         val bitmap: Bitmap
         try {
-            input = fileIO.readAsset(fileName)
+            input = assets.open(fileName)
             bitmap = BitmapFactory.decodeStream(input)
                 ?: throw RuntimeException("Couldn't load bitmap from asset '$fileName'")
         } catch (e: IOException) {

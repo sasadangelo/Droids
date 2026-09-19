@@ -16,11 +16,26 @@ class DroidsWorld private constructor() {
         Ready,
         Running,
         Paused,
-        GameOver
+        GameOver,
+        Cleared
+    }
+
+    // the possible game modes. Marathon is the classic mode: level/speed keeps ramping up
+    // forever and the only way to lose is topping out. Sprint and Endless both freeze the
+    // level (so the fall speed stays constant instead of ramping up) but differ in whether
+    // there's a win condition: Sprint races to clear a fixed number of lines as fast as
+    // possible, Endless has no target at all - just a relaxed, non-escalating practice mode.
+    enum class GameMode {
+        MARATHON,
+        SPRINT,
+        ENDLESS
     }
 
     // the game status
     var state: GameState = GameState.Ready
+
+    // the current game mode, selected before a new game starts
+    var mode: GameMode = GameMode.MARATHON
 
     // this is the list of blocks laying in the bottom of screen.
     private val blockList: MutableList<Block> = ArrayList()
@@ -55,6 +70,16 @@ class DroidsWorld private constructor() {
     // the user score
     var score: Int = 0
 
+    // total lines cleared so far this game - drives Sprint's 40-line win condition, and is
+    // shown on the win screen regardless of mode.
+    var linesCleared: Int = 0
+        private set
+
+    // total time, in seconds, spent in the Running state so far this game - used by Sprint's
+    // race-the-clock timer.
+    var elapsedTime: Float = 0f
+        private set
+
     init {
         repeat(NEXT_QUEUE_SIZE) { enqueueNextShape() }
         makeNextShapeFalling()
@@ -72,6 +97,9 @@ class DroidsWorld private constructor() {
         // 4-block-tall I piece) shapes stacked without overlapping - confirmed by testing 3
         // on-device, where the third slot's shape visibly collided with the Score label.
         const val NEXT_QUEUE_SIZE = 2
+
+        // Sprint mode's win condition: clear this many total lines as fast as possible.
+        const val SPRINT_TARGET_LINES = 40
 
         // the private static instance used to implement the Singleton pattern.
         private var instance: DroidsWorld? = null
@@ -131,20 +159,19 @@ class DroidsWorld private constructor() {
     }
 
     fun update(deltaTime: Float) {
-        if (state == GameState.GameOver) return
+        if (state != GameState.Running) return
 
-        if (state == GameState.Running) {
-            val falling = fallingShape!!
-            if (falling.collide()) {
-                state = GameState.GameOver
-            } else {
-                falling.update()
-                if (!falling.falling) {
-                    val layingShape = falling
-                    score += layingShape.softDropScore
-                    makeNextShapeFalling()
-                    deleteLinesOf(layingShape)
-                }
+        elapsedTime += deltaTime
+        val falling = fallingShape!!
+        if (falling.collide()) {
+            state = GameState.GameOver
+        } else {
+            falling.update()
+            if (!falling.falling) {
+                val layingShape = falling
+                score += layingShape.softDropScore
+                makeNextShapeFalling()
+                deleteLinesOf(layingShape)
             }
         }
     }
@@ -170,14 +197,25 @@ class DroidsWorld private constructor() {
 
         // goal is decreased by the number of lines deleted.
         goal -= deletedLines.size
+        linesCleared += deletedLines.size
         when (deletedLines.size) {
             1 -> score += 40 * (level + 1)
             2 -> score += 100 * (level + 1)
             3 -> score += 300 * (level + 1)
             4 -> score += 1200 * (level + 1)
         }
+
+        // Sprint mode is won as soon as the line target is reached.
+        if (mode == GameMode.SPRINT && linesCleared >= SPRINT_TARGET_LINES) {
+            state = GameState.Cleared
+        }
+
         if (goal <= 0) {
-            ++level
+            // Only Marathon ramps the level (and therefore the fall speed) up - Sprint and
+            // Endless stay at a constant difficulty (see GameMode's doc comment).
+            if (mode == GameMode.MARATHON) {
+                ++level
+            }
             goal += 5 * level + 5
         }
 
@@ -213,6 +251,8 @@ class DroidsWorld private constructor() {
         heldShape = null
         level = 0
         score = 0
+        linesCleared = 0
+        elapsedTime = 0f
         nextShapesQueue.clear()
         repeat(NEXT_QUEUE_SIZE) { enqueueNextShape() }
         makeNextShapeFalling()

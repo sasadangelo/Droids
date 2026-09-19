@@ -67,7 +67,7 @@ abstract class AndroidGame : Activity(), Game {
 
         renderView = AndroidFastRenderView(this, frameBuffer)
         graphics = AndroidGraphics(assets, frameBuffer)
-        fileIO = AndroidFileIO(assets)
+        fileIO = AndroidFileIO(this, assets)
         audio = AndroidAudio(this)
         input = AndroidInput(this, renderView, frameBufferBounds.left, frameBufferBounds.top, scaleX, scaleY)
 

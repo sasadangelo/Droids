@@ -17,7 +17,17 @@ import java.io.OutputStreamWriter
  */
 object Settings {
     @JvmField
-    var soundEnabled = true
+    var musicEnabled = true
+
+    @JvmField
+    var sfxEnabled = true
+
+    // Volume levels, 0f (silent) to 1f (full volume).
+    @JvmField
+    var musicVolume = 1f
+
+    @JvmField
+    var sfxVolume = 1f
 
     @JvmField
     var highscores = intArrayOf(100, 80, 50, 30, 10)
@@ -27,7 +37,10 @@ object Settings {
         var reader: BufferedReader? = null
         try {
             reader = BufferedReader(InputStreamReader(files.readFile(".droids")))
-            soundEnabled = reader.readLine()?.toBoolean() ?: false
+            musicEnabled = reader.readLine()?.toBoolean() ?: true
+            sfxEnabled = reader.readLine()?.toBoolean() ?: true
+            musicVolume = reader.readLine()?.toFloat() ?: 1f
+            sfxVolume = reader.readLine()?.toFloat() ?: 1f
             for (i in 0 until 5) {
                 highscores[i] = reader.readLine()!!.toInt()
             }
@@ -47,7 +60,13 @@ object Settings {
         var writer: BufferedWriter? = null
         try {
             writer = BufferedWriter(OutputStreamWriter(files.writeFile(".droids")))
-            writer.write(soundEnabled.toString())
+            writer.write(musicEnabled.toString())
+            writer.write("\n")
+            writer.write(sfxEnabled.toString())
+            writer.write("\n")
+            writer.write(musicVolume.toString())
+            writer.write("\n")
+            writer.write(sfxVolume.toString())
             writer.write("\n")
             for (i in 0 until 5) {
                 writer.write(highscores[i].toString())

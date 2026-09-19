@@ -4,6 +4,7 @@
  */
 package org.code4projects.droids.view
 
+import org.code4projects.droids.model.DroidsWorld
 import org.code4projects.droids.model.Settings
 import org.code4projects.framework.Gdx
 import org.code4projects.framework.Graphics
@@ -19,14 +20,14 @@ import org.code4projects.framework.impl.FadeTransitionScreen
  *     Highscores
  *     Quit
  *
- *  It also has a button to activate/deactivate sound.
+ *  It also has a button that opens the settings screen (music/SFX toggles and volume).
  *
  * @author Salvatore D'Angelo
  */
 class StartScreen : Screen {
     private val backgroundBounds = Rectangle(0, 0, 640, 960)
     private val logoBounds = Rectangle(64, 40, 512, 320)
-    private val soundButtonBounds = Rectangle(64, 740, 100, 100)
+    private val settingsButtonBounds = Rectangle(64, 740, 100, 100)
     private val mainMenuBounds = Rectangle(168, 440, 306, 248)
     private val playMenuBounds = Rectangle(128, 440, 384, 84)
     private val highscoresMenuBounds = Rectangle(128, 440 + 84, 384, 84)
@@ -34,10 +35,10 @@ class StartScreen : Screen {
 
     /*
      * Check the user input and if one the the folloing things could occurs:
-     *     - Play the game
+     *     - Play the game (choosing a mode first, unless a game is already paused/running)
      *     - See Highscores
      *     - Quit game
-     *     - Activate/deactivate sound
+     *     - Open the settings screen
      */
     override fun update(deltaTime: Float) {
         val touchEvents = Gdx.input!!.getTouchEvents()
@@ -46,30 +47,33 @@ class StartScreen : Screen {
         for (i in 0 until len) {
             val event = touchEvents[i]
             if (event.type == Input.TouchEvent.TOUCH_UP) {
-                // activate/deactivate sound
-                if (soundButtonBounds.contains(event.x, event.y)) {
-                    Settings.soundEnabled = !Settings.soundEnabled
-                    if (Settings.soundEnabled)
-                        Assets.click!!.play(1f)
+                // open the settings screen
+                if (settingsButtonBounds.contains(event.x, event.y)) {
+                    Assets.playClick()
+                    Gdx.game!!.setScreen(FadeTransitionScreen(this, SettingsScreen()))
+                    return
                 }
-                // play the game
+                // play the game: resume directly if a game is already paused/running (so
+                // pausing and going home doesn't lose progress), otherwise let the player
+                // choose a mode for a new game.
                 if (playMenuBounds.contains(event.x, event.y)) {
-                    Gdx.game!!.setScreen(FadeTransitionScreen(this, GameScreen()))
-                    if (Settings.soundEnabled)
-                        Assets.click!!.play(1f)
+                    Assets.playClick()
+                    val world = DroidsWorld.getInstance()
+                    val resuming = world.state == DroidsWorld.GameState.Paused ||
+                        world.state == DroidsWorld.GameState.Running
+                    val nextScreen = if (resuming) GameScreen() else ModeSelectScreen()
+                    Gdx.game!!.setScreen(FadeTransitionScreen(this, nextScreen))
                     return
                 }
                 // see highscores.
                 if (highscoresMenuBounds.contains(event.x, event.y)) {
                     Gdx.game!!.setScreen(FadeTransitionScreen(this, HighscoreScreen()))
-                    if (Settings.soundEnabled)
-                        Assets.click!!.play(1f)
+                    Assets.playClick()
                     return
                 }
                 // quit the game, after confirmation.
                 if (quitMenuBounds.contains(event.x, event.y)) {
-                    if (Settings.soundEnabled)
-                        Assets.click!!.play(1f)
+                    Assets.playClick()
                     Gdx.game!!.confirmExit { exitGame() }
                     return
                 }
@@ -89,16 +93,16 @@ class StartScreen : Screen {
         g.drawPixmap(Assets.logo!!, logoBounds.x, logoBounds.y)
         // draw the main menu
         g.drawPixmap(Assets.mainmenu!!, mainMenuBounds.x, mainMenuBounds.y)
-        // draw the sound button depending on sound status.
-        if (Settings.soundEnabled)
+        // draw the settings button; the icon reflects whether any audio is currently enabled.
+        if (Settings.musicEnabled || Settings.sfxEnabled)
             g.drawPixmap(
-                Assets.buttons!!, soundButtonBounds.x, soundButtonBounds.y, 0, 0,
-                soundButtonBounds.width + 1, soundButtonBounds.height + 1
+                Assets.buttons!!, settingsButtonBounds.x, settingsButtonBounds.y, 0, 0,
+                settingsButtonBounds.width + 1, settingsButtonBounds.height + 1
             )
         else
             g.drawPixmap(
-                Assets.buttons!!, soundButtonBounds.x, soundButtonBounds.y, 100, 0,
-                soundButtonBounds.width + 1, soundButtonBounds.height + 1
+                Assets.buttons!!, settingsButtonBounds.x, settingsButtonBounds.y, 100, 0,
+                settingsButtonBounds.width + 1, settingsButtonBounds.height + 1
             )
     }
 

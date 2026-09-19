@@ -120,24 +120,36 @@ the second as valuable but deferrable.
   only has room for two worst-case-height (the 4-block I piece) shapes before the next one
   collides with the Score panel below it — the roadmap's own 2–3 range, at the end that actually
   fits.
-- **Game modes** — e.g. Marathon (current) vs. Sprint (40 lines) vs. Endless; reuses the existing
-  `DroidsWorld` state machine, mostly a win/end-condition variant.
-- **Settings screen** — currently one on/off toggle for all audio (`Settings.soundEnabled`); a
-  real options screen (music/SFX split, volume) is a natural companion to the Phase 1 UI redesign.
+- ~~**Game modes.**~~ **Done.** Added `DroidsWorld.GameMode` (Marathon/Sprint/Endless) and a new
+  `ModeSelectScreen` shown when starting a fresh game (resuming a paused/running game still skips
+  straight to `GameScreen`, unchanged). Marathon is the existing behavior unchanged - level/speed
+  ramp up forever, ends only on top-out. Sprint and Endless both freeze the level (constant fall
+  speed) instead of ramping it; Sprint additionally tracks total lines cleared and a running timer,
+  winning (new `DroidsWorld.GameState.Cleared`, rendered by a new `GameScreen.GameCleared` state)
+  once `SPRINT_TARGET_LINES` (40) is reached, while Endless has no win condition at all - just
+  relaxed, non-escalating play. No new art: the mode-select rows and the Sprint timer reuse
+  `drawRect`/`drawText`, the same fallback used for the ghost piece.
+- ~~**Settings screen.**~~ **Done.** Replaced the single `Settings.soundEnabled` toggle with
+  separate `musicEnabled`/`sfxEnabled` flags and `musicVolume`/`sfxVolume` (0f-1f) floats, and
+  added a `SettingsScreen` (reachable from the start screen's former sound-toggle button) with a
+  toggle and a drag-to-set slider per channel - again drawn with `drawRect`/`drawText` rather than
+  new art. The ~15 call sites that used to check `Settings.soundEnabled` directly now go through
+  new `Assets.playClick()/playBitten()/playMusic()/pauseMusic()/stopMusic()` helpers that apply the
+  right enabled flag and volume in one place. Fixed the Phase 3 scoped-storage bug in the same
+  change (see below), since the new settings would otherwise silently fail to save exactly like
+  the old ones did.
 
 ## Phase 3 — Robustness
 
 Things that don't affect how the game looks or plays today, but will bite before or shortly after it reaches real users.
 
-- **High scores / sound setting don't actually persist on modern Android.**
-  `AndroidFileIO.kt` reads/writes via `Environment.getExternalStorageDirectory()`. Since Android
-  10 (API 29), scoped storage blocks this for apps targeting a modern SDK (we target 37); the
-  `WRITE_EXTERNAL_STORAGE` permission itself is capped at `maxSdkVersion="18"` on modern targets,
-  so it's granted but does nothing. Because `Settings.load`/`Settings.save` swallow all
-  exceptions, this fails completely silently — on any device newer than \~2020, the sound
-  preference and high scores are very likely never actually saved. Fix by switching
-  `AndroidFileIO` to `context.getFilesDir()` or `context.getExternalFilesDir(null)` (neither needs
-  a permission on modern SDKs), then drop `WRITE_EXTERNAL_STORAGE` from the manifest entirely.
+- ~~**High scores / sound setting don't actually persist on modern Android.**~~ **Done.**
+  `AndroidFileIO.kt` read/wrote via `Environment.getExternalStorageDirectory()`, which scoped
+  storage (Android 10+/API 29+) blocks for apps targeting a modern SDK (we target 37), so
+  `Settings.load`/`Settings.save` were silently failing. Switched `AndroidFileIO` to
+  `context.filesDir` (no permission needed on any supported API level) and dropped
+  `WRITE_EXTERNAL_STORAGE` from the manifest. Fixed alongside the Settings screen work above,
+  since the new music/SFX settings would otherwise have inherited the exact same silent failure.
 - **Automated tests.** The `model` package (`DroidsWorld`, `Shape`, `Block`, `Settings`) is now
   plain Kotlin with no Android dependencies — realistic to add JVM unit tests for line clearing,
   scoring, rotation and level-up logic without an emulator. Currently zero tests exist, and this

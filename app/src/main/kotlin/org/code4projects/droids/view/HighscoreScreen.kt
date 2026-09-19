@@ -52,8 +52,7 @@ class HighscoreScreen : Screen {
             val event = touchEvents[i]
             if (event.type == TouchEvent.TOUCH_UP) {
                 if (backButtonBounds.contains(event.x, event.y)) {
-                    if (Settings.soundEnabled)
-                        Assets.click!!.play(1f)
+                    Assets.playClick()
                     Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
                     return
                 }
@@ -104,8 +103,7 @@ class HighscoreScreen : Screen {
      * Same as tapping the back button: return to the start screen.
      */
     override fun backPressed(): Boolean {
-        if (Settings.soundEnabled)
-            Assets.click!!.play(1f)
+        Assets.playClick()
         Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
         return true
     }

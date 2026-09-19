@@ -4,6 +4,7 @@
  */
 package org.code4projects.droids.view
 
+import org.code4projects.droids.model.Settings
 import org.code4projects.framework.Music
 import org.code4projects.framework.Pixmap
 import org.code4projects.framework.Sound
@@ -88,5 +89,47 @@ object Assets {
         0xffff00ffL.toInt() -> smallmagentablock
         0xffff0000L.toInt() -> smallredblock
         else -> smallredblock
+    }
+
+    // Centralizes SFX/music gating and volume so call sites don't each have to know about
+    // Settings.sfxEnabled/musicEnabled and their volume levels.
+    @JvmStatic
+    fun playClick() {
+        if (Settings.sfxEnabled) click?.play(Settings.sfxVolume)
+    }
+
+    @JvmStatic
+    fun playBitten() {
+        if (Settings.sfxEnabled) bitten?.play(Settings.sfxVolume)
+    }
+
+    @JvmStatic
+    fun playMusic() {
+        val m = music ?: return
+        if (!Settings.musicEnabled) return
+        m.setVolume(Settings.musicVolume)
+        if (!m.isPlaying()) {
+            m.setLooping(true)
+            m.play()
+        }
+    }
+
+    @JvmStatic
+    fun pauseMusic() {
+        val m = music ?: return
+        if (m.isPlaying()) m.pause()
+    }
+
+    @JvmStatic
+    fun stopMusic() {
+        val m = music ?: return
+        if (m.isPlaying()) m.stop()
+    }
+
+    // Applies the current music volume/mute state to the already-loaded music track - called
+    // when the volume/toggle changes on the settings screen while a game may already be running.
+    @JvmStatic
+    fun updateMusicVolume() {
+        music?.setVolume(if (Settings.musicEnabled) Settings.musicVolume else 0f)
     }
 }

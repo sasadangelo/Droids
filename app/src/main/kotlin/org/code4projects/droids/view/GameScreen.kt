@@ -81,6 +81,13 @@ class GameScreen : Screen {
         style = TextStyle.Style.BOLD
     }
 
+    private val timerStyle = TextStyle().apply {
+        color = 0xffffffffL.toInt()
+        textSize = 28
+        style = TextStyle.Style.BOLD
+        align = TextStyle.Align.CENTER
+    }
+
     init {
         Log.i(LOG_TAG, "constructor -- begin")
 
@@ -88,6 +95,13 @@ class GameScreen : Screen {
         states[DroidsWorld.GameState.Ready] = GameReady()
         states[DroidsWorld.GameState.Running] = GameRunning()
         states[DroidsWorld.GameState.GameOver] = GameOver()
+        states[DroidsWorld.GameState.Cleared] = GameCleared()
+    }
+
+    // Formats a duration in seconds as "m:ss", used by Sprint mode's timer.
+    private fun formatTime(seconds: Float): String {
+        val totalSeconds = seconds.toInt()
+        return "${totalSeconds / 60}:${(totalSeconds % 60).toString().padStart(2, '0')}"
     }
 
     /*
@@ -123,20 +137,25 @@ class GameScreen : Screen {
         // render the game world.
         renderer.draw(this)
 
-        // draw the goal, score and level.
+        // draw the goal, score and level. In Sprint mode the goal slot shows lines remaining
+        // to the 40-line target instead of the per-level goal, since the level never changes.
         val style = TextStyle()
         style.color = 0xffffffffL.toInt()
         style.textSize = 20
         style.align = TextStyle.Align.CENTER
-        Gdx.graphics!!.drawText(
-            "" + DroidsWorld.getInstance().level, 60 + leftRegion.x, 330 + leftRegion.y, style
-        )
-        Gdx.graphics!!.drawText(
-            "" + DroidsWorld.getInstance().goal, 60 + leftRegion.x, 530 + leftRegion.y, style
-        )
-        Gdx.graphics!!.drawText(
-            "" + DroidsWorld.getInstance().score, 60 + rightRegion.x, 530 + rightRegion.y, style
-        )
+        val world = DroidsWorld.getInstance()
+        val goalDisplay = if (world.mode == DroidsWorld.GameMode.SPRINT)
+            (DroidsWorld.SPRINT_TARGET_LINES - world.linesCleared).coerceAtLeast(0)
+        else
+            world.goal
+        Gdx.graphics!!.drawText("" + world.level, 60 + leftRegion.x, 330 + leftRegion.y, style)
+        Gdx.graphics!!.drawText("" + goalDisplay, 60 + leftRegion.x, 530 + leftRegion.y, style)
+        Gdx.graphics!!.drawText("" + world.score, 60 + rightRegion.x, 530 + rightRegion.y, style)
+
+        // Sprint mode also shows a running race-the-clock timer.
+        if (world.mode == DroidsWorld.GameMode.SPRINT) {
+            Gdx.graphics!!.drawText(formatTime(world.elapsedTime), 320, 40, timerStyle)
+        }
 
         // draw the state specific element
         states[DroidsWorld.getInstance().state]!!.draw()
@@ -151,7 +170,8 @@ class GameScreen : Screen {
         if (DroidsWorld.getInstance().state == DroidsWorld.GameState.Running)
             DroidsWorld.getInstance().state = DroidsWorld.GameState.Paused
 
-        if (DroidsWorld.getInstance().state == DroidsWorld.GameState.GameOver) {
+        val state = DroidsWorld.getInstance().state
+        if (state == DroidsWorld.GameState.GameOver || state == DroidsWorld.GameState.Cleared) {
             Settings.addScore(DroidsWorld.getInstance().score)
             Settings.save(Gdx.fileIO!!)
         }
@@ -237,8 +257,7 @@ class GameScreen : Screen {
                     }
                     TouchEvent.TOUCH_UP -> {
                         if (pauseButtonBounds.contains(event.x, event.y)) {
-                            if (Settings.soundEnabled)
-                                Assets.click!!.play(1f)
+                            Assets.playClick()
                             DroidsWorld.getInstance().state = DroidsWorld.GameState.Paused
                             return
                         }
@@ -260,14 +279,9 @@ class GameScreen : Screen {
 
             DroidsWorld.getInstance().update(deltaTime)
             if (DroidsWorld.getInstance().state == DroidsWorld.GameState.GameOver) {
-                if (Settings.soundEnabled)
-                    Assets.bitten!!.play(1f)
+                Assets.playBitten()
             }
-            if (Settings.soundEnabled)
-                if (!Assets.music!!.isPlaying()) {
-                    Assets.music!!.setLooping(true)
-                    Assets.music!!.play()
-                }
+            Assets.playMusic()
         }
 
         /*
@@ -302,23 +316,19 @@ class GameScreen : Screen {
                 val event = touchEvents[i]
                 if (event.type == TouchEvent.TOUCH_UP) {
                     if (pauseMenuBounds.contains(event.x, event.y)) {
-                        if (Settings.soundEnabled)
-                            Assets.click!!.play(1f)
+                        Assets.playClick()
                         DroidsWorld.getInstance().state = DroidsWorld.GameState.Running
                         return
                     }
                     if (homeMenuBounds.contains(event.x, event.y)) {
-                        if (Settings.soundEnabled)
-                            Assets.click!!.play(1f)
+                        Assets.playClick()
                         Gdx.game!!.setScreen(FadeTransitionScreen(this@GameScreen, StartScreen()))
                         return
                     }
                 }
             }
             // pause the music if it is playing.
-            if (Settings.soundEnabled)
-                if (Assets.music!!.isPlaying())
-                    Assets.music!!.pause()
+            Assets.pauseMusic()
         }
 
         /*
@@ -383,18 +393,15 @@ class GameScreen : Screen {
                 val event = touchEvents[i]
                 if (event.type == TouchEvent.TOUCH_UP) {
                     if (xButtonBounds.contains(event.x, event.y)) {
-                        if (Settings.soundEnabled)
-                            Assets.click!!.play(1f)
+                        Assets.playClick()
                         Gdx.game!!.setScreen(FadeTransitionScreen(this@GameScreen, StartScreen()))
                         DroidsWorld.getInstance().clear()
                         return
                     }
                 }
             }
-            // pause the music if it is playing.
-            if (Settings.soundEnabled)
-                if (Assets.music!!.isPlaying())
-                    Assets.music!!.stop()
+            // stop the music if it is playing.
+            Assets.stopMusic()
         }
 
         /*
@@ -421,6 +428,58 @@ class GameScreen : Screen {
     }
 
     /*
+     * This class represents the game screen when a Sprint run has been won (the line target was
+     * reached). It reuses the same layout as GameOver - transparent overlay, pause button, X
+     * button to go home - but shows the finishing time alongside the score instead of just the
+     * score, since that's the number a Sprint run is actually judged on.
+     *
+     * @author Salvatore D'Angelo
+     */
+    inner class GameCleared : GameState() {
+        /*
+         * Update the game when a Sprint run has been cleared. The method catches the user input
+         * and returns to the start screen.
+         */
+        override fun update(touchEvents: List<TouchEvent>, deltaTime: Float) {
+            Log.i(LOG_TAG, "GameCleared.update -- begin")
+            val len = touchEvents.size
+            for (i in 0 until len) {
+                val event = touchEvents[i]
+                if (event.type == TouchEvent.TOUCH_UP) {
+                    if (xButtonBounds.contains(event.x, event.y)) {
+                        Assets.playClick()
+                        Gdx.game!!.setScreen(FadeTransitionScreen(this@GameScreen, StartScreen()))
+                        DroidsWorld.getInstance().clear()
+                        return
+                    }
+                }
+            }
+            // stop the music if it is playing.
+            Assets.stopMusic()
+        }
+
+        /*
+         * Draw the game when a Sprint run has been cleared.
+         */
+        override fun draw() {
+            Log.i(LOG_TAG, "GameCleared.draw -- begin")
+            val g: Graphics = Gdx.graphics!!
+
+            Gdx.graphics!!.drawPixmap(
+                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 100, 200,
+                pauseButtonBounds.width + 1, pauseButtonBounds.height + 1
+            ) // pause button
+            g.drawPixmap(Assets.gameoverscreen!!, gameoverScreenBounds.x, gameoverScreenBounds.y)
+            g.drawPixmap(
+                Assets.buttons!!, xButtonBounds.x, xButtonBounds.y, 0, 200,
+                xButtonBounds.width + 1, xButtonBounds.height + 1
+            ) // down button
+            g.drawText(formatTime(DroidsWorld.getInstance().elapsedTime), 360, 570, gameOverScoreStyle)
+            g.drawText("" + DroidsWorld.getInstance().score, 360, 630, gameOverScoreStyle)
+        }
+    }
+
+    /*
      * The screen is resumed.
      */
     override fun resume() {
@@ -438,15 +497,14 @@ class GameScreen : Screen {
      * back to the start screen (same as their own "home"/"X" buttons).
      */
     override fun backPressed(): Boolean {
-        if (Settings.soundEnabled)
-            Assets.click!!.play(1f)
+        Assets.playClick()
 
         when (DroidsWorld.getInstance().state) {
             DroidsWorld.GameState.Running, DroidsWorld.GameState.Ready ->
                 DroidsWorld.getInstance().state = DroidsWorld.GameState.Paused
             DroidsWorld.GameState.Paused ->
                 Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
-            DroidsWorld.GameState.GameOver -> {
+            DroidsWorld.GameState.GameOver, DroidsWorld.GameState.Cleared -> {
                 Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
                 DroidsWorld.getInstance().clear()
             }
