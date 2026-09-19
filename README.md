@@ -18,7 +18,7 @@ This game has been created only for educational purpose, it has no claim to be a
 ![Main Menu](docs/img/Screenshot_Droids_Home.png) ![Game](docs/img/Screenshot_Droids.png)
 
 # Video Demo
-[![Video Demo](https://raw.githubusercontent.com/wiki/sasadangelo/Droids/img/Droids_Video.png)](https://www.youtube.com/watch?v=zvO1ws1oZQE "Video Demo")
+[![Video Demo](docs/img/Droids_Video_Thumbnail.png)](https://youtube.com/shorts/GojNJ5KhKzE "Video Demo")
 
 # Limitations
 
