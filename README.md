@@ -4,6 +4,15 @@ Droids is a Tetris clone for Android. The game includes a playing field consisti
 
 This game has been created only for educational purpose, it has no claim to be a complete game distributable through the Android market. It's my belief that you can get inspiration from this source code to implement your own video games.
 
+# Features
+
+- **Three game modes** — Marathon (speed ramps up forever, survive as long as you can), Sprint (clear 40 lines as fast as possible, with a timer), and Endless (constant speed, no target, relaxed play).
+- **Touch controls** — drag to move, tap to rotate (with wall kicks), swipe down to soft-drop, swipe up to hold.
+- **Hold piece** and a **next-piece queue** (2 pieces ahead).
+- **Ghost piece** preview showing where the falling piece will land.
+- **Settings screen** — independent Music/SFX toggles, each with its own volume slider.
+- **Local high scores** (top 5) and visual level progression (the background shifts every few levels).
+
 # Screenshots
 
 ![Main Menu](docs/img/Screenshot_Droids_Home.png) ![Game](docs/img/Screenshot_Droids.png)
@@ -13,7 +22,11 @@ This game has been created only for educational purpose, it has no claim to be a
 
 # Limitations
 
-Currently the game could go on forever and it is not expected that the player finish the game after a certain number of levels. The level change does not result in a change of graphics, simply at each level the game difficulty increases because the tetrominoes descend faster.
+- **No automated tests** — the `model` package (`DroidsWorld`, `Shape`, `Block`, `Settings`) has no Android dependencies, so it's realistic to unit-test, but nothing exists yet.
+- **No crash visibility** — no crash reporting is wired up (not even Play Console's built-in Android vitals).
+- **Deprecated display APIs** — `AndroidGame.onCreate()` still uses `FLAG_FULLSCREEN`/`getDefaultDisplay()` instead of the modern edge-to-edge APIs.
+
+See [Phase 3 of the roadmap](docs/ROADMAP.md) for details on each of these.
 
 # Roadmap
 
