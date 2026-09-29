@@ -4,7 +4,6 @@
  */
 package org.code4projects.droids.model
 
-import android.os.SystemClock
 import org.code4projects.framework.Actor
 
 /*
@@ -38,8 +37,8 @@ abstract class Shape protected constructor(width: Int, height: Int) : Actor(0, 0
 
     // these variable are used to synch up movements and avoid that game run too fast on high
     // performance systems.
-    private var lastFallUpdate: Long = SystemClock.uptimeMillis()
-    private var lastMoveUpdate: Long = SystemClock.uptimeMillis()
+    private var lastFallUpdate: Long = System.currentTimeMillis()
+    private var lastMoveUpdate: Long = System.currentTimeMillis()
 
     // This is the method that apply the rotation on the shape.
     fun applyRotation() {
@@ -117,8 +116,8 @@ abstract class Shape protected constructor(width: Int, height: Int) : Actor(0, 0
 
         // If the time passed from last update is > updateInterval then
         // an update is necessary and lastFallUpdate is updated to current time.
-        if (SystemClock.uptimeMillis() - lastFallUpdate > updateInterval) {
-            lastFallUpdate = SystemClock.uptimeMillis()
+        if (System.currentTimeMillis() - lastFallUpdate > updateInterval) {
+            lastFallUpdate = System.currentTimeMillis()
             return true
         }
         return false
@@ -127,8 +126,8 @@ abstract class Shape protected constructor(width: Int, height: Int) : Actor(0, 0
     // This method returns true if the time passed from last horizontal movement of the shape
     // is > than 100 ms.
     fun needsMoveUpdate(): Boolean {
-        if (SystemClock.uptimeMillis() - lastMoveUpdate > 100) {
-            lastMoveUpdate = SystemClock.uptimeMillis()
+        if (System.currentTimeMillis() - lastMoveUpdate > 100) {
+            lastMoveUpdate = System.currentTimeMillis()
             return true
         }
         return false

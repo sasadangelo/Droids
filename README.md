@@ -58,22 +58,63 @@ The project is built from the command line with Gradle and does not require Andr
 
 ## Prerequisites
 
-- **JDK 17** (required by the Android Gradle Plugin)
-- **Android SDK command-line tools**, with the following packages installed:
-  - `platform-tools`
-  - `platforms;android-37` (or the `compileSdk` version set in `app/build.gradle`)
-  - `build-tools;37.0.0` (or the matching `buildToolsVersion`)
-  - `emulator` and a system image, only if you want to run the game on a virtual device
-- Git
+The project is built with the Gradle Wrapper, so Gradle does not need to be installed separately. The following tools are required:
 
-On macOS these can be installed with [Homebrew](https://brew.sh):
+- **Git**, to download the source code.
+- **JDK 17**, required by the Android Gradle Plugin.
+- **Android SDK Command-line Tools**.
+- **Android SDK Platform-Tools**, which provides `adb` for installing the app on a physical device.
+- **Android SDK Platform 37.0**, required by `compileSdk 37` in `app/build.gradle`.
+- **Android SDK Build-Tools 37.0.0**, required by `buildToolsVersion` in `app/build.gradle`.
+
+An Android emulator is optional. To use one, also install the **Android Emulator** package and a system image. A physical Android device only needs Platform-Tools and USB debugging enabled.
+
+### macOS setup with Homebrew
+
+Install [Homebrew](https://brew.sh) first if it is not already installed. Then install the JDK and Android command-line tools:
 
 ```bash
-brew install openjdk@17
+brew install --cask temurin@17
 brew install --cask android-commandlinetools
+```
 
+Add Java and the Android SDK tools to Zsh (`~/.zshrc`):
+
+```bash
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 17)' >> ~/.zshrc
+echo 'export ANDROID_HOME="$(brew --prefix)/share/android-commandlinetools"' >> ~/.zshrc
+echo 'export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+Check that the tools are available:
+
+```bash
+java -version
+sdkmanager --version
+adb version
+```
+
+Accept the Android SDK licenses:
+
+```bash
 sdkmanager --licenses
-sdkmanager "platform-tools" "platforms;android-37" "build-tools;37.0.0" "emulator"
+```
+
+Install the packages required to build and deploy to a physical device:
+
+```bash
+sdkmanager "platform-tools" "platforms;android-37.0" "build-tools;37.0.0" "emulator"
+```
+
+If you want to use an emulator, install a system image as well. On Apple Silicon Macs use `arm64-v8a`; on Intel Macs use `x86_64`:
+
+```bash
+# Apple Silicon
+sdkmanager "system-images;android-37;google_apis;arm64-v8a"
+
+# Intel
+sdkmanager "system-images;android-37;google_apis;x86_64"
 ```
 
 ## Get the source and configure the SDK path
@@ -96,13 +137,23 @@ Use the provided `droids.sh` helper script:
 
 The script compiles the debug APK with `./gradlew assembleDebug`, then installs and launches Droids automatically.
 
-If you don't have an emulator (AVD) yet, create one first, for example:
+If you want to use an emulator and do not have an AVD yet, create one first. Use `arm64-v8a` on Apple Silicon or `x86_64` on Intel:
 
 ```bash
-avdmanager create avd -n Pixel_3_AVD_ARM -k "system-images;android-30;google_apis;arm64-v8a" -d pixel_3
+# Apple Silicon
+avdmanager create avd -n Droids_API_37 -k "system-images;android-37;google_apis;arm64-v8a" -d pixel_3
+
+# Intel
+avdmanager create avd -n Droids_API_37 -k "system-images;android-37;google_apis;x86_64" -d pixel_3
 ```
 
-To run on a physical device instead, enable Developer Options (Settings > About phone > tap "Build number" 7 times), turn on USB Debugging in Settings > Developer Options, connect the phone via a USB **data** cable, and accept the "Allow USB debugging" prompt on the phone.
+To run on a physical device instead, enable Developer Options (Settings > About phone > tap "Build number" 7 times), turn on USB Debugging in Settings > Developer Options, connect the phone with a USB **data** cable, select **File Transfer** if necessary, and accept the "Allow USB debugging" prompt. Verify the connection with:
+
+```bash
+adb devices
+```
+
+The device must appear with the status `device`, not `unauthorized`.
 
 # Troubleshooting
 

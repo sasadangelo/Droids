@@ -150,11 +150,10 @@ Things that don't affect how the game looks or plays today, but will bite before
   `context.filesDir` (no permission needed on any supported API level) and dropped
   `WRITE_EXTERNAL_STORAGE` from the manifest. Fixed alongside the Settings screen work above,
   since the new music/SFX settings would otherwise have inherited the exact same silent failure.
-- **Automated tests.** The `model` package (`DroidsWorld`, `Shape`, `Block`, `Settings`) is now
-  plain Kotlin with no Android dependencies — realistic to add JVM unit tests for line clearing,
-  scoring, rotation and level-up logic without an emulator. Currently zero tests exist, and this
-  package is exactly the kind of logic that regresses silently when Phase 2 changes rotation/
-  scoring behavior.
+- ~~**Automated tests.**~~ **Done.** The `model` package (`DroidsWorld`, `Shape`, `Block`,
+  `Settings`) is now plain Kotlin with no Android dependencies. JVM unit tests cover shape
+  geometry and rotation cycles, drop distance, hold/queue behavior, line clearing and scoring,
+  and high-score ordering. Run them with `./gradlew test`; no emulator is required.
 - **Crash visibility.** Nothing wired up today. Minimum viable option costs no code changes: Play
   Console's built-in Android vitals once the app is in any testing track. A dedicated SDK
   (Firebase Crashlytics) is a step up if needed later.
