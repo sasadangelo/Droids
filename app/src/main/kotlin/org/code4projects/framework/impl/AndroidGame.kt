@@ -11,9 +11,13 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Build
 import android.os.PowerManager
 import android.view.Window
-import android.view.WindowManager
+
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 import org.code4projects.framework.Audio
 import org.code4projects.framework.FileIO
@@ -47,7 +51,11 @@ abstract class AndroidGame : Activity(), Game {
         super.onCreate(savedInstanceState)
 
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            hide(WindowInsetsCompat.Type.systemBars())
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
 
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val frameBufferWidth = if (isLandscape) 960 else 640
@@ -58,7 +66,11 @@ abstract class AndroidGame : Activity(), Game {
         // preserve its aspect ratio instead of stretching it, so touch coordinates - which arrive
         // in full display pixel space - must be mapped through the same offset/scale rather than
         // scaled directly against the raw display size.
-        val displayBounds = Rect(0, 0, windowManager.defaultDisplay.width, windowManager.defaultDisplay.height)
+        val displayBounds = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Rect(windowManager.currentWindowMetrics.bounds)
+        } else {
+            Rect(0, 0, resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
+        }
         val frameBufferBounds = Rect()
         AndroidFastRenderView.calculateAspectFitRect(displayBounds, frameBufferWidth, frameBufferHeight, frameBufferBounds)
 

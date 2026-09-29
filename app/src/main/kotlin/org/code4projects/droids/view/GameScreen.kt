@@ -50,6 +50,10 @@ class GameScreen : Screen {
         private const val HOLD_SWIPE_PX = DroidsWorldRenderer.BLOCK_HEIGHT * 2
         private const val TAP_MAX_DISTANCE_PX = 20
         private const val TAP_MAX_DURATION_MS = 250L
+        private const val GESTURE_AXIS_LOCK_PX = 24
+        private const val GESTURE_AXIS_UNDECIDED = 0
+        private const val GESTURE_AXIS_HORIZONTAL = 1
+        private const val GESTURE_AXIS_VERTICAL = 2
     }
 
     // The set of background art cycled through as the level goes up (rather than growing
@@ -204,6 +208,7 @@ class GameScreen : Screen {
         private var gestureStartTime = 0L
         private var softDropTriggered = false
         private var holdTriggered = false
+        private var gestureAxis = GESTURE_AXIS_UNDECIDED
 
         /*
          * Update the game when it is in running state. The method catches the user's touch
@@ -225,31 +230,50 @@ class GameScreen : Screen {
                             gestureStartTime = SystemClock.uptimeMillis()
                             softDropTriggered = false
                             holdTriggered = false
+                            gestureAxis = GESTURE_AXIS_UNDECIDED
                         }
                     }
                     TouchEvent.TOUCH_DRAGGED -> {
                         if (gestureActive) {
+                            val deltaX = event.x - gestureStartX
+                            val deltaY = event.y - gestureStartY
+                            if (gestureAxis == GESTURE_AXIS_UNDECIDED &&
+                                maxOf(abs(deltaX), abs(deltaY)) >= GESTURE_AXIS_LOCK_PX
+                            ) {
+                                gestureAxis = if (abs(deltaX) > abs(deltaY)) {
+                                    GESTURE_AXIS_HORIZONTAL
+                                } else {
+                                    GESTURE_AXIS_VERTICAL
+                                }
+                            }
+
                             // Step the falling shape one column per block width crossed, so a
                             // continuous drag slides it left/right across multiple columns.
-                            while (event.x - gestureStepX >= MOVE_STEP_PX) {
-                                DroidsWorld.getInstance().fallingShape!!.moveRight()
-                                if (DroidsWorld.getInstance().fallingShape!!.collide())
-                                    DroidsWorld.getInstance().fallingShape!!.moveLeft()
-                                gestureStepX += MOVE_STEP_PX
-                            }
-                            while (gestureStepX - event.x >= MOVE_STEP_PX) {
-                                DroidsWorld.getInstance().fallingShape!!.moveLeft()
-                                if (DroidsWorld.getInstance().fallingShape!!.collide())
+                            if (gestureAxis != GESTURE_AXIS_VERTICAL) {
+                                while (event.x - gestureStepX >= MOVE_STEP_PX) {
                                     DroidsWorld.getInstance().fallingShape!!.moveRight()
-                                gestureStepX -= MOVE_STEP_PX
+                                    if (DroidsWorld.getInstance().fallingShape!!.collide())
+                                        DroidsWorld.getInstance().fallingShape!!.moveLeft()
+                                    gestureStepX += MOVE_STEP_PX
+                                }
+                                while (gestureStepX - event.x >= MOVE_STEP_PX) {
+                                    DroidsWorld.getInstance().fallingShape!!.moveLeft()
+                                    if (DroidsWorld.getInstance().fallingShape!!.collide())
+                                        DroidsWorld.getInstance().fallingShape!!.moveRight()
+                                    gestureStepX -= MOVE_STEP_PX
+                                }
                             }
                             // Soft-drop once the finger has dragged down far enough.
-                            if (!softDropTriggered && event.y - gestureStartY >= DROP_SWIPE_PX) {
+                            if (gestureAxis != GESTURE_AXIS_HORIZONTAL &&
+                                !softDropTriggered && event.y - gestureStartY >= DROP_SWIPE_PX
+                            ) {
                                 DroidsWorld.getInstance().fallingShape!!.accelerateFalling()
                                 softDropTriggered = true
                             }
                             // Hold once the finger has dragged up far enough.
-                            if (!holdTriggered && gestureStartY - event.y >= HOLD_SWIPE_PX) {
+                            if (gestureAxis != GESTURE_AXIS_HORIZONTAL &&
+                                !holdTriggered && gestureStartY - event.y >= HOLD_SWIPE_PX
+                            ) {
                                 DroidsWorld.getInstance().holdFallingShape()
                                 holdTriggered = true
                             }

@@ -154,19 +154,19 @@ Things that don't affect how the game looks or plays today, but will bite before
   `Settings`) is now plain Kotlin with no Android dependencies. JVM unit tests cover shape
   geometry and rotation cycles, drop distance, hold/queue behavior, line clearing and scoring,
   and high-score ordering. Run them with `./gradlew test`; no emulator is required.
-- **Crash visibility.** Nothing wired up today. Minimum viable option costs no code changes: Play
-  Console's built-in Android vitals once the app is in any testing track. A dedicated SDK
-  (Firebase Crashlytics) is a step up if needed later.
-- **Edge-to-edge / deprecated display APIs.** The build already warns about this:
-  `FLAG_FULLSCREEN`, `getDefaultDisplay()` and related APIs used in `AndroidGame.onCreate()` are
-  deprecated in favor of edge-to-edge (`WindowCompat.setDecorFitsSystemWindows`). Not an immediate
-  hard failure at API 37, but touches the same screen-sizing code as the Phase 1 aspect-ratio fix,
-  so it's cheapest to do at the same time rather than revisiting that file twice.
+- ~~**Edge-to-edge / deprecated display APIs.**~~ **Done.** Replaced `FLAG_FULLSCREEN` and
+  `getDefaultDisplay()` in `AndroidGame.onCreate()` with AndroidX edge-to-edge window handling,
+  system-bar insets control, and `currentWindowMetrics` with a pre-API 30 fallback. The existing
+  aspect-fit rendering and touch-coordinate mapping continue to use the same display bounds.
 
 ## Phase 4 — Google Play submission
 
 Nothing here changes how the game looks or plays — it's entirely about getting a finished game
 into the store. Do this last, once Phases 1–3 already produced something worth publishing.
+
+- **Crash visibility.** Once the app is in a Google Play testing track, use Play Console's built-in
+  Android vitals to monitor crashes and ANRs without changing the app. If crash reports are needed
+  before Play testing or with more diagnostic detail, consider integrating Firebase Crashlytics.
 
 - **Release signing.** No `signingConfig` for the `release` build type exists yet, and there must
   never be a keystore committed to the repo. Generate a release keystore, add a
