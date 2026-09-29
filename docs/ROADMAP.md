@@ -176,10 +176,9 @@ into the store. Do this last, once Phases 1–3 already produced something worth
 - **Android App Bundle.** Play Console requires an `.aab`. AGP already produces this via
   `./gradlew bundleRelease` — becomes part of the release process once signing exists (candidate
   for a `droids-release.sh` companion to the existing `droids.sh`).
-- **Versioning.** `versionCode`/`versionName` in `app/build.gradle` are still `1`/`"1.0"`,
-  unrelated to the git tags used so far (`0.0.1`…`0.0.5`). Play Console requires `versionCode` to
-  strictly increase on every upload — decide a scheme (e.g. mirror the git tag into
-  `versionName`, bump `versionCode` by 1 per upload) before the first submission.
+- **Versioning.** Scheme decided at 0.1.0 (the first MVP): `versionName` mirrors the git tag,
+  and `versionCode` increases by 1 per tagged release (0.1.0 → `versionCode 2`). Play Console
+  requires `versionCode` to strictly increase on every upload, so keep bumping it per release.
 - **Store assets.** Play Console needs a 512×512 hi-res icon and a 1024×500 feature graphic
   (separate from the in-app adaptive icon done in Phase 1), plus phone screenshots (and tablet
   ones only if tablet layouts are actually tested), short + full description, category, contact

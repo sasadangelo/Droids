@@ -22,11 +22,10 @@ This game has been created only for educational purpose, it has no claim to be a
 
 # Limitations
 
-- **No automated tests** — the `model` package (`DroidsWorld`, `Shape`, `Block`, `Settings`) has no Android dependencies, so it's realistic to unit-test, but nothing exists yet.
-- **No crash visibility** — no crash reporting is wired up (not even Play Console's built-in Android vitals).
-- **Deprecated display APIs** — `AndroidGame.onCreate()` still uses `FLAG_FULLSCREEN`/`getDefaultDisplay()` instead of the modern edge-to-edge APIs.
+- **No crash visibility** — no crash reporting is wired up yet (planned via Play Console's built-in Android vitals once the app is in a testing track).
+- **Not on Google Play yet** — no release signing or app bundle; install the debug APK attached to each [GitHub release](https://github.com/sasadangelo/Droids/releases).
 
-See [Phase 3 of the roadmap](docs/ROADMAP.md) for details on each of these.
+See [Phase 4 of the roadmap](docs/ROADMAP.md) for details.
 
 # Roadmap
 
