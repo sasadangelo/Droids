@@ -109,7 +109,7 @@ class ModeSelectScreen : Screen {
     override fun draw(deltaTime: Float) {
         val g: Graphics = Gdx.graphics!!
 
-        g.drawPixmap(Assets.startscreen!!, backgroundBounds.x, backgroundBounds.y)
+        g.drawBackground(Assets.startscreen!!)
         g.drawText("Select Mode", backgroundBounds.width / 2, 200, titleStyle)
 
         val currentMode = DroidsWorld.getInstance().mode

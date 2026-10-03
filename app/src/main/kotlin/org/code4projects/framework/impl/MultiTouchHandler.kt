@@ -18,8 +18,8 @@ import org.code4projects.framework.Pool.PoolObjectFactory
  */
 class MultiTouchHandler(
     view: View,
-    private val offsetX: Int,
-    private val offsetY: Int,
+    private val offsetX: Float,
+    private val offsetY: Float,
     private val scaleX: Float,
     private val scaleY: Float
 ) : TouchHandler {

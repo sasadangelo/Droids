@@ -24,7 +24,6 @@ import org.code4projects.framework.Screen
  * @author Salvatore D'Angelo
  */
 class StartScreen : Screen {
-    private val backgroundBounds = Rectangle(0, 0, 640, 960)
     private val logoBounds = Rectangle(64, 40, 512, 320)
     private val settingsButtonBounds = Rectangle(64, 740, 100, 100)
     private val mainMenuBounds = Rectangle(168, 440, 306, 248)
@@ -87,7 +86,7 @@ class StartScreen : Screen {
         val g: Graphics = Gdx.graphics!!
 
         // draw the background
-        g.drawPixmap(Assets.startscreen!!, backgroundBounds.x, backgroundBounds.y)
+        g.drawBackground(Assets.startscreen!!)
         // draw the logo
         g.drawPixmap(Assets.logo!!, logoBounds.x, logoBounds.y)
         // draw the main menu

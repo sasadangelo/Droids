@@ -32,8 +32,12 @@ class SlideTransition(
 
     override fun drawTransition(t: Float, deltaTime: Float) {
         val g = Gdx.graphics!!
-        val offsetX = direction.dx * g.getWidth() * t
-        val offsetY = direction.dy * g.getHeight() * t
+        // Move by the whole visible area, not just the layout one, so the incoming screen's
+        // edges never show up before it is in place.
+        val width = g.getWidth()
+        val height = g.getVisibleBottom() - g.getVisibleTop()
+        val offsetX = direction.dx * width * t
+        val offsetY = direction.dy * height * t
 
         g.save()
         g.translate(offsetX, offsetY)
@@ -41,7 +45,7 @@ class SlideTransition(
         g.restore()
 
         g.save()
-        g.translate(offsetX - direction.dx * g.getWidth(), offsetY - direction.dy * g.getHeight())
+        g.translate(offsetX - direction.dx * width, offsetY - direction.dy * height)
         to.draw(deltaTime)
         g.restore()
     }

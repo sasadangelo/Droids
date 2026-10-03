@@ -19,7 +19,6 @@ import org.code4projects.framework.TextStyle
  * @author Salvatore D'Angelo
  */
 class HighscoreScreen : Screen {
-    private val backgroundBounds = Rectangle(0, 0, 640, 960)
     private val backButtonBounds = Rectangle(64, 740, 100, 100)
 
     private val lines = Array(5) { "" }
@@ -66,7 +65,7 @@ class HighscoreScreen : Screen {
         val g: Graphics = Gdx.graphics!!
 
         // draw the background.
-        g.drawPixmap(Assets.highscoresscreen!!, backgroundBounds.x, backgroundBounds.y)
+        g.drawBackground(Assets.highscoresscreen!!)
         // draw the 5 scores.
         var y = 240
         for (i in 0 until 5) {

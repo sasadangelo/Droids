@@ -24,11 +24,22 @@ import org.code4projects.framework.TextStyle
  * This class implements the Graphics subsystem for Android. The framebuffer (that in Android is
  * basically a bitmap) will be managed by a Android Canvas object.
  *
+ * Screens are laid out on a fixed layoutWidth x layoutHeight area. The frame buffer is as wide as
+ * that area but may be taller, to match the screen's aspect ratio: the layout area is then centered
+ * vertically in it (the canvas is translated once, here) and the extra rows above and below are
+ * reachable through negative y / y beyond layoutHeight, see getVisibleTop()/getVisibleBottom().
+ *
  * @author mzechner
  * @author Salvatore D'Angelo
  */
-class AndroidGraphics(private val assets: AssetManager, private val frameBuffer: Bitmap) : Graphics {
-    private val canvas = Canvas(frameBuffer)
+class AndroidGraphics(
+    private val assets: AssetManager,
+    private val frameBuffer: Bitmap,
+    private val layoutWidth: Int,
+    private val layoutHeight: Int
+) : Graphics {
+    private val layoutOffsetY = (frameBuffer.height - layoutHeight) / 2
+    private val canvas = Canvas(frameBuffer).apply { translate(0f, layoutOffsetY.toFloat()) }
     private val paint = Paint()
     private val srcRect = Rect()
     private val dstRect = Rect()
@@ -183,6 +194,33 @@ class AndroidGraphics(private val assets: AssetManager, private val frameBuffer:
     }
 
     /*
+     * Draws the pixmap centered vertically on the layout area, then stretches its first and last
+     * rows over whatever visible area it leaves uncovered above and below.
+     */
+    override fun drawBackground(pixmap: Pixmap) {
+        val width = pixmap.getWidth()
+        val height = pixmap.getHeight()
+        val y = (layoutHeight - height) / 2
+        drawPixmap(pixmap, 0, y)
+
+        // Not the region drawPixmap(): it treats rect edges as inclusive, which collapses a 1px
+        // tall source row to nothing.
+        val bitmap = (pixmap as AndroidPixmap).bitmap
+        val top = getVisibleTop()
+        if (y > top) {
+            srcRect.set(0, 0, width, 1)
+            dstRect.set(0, top, layoutWidth, y)
+            canvas.drawBitmap(bitmap, srcRect, dstRect, null)
+        }
+        val bottom = getVisibleBottom()
+        if (y + height < bottom) {
+            srcRect.set(0, height - 1, width, height)
+            dstRect.set(0, y + height, layoutWidth, bottom)
+            canvas.drawBitmap(bitmap, srcRect, dstRect, null)
+        }
+    }
+
+    /*
      * Draws an anti-aliased filled rectangle with rounded corners.
      */
     override fun drawRoundRect(x: Int, y: Int, width: Int, height: Int, radius: Float, color: Int) {
@@ -214,14 +252,18 @@ class AndroidGraphics(private val assets: AssetManager, private val frameBuffer:
     }
 
     /*
-     * Gets width of the frame buffer.
+     * Gets width of the layout area.
      */
-    override fun getWidth(): Int = frameBuffer.width
+    override fun getWidth(): Int = layoutWidth
 
     /*
-     * Gets height of the frame buffer.
+     * Gets height of the layout area.
      */
-    override fun getHeight(): Int = frameBuffer.height
+    override fun getHeight(): Int = layoutHeight
+
+    override fun getVisibleTop(): Int = -layoutOffsetY
+
+    override fun getVisibleBottom(): Int = frameBuffer.height - layoutOffsetY
 
     /*
      * Draws text in input in (x, y) position and with style in input.

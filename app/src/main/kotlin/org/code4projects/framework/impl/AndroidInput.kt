@@ -21,7 +21,7 @@ import org.code4projects.framework.Input
  *
  * @author mzechner
  */
-class AndroidInput(context: Context, view: View, offsetX: Int, offsetY: Int, scaleX: Float, scaleY: Float) : Input {
+class AndroidInput(context: Context, view: View, offsetX: Float, offsetY: Float, scaleX: Float, scaleY: Float) : Input {
     private val accelHandler = AccelerometerHandler(context)
     private val keyHandler = KeyboardHandler(view)
     private val touchHandler: TouchHandler =

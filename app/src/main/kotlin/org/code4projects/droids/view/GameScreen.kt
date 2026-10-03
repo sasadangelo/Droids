@@ -68,8 +68,6 @@ class GameScreen : Screen {
     val workingRegion = Rectangle(120, 40, 400, 800)
     val commandRegion = Rectangle(0, 800, 640, 160)
 
-    private val gameoverScreenBounds = Rectangle(0, 0, 640, 960)
-    private val gameScreenBounds = Rectangle(0, 0, 640, 960)
     private val pauseButtonBounds = Rectangle(10, 40, 100, 100)
     private val xButtonBounds = Rectangle(256, 400, 100, 100)
     private val pauseMenuBounds = Rectangle(200, 200, 320, 96)
@@ -136,7 +134,7 @@ class GameScreen : Screen {
         Log.i(LOG_TAG, "draw -- begin")
         // draw the background, picking the variant for the current level tier
         val background = backgrounds[(DroidsWorld.getInstance().level / LEVELS_PER_BACKGROUND) % backgrounds.size]
-        Gdx.graphics!!.drawPixmap(background, gameScreenBounds.x, gameScreenBounds.y)
+        Gdx.graphics!!.drawBackground(background)
         // render the game world.
         renderer.draw(this)
 
@@ -440,7 +438,7 @@ class GameScreen : Screen {
                 pauseButtonBounds.width + 1, pauseButtonBounds.height + 1
             ) // pause button
             // draw game over transparent black background
-            g.drawPixmap(Assets.gameoverscreen!!, gameoverScreenBounds.x, gameoverScreenBounds.y)
+            g.drawBackground(Assets.gameoverscreen!!)
             // draw the X button
             g.drawPixmap(
                 Assets.buttons!!, xButtonBounds.x, xButtonBounds.y, 0, 200,
@@ -492,7 +490,7 @@ class GameScreen : Screen {
                 Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 100, 200,
                 pauseButtonBounds.width + 1, pauseButtonBounds.height + 1
             ) // pause button
-            g.drawPixmap(Assets.gameoverscreen!!, gameoverScreenBounds.x, gameoverScreenBounds.y)
+            g.drawBackground(Assets.gameoverscreen!!)
             g.drawPixmap(
                 Assets.buttons!!, xButtonBounds.x, xButtonBounds.y, 0, 200,
                 xButtonBounds.width + 1, xButtonBounds.height + 1

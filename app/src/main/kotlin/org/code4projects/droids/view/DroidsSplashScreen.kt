@@ -54,7 +54,7 @@ class DroidsSplashScreen : SplashScreen(
     }
 
     override fun drawSplash(g: Graphics, deltaTime: Float) {
-        g.drawPixmap(Assets.splashBackground!!, 0, 0)
+        g.drawBackground(Assets.splashBackground!!)
         drawLogo(g)
         drawSparkles(g)
         drawCredits(g)
@@ -98,7 +98,9 @@ class DroidsSplashScreen : SplashScreen(
         val t = ((elapsed - CREDITS_START) / CREDITS_FADE).coerceIn(0f, 1f)
         if (t <= 0f) return
         creditsStyle.color = ((255 * t * 0.85f).toInt() shl 24) or 0xffffff
-        g.drawText("© 2016-2026 Salvatore D'Angelo", 320, 860, creditsStyle)
-        g.drawText("Released under the MIT License", 320, 895, creditsStyle)
+        // Anchored to the bottom of the screen rather than of the layout area.
+        val bottom = g.getVisibleBottom()
+        g.drawText("© 2016-2026 Salvatore D'Angelo", 320, bottom - 100, creditsStyle)
+        g.drawText("Released under the MIT License", 320, bottom - 65, creditsStyle)
     }
 }

@@ -4,7 +4,7 @@
 """
 Generate the splash screen art and the blocks used by the block-wipe screen transition:
 
-  assets/splash_background.png  640x960 blue background with faint tetromino silhouettes
+  assets/splash_background.png  640x1520 blue background with faint tetromino silhouettes
   assets/splash_logo.png        the "DROIDS" wordmark made of glossy blocks
   assets/wipe_<color>.png       one glossy block per palette color, for the block wipe
 
@@ -25,6 +25,9 @@ ASSETS = HERE.parent.parent / "assets"
 SUPERSAMPLE = 3
 
 WIDTH, HEIGHT = 640, 960
+# Taller than the 640x960 layout area, which the game centers on screens up to 21:9; the extra
+# rows fill the space above and below it.
+BACKGROUND_HEIGHT = 1520
 BACKGROUND_CELL = 32
 
 # 3x5 pixel font, one color per letter (same rainbow order as the icon).
@@ -43,7 +46,7 @@ WIPE_BLOCK = 80
 
 def background_spots():
     """Scatter non-overlapping tetromino silhouettes on the background grid (fixed seed)."""
-    cols, rows = WIDTH // BACKGROUND_CELL, HEIGHT // BACKGROUND_CELL
+    cols, rows = WIDTH // BACKGROUND_CELL, BACKGROUND_HEIGHT // BACKGROUND_CELL
     rng = random.Random(1985)
     taken, spots = set(), []
     for _ in range(400):
@@ -89,8 +92,11 @@ def main():
             render(src, master, width * SUPERSAMPLE, height * SUPERSAMPLE)
             downscale(master, ASSETS / f"{name}.png", width, height, opaque=opaque)
 
-        export("splash_background", blue_background(WIDTH, HEIGHT, BACKGROUND_CELL, background_spots(), glow_y=0.4),
-               WIDTH, HEIGHT, opaque=True)
+        # Glow centered behind the logo, which sits at y=400 of the centered layout area.
+        glow_y = (400 + (BACKGROUND_HEIGHT - HEIGHT) / 2) / BACKGROUND_HEIGHT
+        export("splash_background",
+               blue_background(WIDTH, BACKGROUND_HEIGHT, BACKGROUND_CELL, background_spots(), glow_y=round(glow_y, 3)),
+               WIDTH, BACKGROUND_HEIGHT, opaque=True)
         width, height, content = logo()
         export("splash_logo", content, width, height)
         for color in PALETTE:

@@ -126,7 +126,7 @@ class SettingsScreen : Screen {
      */
     override fun draw(deltaTime: Float) {
         val g: Graphics = Gdx.graphics!!
-        g.drawPixmap(Assets.startscreen!!, backgroundBounds.x, backgroundBounds.y)
+        g.drawBackground(Assets.startscreen!!)
         g.drawText("Settings", backgroundBounds.width / 2, 220, titleStyle)
 
         g.drawText("Music", musicSliderTrack.x, 280, labelStyle)

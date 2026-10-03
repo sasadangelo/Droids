@@ -78,6 +78,14 @@ interface Graphics {
     )
 
     /**
+     * Draw a full-screen background: [pixmap] is centered vertically on the layout area and, when
+     * it is shorter than the visible area, its top and bottom rows are stretched to fill the
+     * screen up to [getVisibleTop] and [getVisibleBottom]. Works for backgrounds whose edges are
+     * flat or a vertical gradient, and for translucent overlays.
+     */
+    fun drawBackground(pixmap: Pixmap)
+
+    /**
      * Same as [drawRect], with rounded corners of the given [radius].
      */
     fun drawRoundRect(x: Int, y: Int, width: Int, height: Int, radius: Float, color: Int)
@@ -115,12 +123,27 @@ interface Graphics {
     fun rotate(degrees: Float, px: Float, py: Float)
 
     /**
-     * Return the width of the framebuffer.
+     * Return the width of the layout area screens are designed for.
      */
     fun getWidth(): Int
 
     /**
-     * Return the height of the framebuffer.
+     * Return the height of the layout area screens are designed for. Screens taller than the
+     * layout's aspect ratio show extra space above and below it: see [getVisibleTop] and
+     * [getVisibleBottom].
      */
     fun getHeight(): Int
+
+    /**
+     * The y coordinate of the top edge of the screen, in layout coordinates. It is 0 when the
+     * screen has the layout's aspect ratio and negative on taller screens, where the layout area
+     * is centered vertically and anything drawn between this and 0 is still visible.
+     */
+    fun getVisibleTop(): Int
+
+    /**
+     * The y coordinate of the bottom edge of the screen, in layout coordinates: [getHeight] on a
+     * screen with the layout's aspect ratio, more on taller screens.
+     */
+    fun getVisibleBottom(): Int
 }

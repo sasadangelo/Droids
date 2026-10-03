@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.os.Build
 import android.os.PowerManager
 import android.view.Window
+import android.view.WindowManager
 
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -57,31 +58,53 @@ abstract class AndroidGame : Activity(), Game {
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
 
-        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        val frameBufferWidth = if (isLandscape) 960 else 640
-        val frameBufferHeight = if (isLandscape) 640 else 960
-        val frameBuffer = Bitmap.createBitmap(frameBufferWidth, frameBufferHeight, Bitmap.Config.RGB_565)
+        // Draw behind the camera notch/cutout too: otherwise, with the system bars hidden, the
+        // window is shrunk to avoid it and stops matching displayBounds below.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
 
-        // The frame buffer is drawn letterboxed/pillarboxed (see AndroidFastRenderView.run()) to
-        // preserve its aspect ratio instead of stretching it, so touch coordinates - which arrive
-        // in full display pixel space - must be mapped through the same offset/scale rather than
-        // scaled directly against the raw display size.
         val displayBounds = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Rect(windowManager.currentWindowMetrics.bounds)
         } else {
             Rect(0, 0, resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
         }
+
+        // Screens are laid out on a fixed area (640x960 in portrait). On a screen taller than that
+        // area's aspect ratio - nearly every modern phone - the frame buffer grows taller to match
+        // it, so the game fills the whole display instead of being letterboxed; the layout area
+        // stays centered in it (see AndroidGraphics). Screens wider than the layout area (tablets)
+        // are still pillarboxed.
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val layoutWidth = if (isLandscape) 960 else 640
+        val layoutHeight = if (isLandscape) 640 else 960
+        val frameBufferWidth = layoutWidth
+        val frameBufferHeight = maxOf(
+            layoutHeight,
+            Math.round(layoutWidth.toFloat() * displayBounds.height() / displayBounds.width())
+        )
+        val frameBuffer = Bitmap.createBitmap(frameBufferWidth, frameBufferHeight, Bitmap.Config.RGB_565)
+
+        // The frame buffer is drawn letterboxed/pillarboxed (see AndroidFastRenderView.run()) to
+        // preserve its aspect ratio instead of stretching it, so touch coordinates - which arrive
+        // in full display pixel space - must be mapped through the same offset/scale rather than
+        // scaled directly against the raw display size, then shifted into layout coordinates.
         val frameBufferBounds = Rect()
         AndroidFastRenderView.calculateAspectFitRect(displayBounds, frameBufferWidth, frameBufferHeight, frameBufferBounds)
 
         val scaleX = frameBufferWidth.toFloat() / frameBufferBounds.width()
         val scaleY = frameBufferHeight.toFloat() / frameBufferBounds.height()
+        val layoutOffsetY = (frameBufferHeight - layoutHeight) / 2
 
         renderView = AndroidFastRenderView(this, frameBuffer)
-        graphics = AndroidGraphics(assets, frameBuffer)
+        graphics = AndroidGraphics(assets, frameBuffer, layoutWidth, layoutHeight)
         fileIO = AndroidFileIO(this, assets)
         audio = AndroidAudio(this)
-        input = AndroidInput(this, renderView, frameBufferBounds.left, frameBufferBounds.top, scaleX, scaleY)
+        input = AndroidInput(
+            this, renderView, frameBufferBounds.left.toFloat(),
+            frameBufferBounds.top + layoutOffsetY / scaleY, scaleX, scaleY
+        )
 
         Gdx.game = this
         Gdx.graphics = graphics

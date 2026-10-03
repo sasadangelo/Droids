@@ -40,6 +40,21 @@ the art need to be addressed together.
   square on any modern device. Fixed by computing `dstRect` to preserve aspect ratio
   (letterbox/pillarbox) instead of filling the whole clip bounds, and mapping touch coordinates
   through the same offset/scale.
+- ~~**Fill the whole screen (no letterbox bars).**~~ **Done.** The aspect fix above left black
+  bars above and below the 2:3 frame buffer on every modern phone. The frame buffer is now as
+  tall as the display's aspect ratio needs (e.g. 640×1422 on 20:9) while screens keep laying
+  out on the same centered 640×960 area, so no screen coordinates changed. `Graphics` exposes
+  the extra space via `getVisibleTop()`/`getVisibleBottom()` and a `drawBackground()` that
+  centers a background and stretches its edge rows to the screen edges; transitions cover the
+  whole visible area; touch is mapped into layout coordinates; the window extends into display
+  cutouts. Tablets (wider than 2:3) are still pillarboxed. The splash background is generated
+  taller (640×1520) instead of being stretched. Screens don't yet *use* the extra space for
+  content — that comes with the HUD/menu redesign.
+- **Tablets: fill the screen horizontally too.** Screens wider than 2:3 are still pillarboxed.
+  Same approach, mirrored: a wider frame buffer, `getVisibleLeft()`/`getVisibleRight()`,
+  `drawBackground()` stretching edge columns, transitions and touch covering the side bands, a
+  wider splash background. Best done together with the HUD/menu redesign, designing those for
+  "extra space above/below on phones, at the sides on tablets".
 - ~~**Redesign the art at a higher resolution.**~~ **Done.** Buttons, HUD panels, menu
   backgrounds — sourced as SVG in `assetstemplate/` (already had vector originals for some
   assets) and exported at 2x the previous pixel size (framebuffer doubled to 640×960 to match).

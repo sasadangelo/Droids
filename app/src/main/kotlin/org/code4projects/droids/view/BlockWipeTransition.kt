@@ -20,12 +20,12 @@ import org.code4projects.framework.transition.TileWipeTransition
  * @author Salvatore D'Angelo
  */
 class BlockWipeTransition(from: Screen, to: Screen) :
-    TileWipeTransition(from, to, COLS, ROWS, DURATION, SPREAD, HOLD) {
+    TileWipeTransition(from, to, COLS, DURATION, SPREAD, HOLD) {
 
     companion object {
-        // 640x960 frame buffer split in 80x80 cells, the size of the wipe_*.png blocks.
+        // 640px wide layout split in 80x80 cells, the size of the wipe_*.png blocks; the number
+        // of rows follows the screen height.
         private const val COLS = 8
-        private const val ROWS = 12
         private const val DURATION = 4.4f
         private const val SPREAD = 0.65f
         // Fraction of DURATION the screen stays full of blocks before they start popping out.
@@ -39,11 +39,11 @@ class BlockWipeTransition(from: Screen, to: Screen) :
 
     // A different color layout and sweep jitter every time, but fixed for the whole transition.
     private val random = Random(System.nanoTime())
-    private val colors = IntArray(COLS * ROWS) { random.nextInt(Assets.wipeBlocks.size) }
-    private val jitter = FloatArray(COLS * ROWS) { (random.nextFloat() - 0.5f) * 2f * JITTER }
+    private val colors = IntArray(cols * rows) { random.nextInt(Assets.wipeBlocks.size) }
+    private val jitter = FloatArray(cols * rows) { (random.nextFloat() - 0.5f) * 2f * JITTER }
 
     override fun tileDelay(col: Int, row: Int): Float =
-        super.tileDelay(col, row) + jitter[row * COLS + col]
+        super.tileDelay(col, row) + jitter[row * cols + col]
 
     override fun drawTile(
         x: Int, y: Int, width: Int, height: Int, col: Int, row: Int, coverage: Float, entering: Boolean
@@ -56,7 +56,7 @@ class BlockWipeTransition(from: Screen, to: Screen) :
         val scale = if (entering) Interpolation.easeOutBack.apply(coverage) else Interpolation.easeOut.apply(coverage)
         val rotation = if (entering) 0f else (1f - coverage) * 90f
         g.drawPixmap(
-            Assets.wipeBlocks[colors[row * COLS + col]], x + width / 2f, y + height / 2f, scale, rotation, 1f
+            Assets.wipeBlocks[colors[row * cols + col]], x + width / 2f, y + height / 2f, scale, rotation, 1f
         )
     }
 }

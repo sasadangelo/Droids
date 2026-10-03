@@ -9,9 +9,11 @@ import org.code4projects.framework.Interpolation
 import org.code4projects.framework.Screen
 
 /**
- * Covers the outgoing screen with a grid of tiles appearing one after the other, swaps to the
+ * Covers the outgoing screen with a grid of square tiles appearing one after the other, swaps to the
  * incoming screen once the grid is full, then removes the tiles in the same order to reveal it.
  * [hold] is the fraction of [duration] the screen stays fully covered between the two sweeps.
+ * The grid is [cols] tiles wide and as many rows tall as needed to cover the whole visible area,
+ * which depends on the screen's aspect ratio.
  *
  * The framework only drives the timing: when each tile starts ([tileDelay], a diagonal sweep by
  * default) and how much it covers at any moment. What a tile looks like is up to the game,
@@ -23,7 +25,6 @@ abstract class TileWipeTransition(
     from: Screen,
     to: Screen,
     protected val cols: Int,
-    protected val rows: Int,
     duration: Float = 1.0f,
     private val spread: Float = 0.6f,
     private val hold: Float = 0f,
@@ -43,6 +44,14 @@ abstract class TileWipeTransition(
             return ((sweepProgress - delay * spread) / (1f - spread)).coerceIn(0f, 1f)
         }
     }
+
+    private val tileSize = (Gdx.graphics!!.getWidth() + cols - 1) / cols
+    private val gridTop = Gdx.graphics!!.getVisibleTop()
+
+    /**
+     * Number of tile rows needed to cover the visible area.
+     */
+    protected val rows = (Gdx.graphics!!.getVisibleBottom() - gridTop + tileSize - 1) / tileSize
 
     // Computed lazily so subclasses can override tileDelay() using their own fields.
     private val delays: FloatArray by lazy {
@@ -69,7 +78,6 @@ abstract class TileWipeTransition(
     )
 
     override fun drawTransition(t: Float, deltaTime: Float) {
-        val g = Gdx.graphics!!
         // Covering sweep, fully-covered hold, uncovering sweep. The screens swap halfway, while
         // the grid is full, so the swap itself is never visible.
         val sweepTime = (1f - hold.coerceIn(0f, 0.9f)) / 2f
@@ -83,14 +91,12 @@ abstract class TileWipeTransition(
             sweep = ((t - (1f - sweepTime)) / sweepTime).coerceAtLeast(0f)
         }
 
-        val tileWidth = (g.getWidth() + cols - 1) / cols
-        val tileHeight = (g.getHeight() + rows - 1) / rows
         for (row in 0 until rows) {
             for (col in 0 until cols) {
                 val progress = tileCoverage(sweep, delays[row * cols + col], spread)
                 val coverage = if (entering) progress else 1f - progress
                 if (coverage > 0f) {
-                    drawTile(col * tileWidth, row * tileHeight, tileWidth, tileHeight, col, row, coverage, entering)
+                    drawTile(col * tileSize, gridTop + row * tileSize, tileSize, tileSize, col, row, coverage, entering)
                 }
             }
         }

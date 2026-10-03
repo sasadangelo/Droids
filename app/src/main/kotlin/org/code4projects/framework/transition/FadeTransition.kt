@@ -34,7 +34,8 @@ class FadeTransition(
 
         val alpha = (255 * coverage.coerceIn(0f, 1f)).toInt()
         if (alpha > 0) {
-            g.drawRect(0, 0, g.getWidth(), g.getHeight(), (alpha shl 24) or (color and 0xffffff))
+            val top = g.getVisibleTop()
+            g.drawRect(0, top, g.getWidth(), g.getVisibleBottom() - top, (alpha shl 24) or (color and 0xffffff))
         }
     }
 }
