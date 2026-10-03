@@ -10,6 +10,10 @@ to do.
 
 Written in English to match the rest of the project's documentation (`README.md`, code comments).
 
+**Status (0.2.0, the second MVP):** Phases 1–3 are complete — the game is finished as a game,
+with a modern look on every screen. What's left is Phase 4 (getting it onto Google Play) and the
+optional Phase 5.
+
 ## Priority order
 
 The order below is deliberate: **visual polish first, gameplay depth second, robustness third,
@@ -50,11 +54,6 @@ the art need to be addressed together.
   cutouts. Tablets (wider than 2:3) are still pillarboxed. The splash background is generated
   taller (640×1520) instead of being stretched. Screens don't yet *use* the extra space for
   content — that comes with the HUD/menu redesign.
-- **Tablets: fill the screen horizontally too.** Screens wider than 2:3 are still pillarboxed.
-  Same approach, mirrored: a wider frame buffer, `getVisibleLeft()`/`getVisibleRight()`,
-  `drawBackground()` stretching edge columns, transitions and touch covering the side bands, a
-  wider splash background. Best done together with the HUD/menu redesign, designing those for
-  "extra space above/below on phones, at the sides on tablets".
 - ~~**Redesign the art at a higher resolution.**~~ **Done.** Buttons, HUD panels, menu
   backgrounds — sourced as SVG in `assetstemplate/` (already had vector originals for some
   assets) and exported at 2x the previous pixel size (framebuffer doubled to 640×960 to match).
@@ -175,7 +174,8 @@ the second as valuable but deferrable.
   `LEVELS_PER_BACKGROUND` (3) levels rather than growing unbounded with level. An earlier attempt
   at a runtime semi-transparent overlay instead of real art was tried and dropped — the effect was
   too subtle to read as "different," especially over the mostly-black playfield. Falling/settled
-  block colors are untouched, since those are what tells shapes apart during play.
+  block colors are untouched, since those are what tells shapes apart during play. Since 0.1.4
+  the tiers use six generated blue-tetromino backgrounds (`gamebg_<hue>.png`) instead.
 
 **Good to have, can follow after v1:**
 - ~~**Hold piece.**~~ **Done.** `DroidsWorld.holdFallingShape()` stashes the falling shape (once
@@ -255,9 +255,12 @@ into the store. Do this last, once Phases 1–3 already produced something worth
 - **Store assets.** Play Console needs a 512×512 hi-res icon and a 1024×500 feature graphic
   (separate from the in-app adaptive icon done in Phase 1), plus phone screenshots (and tablet
   ones only if tablet layouts are actually tested), short + full description, category, contact
-  email.
+  email. The 512×512 icon already exists (`app/src/main/ic_launcher-playstore.png`, generated
+  with the launcher icon); the feature graphic can be generated the same way with
+  `assetstemplate/artkit.py` (blue background + "DROIDS" block logo).
 - **Device/aspect-ratio testing.** At minimum one tall modern phone (20:9) and one older 16:9
-  device; validates the Phase 1 aspect-ratio fix actually holds up.
+  device. The layouts were checked on the emulator at 2:3, 2:1 and 20:9 (the screens adapt to the
+  height); still to do on real hardware, ideally including one phone with a camera cutout.
 - **Play Console account and process (calendar time, not engineering time).** One-time $25
   developer registration; content rating questionnaire (IARC); a Data Safety form (should be
   simple and honest once Phase 3's storage fix means no data leaves the device at all); a privacy
@@ -271,9 +274,15 @@ into the store. Do this last, once Phases 1–3 already produced something worth
 
 No launch deadline attached to any of these.
 
+- **Tablets: fill the screen horizontally too.** Screens wider than 2:3 are still pillarboxed
+  (the game is a centered phone-shaped column, which works but wastes the sides). Same approach
+  as the full-height fix, mirrored: a wider frame buffer, `getVisibleLeft()`/`getVisibleRight()`,
+  `drawBackground()` stretching edge columns, transitions and touch covering the side bands, a
+  wider generated background; then lay the HUD/menus out for the extra width.
 - **Leaderboards/achievements** via Play Games Services — the current "top 5" high score list is
   local to the device only and lost on uninstall/device change.
 - **Monetization** (ads or a one-time unlock) — not required to publish a free game.
-- **Localization** — all UI text is currently baked into bitmap assets (`mainmenu.png` etc.
-  contain rendered English text) rather than string resources, so this is a redesign of the art,
-  not a translation task. Worth knowing before promising it to anyone.
+- **Localization** — since 0.2.0 no UI text is baked into bitmaps any more: everything is drawn
+  at runtime with `drawText()`, so this is now a translation task. It needs the English strings
+  moved out of the Kotlin code (e.g. Android string resources exposed through the framework) and
+  layouts that tolerate longer words, since there is no text measurement primitive yet.

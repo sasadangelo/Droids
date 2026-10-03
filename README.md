@@ -26,6 +26,7 @@ This game has been created only for educational purpose, it has no claim to be a
 # Limitations
 
 - **No crash visibility** — no crash reporting is wired up yet (planned via Play Console's built-in Android vitals once the app is in a testing track).
+- **Tablets** — the game fills the height of any phone, but on tablets (wider than 2:3) it is shown as a centered phone-shaped column.
 - **Not on Google Play yet** — no release signing or app bundle; install the debug APK attached to each [GitHub release](https://github.com/sasadangelo/Droids/releases).
 
 See [Phase 4 of the roadmap](docs/ROADMAP.md) for details.
