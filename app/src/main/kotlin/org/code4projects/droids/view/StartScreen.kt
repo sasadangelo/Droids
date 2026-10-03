@@ -11,7 +11,6 @@ import org.code4projects.framework.Graphics
 import org.code4projects.framework.Input
 import org.code4projects.framework.Rectangle
 import org.code4projects.framework.Screen
-import org.code4projects.framework.impl.FadeTransitionScreen
 
 /*
  * This class represents the start screen. It contains the logo and the main menu with three
@@ -50,7 +49,7 @@ class StartScreen : Screen {
                 // open the settings screen
                 if (settingsButtonBounds.contains(event.x, event.y)) {
                     Assets.playClick()
-                    Gdx.game!!.setScreen(FadeTransitionScreen(this, SettingsScreen()))
+                    Transitions.forward(this, SettingsScreen())
                     return
                 }
                 // play the game: resume directly if a game is already paused/running (so
@@ -61,13 +60,13 @@ class StartScreen : Screen {
                     val world = DroidsWorld.getInstance()
                     val resuming = world.state == DroidsWorld.GameState.Paused ||
                         world.state == DroidsWorld.GameState.Running
-                    val nextScreen = if (resuming) GameScreen() else ModeSelectScreen()
-                    Gdx.game!!.setScreen(FadeTransitionScreen(this, nextScreen))
+                    if (resuming) Transitions.play(this, GameScreen())
+                    else Transitions.forward(this, ModeSelectScreen())
                     return
                 }
                 // see highscores.
                 if (highscoresMenuBounds.contains(event.x, event.y)) {
-                    Gdx.game!!.setScreen(FadeTransitionScreen(this, HighscoreScreen()))
+                    Transitions.forward(this, HighscoreScreen())
                     Assets.playClick()
                     return
                 }

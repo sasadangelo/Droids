@@ -11,7 +11,6 @@ import org.code4projects.framework.Input.TouchEvent
 import org.code4projects.framework.Rectangle
 import org.code4projects.framework.Screen
 import org.code4projects.framework.TextStyle
-import org.code4projects.framework.impl.FadeTransitionScreen
 
 /*
  * This class represents the highscores screen. The screen show the top five scores achieved by the
@@ -53,7 +52,7 @@ class HighscoreScreen : Screen {
             if (event.type == TouchEvent.TOUCH_UP) {
                 if (backButtonBounds.contains(event.x, event.y)) {
                     Assets.playClick()
-                    Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
+                    Transitions.back(this, StartScreen())
                     return
                 }
             }
@@ -104,7 +103,7 @@ class HighscoreScreen : Screen {
      */
     override fun backPressed(): Boolean {
         Assets.playClick()
-        Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
+        Transitions.back(this, StartScreen())
         return true
     }
 }

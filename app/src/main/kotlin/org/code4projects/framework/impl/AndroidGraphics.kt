@@ -11,6 +11,7 @@ import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
@@ -31,6 +32,10 @@ class AndroidGraphics(private val assets: AssetManager, private val frameBuffer:
     private val paint = Paint()
     private val srcRect = Rect()
     private val dstRect = Rect()
+    private val matrix = Matrix()
+    // Filtered so scaled/rotated pixmaps don't look jagged; only used by the animated drawPixmap.
+    private val pixmapPaint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
+    private val roundRectPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     /*
      * Loads a bitmap from filesystem and encapsulate it in a Pixmap object. In Android a bitmap is
@@ -155,6 +160,57 @@ class AndroidGraphics(private val assets: AssetManager, private val frameBuffer:
      */
     override fun drawPixmap(pixmap: Pixmap, x: Int, y: Int) {
         canvas.drawBitmap((pixmap as AndroidPixmap).bitmap, x.toFloat(), y.toFloat(), null)
+    }
+
+    /*
+     * Draws the whole bitmap centered on (centerX, centerY), scaled, rotated around its center
+     * and blended with the given opacity. Nothing is drawn when it would be invisible anyway.
+     */
+    override fun drawPixmap(
+        pixmap: Pixmap, centerX: Float, centerY: Float, scale: Float, rotation: Float, alpha: Float
+    ) {
+        val opacity = (255 * alpha.coerceIn(0f, 1f)).toInt()
+        if (opacity == 0 || scale <= 0f) return
+
+        val bitmap = (pixmap as AndroidPixmap).bitmap
+        matrix.reset()
+        matrix.postTranslate(-bitmap.width / 2f, -bitmap.height / 2f)
+        matrix.postScale(scale, scale)
+        matrix.postRotate(rotation)
+        matrix.postTranslate(centerX, centerY)
+        pixmapPaint.alpha = opacity
+        canvas.drawBitmap(bitmap, matrix, pixmapPaint)
+    }
+
+    /*
+     * Draws an anti-aliased filled rectangle with rounded corners.
+     */
+    override fun drawRoundRect(x: Int, y: Int, width: Int, height: Int, radius: Float, color: Int) {
+        roundRectPaint.color = color
+        canvas.drawRoundRect(
+            x.toFloat(), y.toFloat(), (x + width).toFloat(), (y + height).toFloat(), radius, radius,
+            roundRectPaint
+        )
+    }
+
+    override fun save() {
+        canvas.save()
+    }
+
+    override fun restore() {
+        canvas.restore()
+    }
+
+    override fun translate(dx: Float, dy: Float) {
+        canvas.translate(dx, dy)
+    }
+
+    override fun scale(sx: Float, sy: Float, px: Float, py: Float) {
+        canvas.scale(sx, sy, px, py)
+    }
+
+    override fun rotate(degrees: Float, px: Float, py: Float) {
+        canvas.rotate(degrees, px, py)
     }
 
     /*

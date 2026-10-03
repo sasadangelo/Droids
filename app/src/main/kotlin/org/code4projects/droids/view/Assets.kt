@@ -18,6 +18,13 @@ object Assets {
     // the logo asset
     @JvmField var logo: Pixmap? = null
 
+    // splash screen: blue background and the "DROIDS" block logo
+    @JvmField var splashBackground: Pixmap? = null
+    @JvmField var splashLogo: Pixmap? = null
+
+    // one glossy block per color, used by BlockWipeTransition
+    @JvmField var wipeBlocks: List<Pixmap> = emptyList()
+
     // the screen used in DroidsWorld game
     @JvmField var gamescreen: Pixmap? = null
 

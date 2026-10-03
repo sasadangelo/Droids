@@ -10,7 +10,7 @@ import org.code4projects.droids.model.Settings
 import org.code4projects.framework.Gdx
 import org.code4projects.framework.Graphics
 import org.code4projects.framework.Screen
-import org.code4projects.framework.impl.FadeTransitionScreen
+import org.code4projects.framework.transition.FadeTransition
 
 /*
  * This class represents the loading screen. It load in memory all the assets used by the game.
@@ -35,6 +35,11 @@ class LoadingScreen : Screen {
         Assets.gamescreenCrimson = g.newPixmap("gamescreen_crimson.png", Graphics.PixmapFormat.RGB565)
         Assets.gamescreenOlive = g.newPixmap("gamescreen_olive.png", Graphics.PixmapFormat.RGB565)
         Assets.logo = g.newPixmap("logo.png", Graphics.PixmapFormat.RGB565)
+        Assets.splashBackground = g.newPixmap("splash_background.png", Graphics.PixmapFormat.RGB565)
+        Assets.splashLogo = g.newPixmap("splash_logo.png", Graphics.PixmapFormat.ARGB8888)
+        Assets.wipeBlocks = listOf("pink", "orange", "yellow", "green", "cyan", "blue", "purple").map {
+            g.newPixmap("wipe_$it.png", Graphics.PixmapFormat.ARGB8888)
+        }
 
         // Screens
         Assets.startscreen = g.newPixmap("startscreen.png", Graphics.PixmapFormat.RGB565)
@@ -72,7 +77,8 @@ class LoadingScreen : Screen {
         Assets.music = Gdx.audio!!.newMusic("Korobeiniki.ogg")
 
         Settings.load(Gdx.fileIO!!)
-        Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
+        // This screen draws nothing, so only the second (fade-in) half of the fade is visible.
+        Gdx.game!!.setScreen(FadeTransition(this, DroidsSplashScreen(), duration = 1.2f))
     }
 
     /*

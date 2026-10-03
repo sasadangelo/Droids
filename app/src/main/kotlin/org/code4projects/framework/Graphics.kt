@@ -68,9 +68,51 @@ interface Graphics {
     fun drawPixmap(pixmap: Pixmap, x: Int, y: Int)
 
     /**
+     * Draw a whole bitmap centered on (centerX, centerY), scaled by [scale], rotated by
+     * [rotation] degrees clockwise around its center and blended with opacity [alpha]
+     * (0 = invisible, 1 = opaque). Meant for animations (fades, pops, spins) rather than for
+     * pixel-exact placement.
+     */
+    fun drawPixmap(
+        pixmap: Pixmap, centerX: Float, centerY: Float, scale: Float, rotation: Float, alpha: Float
+    )
+
+    /**
+     * Same as [drawRect], with rounded corners of the given [radius].
+     */
+    fun drawRoundRect(x: Int, y: Int, width: Int, height: Int, radius: Float, color: Int)
+
+    /**
      * Draw text in (x, y) position with style specified by style.
      */
     fun drawText(text: String, x: Int, y: Int, style: TextStyle)
+
+    /**
+     * Push the current transform (translation/scale/rotation) so a later [restore] brings it
+     * back. Every call must be matched by a [restore].
+     */
+    fun save()
+
+    /**
+     * Pop the transform pushed by the matching [save].
+     */
+    fun restore()
+
+    /**
+     * Shift everything drawn from now on (until [restore]) by (dx, dy).
+     */
+    fun translate(dx: Float, dy: Float)
+
+    /**
+     * Scale everything drawn from now on (until [restore]) by (sx, sy) around (px, py).
+     */
+    fun scale(sx: Float, sy: Float, px: Float, py: Float)
+
+    /**
+     * Rotate everything drawn from now on (until [restore]) by [degrees] clockwise around
+     * (px, py).
+     */
+    fun rotate(degrees: Float, px: Float, py: Float)
 
     /**
      * Return the width of the framebuffer.

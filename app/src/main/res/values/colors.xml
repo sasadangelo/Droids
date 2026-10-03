@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Darkest navy of the icon/splash background, so the system launch splash and the window
+         behind the game blend into the in-game splash screen instead of flashing white. -->
+    <color name="droids_navy">#0B1A66</color>
+</resources>

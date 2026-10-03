@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+ always shows a system splash (app icon on a plain background) at launch. -->
+    <style name="Theme.Droids" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/droids_navy</item>
+        <item name="android:statusBarColor">@color/droids_navy</item>
+        <item name="android:navigationBarColor">@color/droids_navy</item>
+        <item name="android:windowSplashScreenBackground">@color/droids_navy</item>
+    </style>
+</resources>

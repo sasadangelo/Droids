@@ -15,7 +15,6 @@ import org.code4projects.framework.Input.TouchEvent
 import org.code4projects.framework.Rectangle
 import org.code4projects.framework.Screen
 import org.code4projects.framework.TextStyle
-import org.code4projects.framework.impl.FadeTransitionScreen
 
 import java.util.EnumMap
 import kotlin.math.abs
@@ -346,7 +345,7 @@ class GameScreen : Screen {
                     }
                     if (homeMenuBounds.contains(event.x, event.y)) {
                         Assets.playClick()
-                        Gdx.game!!.setScreen(FadeTransitionScreen(this@GameScreen, StartScreen()))
+                        Transitions.leaveGame(this@GameScreen, StartScreen())
                         return
                     }
                 }
@@ -418,7 +417,7 @@ class GameScreen : Screen {
                 if (event.type == TouchEvent.TOUCH_UP) {
                     if (xButtonBounds.contains(event.x, event.y)) {
                         Assets.playClick()
-                        Gdx.game!!.setScreen(FadeTransitionScreen(this@GameScreen, StartScreen()))
+                        Transitions.leaveGame(this@GameScreen, StartScreen())
                         DroidsWorld.getInstance().clear()
                         return
                     }
@@ -472,7 +471,7 @@ class GameScreen : Screen {
                 if (event.type == TouchEvent.TOUCH_UP) {
                     if (xButtonBounds.contains(event.x, event.y)) {
                         Assets.playClick()
-                        Gdx.game!!.setScreen(FadeTransitionScreen(this@GameScreen, StartScreen()))
+                        Transitions.leaveGame(this@GameScreen, StartScreen())
                         DroidsWorld.getInstance().clear()
                         return
                     }
@@ -527,9 +526,9 @@ class GameScreen : Screen {
             DroidsWorld.GameState.Running, DroidsWorld.GameState.Ready ->
                 DroidsWorld.getInstance().state = DroidsWorld.GameState.Paused
             DroidsWorld.GameState.Paused ->
-                Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
+                Transitions.leaveGame(this, StartScreen())
             DroidsWorld.GameState.GameOver, DroidsWorld.GameState.Cleared -> {
-                Gdx.game!!.setScreen(FadeTransitionScreen(this, StartScreen()))
+                Transitions.leaveGame(this, StartScreen())
                 DroidsWorld.getInstance().clear()
             }
         }
