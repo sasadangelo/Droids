@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      android:versionCode="3"
-      android:versionName="0.1.1">
+      android:versionCode="4"
+      android:versionName="0.1.2">
     <application android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"
                   android:label="Droids" android:allowBackup="true"
                   android:theme="@style/Theme.Droids">

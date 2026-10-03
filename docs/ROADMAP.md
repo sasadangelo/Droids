@@ -96,6 +96,24 @@ the art need to be addressed together.
   `pausemenu.png`, `ready.png`, `gameover.png`) to cyan, matching the cyan tetromino blocks and
   the navy HUD palette instead of the dated gold clip-art look.
 
+### Modern restyle (from 0.1.1)
+
+0.1.1 brought a new icon, a splash screen and animated transitions in a glossy-blocks-on-blue
+style, inspired by modern mobile Tetris games (original art only — no Tetris logo, trade dress
+or assets). The rest of the game still has the older look; restyle it in this order, from the
+foundation up, each step being its own release so the game always stays working:
+
+1. ~~**Use the whole screen height (no letterbox bars).**~~ **Done in 0.1.2.** The foundation
+   for everything else: redesigning menus and HUD first would mean redoing them afterwards.
+   Touched the framework (the drawing area is no longer fixed at 640×960) and every screen.
+2. **Playfield.** Glossy blocks like the icon's, the playfield with a checkerboard background
+   and a glowing frame, the ghost piece drawn as an outline only.
+3. **In-game HUD.** Panels along the top for Next, Hold, Goal and Score, with a modern font
+   instead of the system one.
+4. **Home screen.** The splash's blue background, a big "Play" button, modes and settings as
+   icons.
+5. **Other screens.** Pause, game over, high scores, settings and mode select in the same style.
+
 ## Phase 2 — Gameplay depth (making it a real, competitive Tetris)
 
 Right now `DroidsWorld` levels only change one number (the fall-update interval, computed from
