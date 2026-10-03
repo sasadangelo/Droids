@@ -45,6 +45,9 @@ object Assets {
     @JvmField var pausemenu: Pixmap? = null
     @JvmField var readymenu: Pixmap? = null
 
+    // the 10x20 board drawn over the game screen background, with a margin for its frame
+    @JvmField var playfield: Pixmap? = null
+
     // these are the colored block to draw the DroidsWorld shape. Each shape is composed by 4 blocks
     // of same colors. Each shape has a different color.
     @JvmField var redblock: Pixmap? = null
@@ -84,6 +87,21 @@ object Assets {
         0xffff00ffL.toInt() -> magentablock
         0xffff0000L.toInt() -> redblock
         else -> redblock
+    }
+
+    /*
+     * The main hue of the glossy block sprite for a block color, for things drawn in code in the
+     * same color as the blocks (e.g. the ghost piece outline). Matches assetstemplate/artkit.py.
+     */
+    @JvmStatic
+    fun getBlockTint(color: Int): Int = when (color) {
+        0xffffff00L.toInt() -> 0xffffd000L.toInt()
+        0xffb2ffffL.toInt() -> 0xff14b8f0L.toInt()
+        0xff0000ffL.toInt() -> 0xff5c7cffL.toInt()
+        0xffff7f00L.toInt() -> 0xffff8a00L.toInt()
+        0xff00ff00L.toInt() -> 0xff3cd62aL.toInt()
+        0xffff00ffL.toInt() -> 0xffc055f0L.toInt()
+        else -> 0xffff4f6eL.toInt()
     }
 
     @JvmStatic

@@ -43,6 +43,10 @@ class DroidsWorldRenderer {
         // "Level" panel below it, so its blocks are drawn smaller still: at NEXT_BLOCK_SIZE an
         // I piece (4 blocks tall) reached past the "Level" label.
         const val HOLD_BLOCK_SIZE = 16
+
+        // The ghost piece is drawn as rounded outlines matching the glossy blocks' shape.
+        private const val GHOST_INSET = 2
+        private const val GHOST_RADIUS = 7f
     }
 
     /*
@@ -68,10 +72,13 @@ class DroidsWorldRenderer {
         val ghostDrop = fallingShape.dropDistance()
         if (ghostDrop > 0) {
             for (block in fallingShape.getBlocks()) {
-                val x = gameScreen.workingRegion.x + block.x * BLOCK_WIDTH
-                val y = gameScreen.workingRegion.y + (block.y + ghostDrop) * BLOCK_HEIGHT
-                val ghostColor = (block.color and 0x00ffffff) or 0x50000000
-                Gdx.graphics!!.drawRect(x, y, BLOCK_WIDTH, BLOCK_HEIGHT, ghostColor)
+                val x = gameScreen.workingRegion.x + block.x * BLOCK_WIDTH + GHOST_INSET
+                val y = gameScreen.workingRegion.y + (block.y + ghostDrop) * BLOCK_HEIGHT + GHOST_INSET
+                val size = BLOCK_WIDTH - 2 * GHOST_INSET
+                val tint = Assets.getBlockTint(block.color) and 0x00ffffff
+                // a faint light veil with an outline in the piece's own color
+                Gdx.graphics!!.drawRoundRect(x, y, size, size, GHOST_RADIUS, 0x1effffff)
+                Gdx.graphics!!.drawRoundRectOutline(x, y, size, size, GHOST_RADIUS, 3f, tint or 0xb4000000.toInt())
             }
         }
 

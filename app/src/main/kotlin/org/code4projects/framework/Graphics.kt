@@ -91,6 +91,14 @@ interface Graphics {
     fun drawRoundRect(x: Int, y: Int, width: Int, height: Int, radius: Float, color: Int)
 
     /**
+     * Draw only the outline of a rounded rectangle, [strokeWidth] thick and fully inside the
+     * (x, y, width, height) bounds.
+     */
+    fun drawRoundRectOutline(
+        x: Int, y: Int, width: Int, height: Int, radius: Float, strokeWidth: Float, color: Int
+    )
+
+    /**
      * Draw text in (x, y) position with style specified by style.
      */
     fun drawText(text: String, x: Int, y: Int, style: TextStyle)

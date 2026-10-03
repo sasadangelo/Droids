@@ -39,6 +39,9 @@ class GameScreen : Screen {
         // progress reads as more than just a faster fall speed.
         private const val LEVELS_PER_BACKGROUND = 3
 
+        // Margin around the board's cells in playfield.png, taken by the frame and its glow.
+        private const val PLAYFIELD_MARGIN = 10
+
         // Gesture tuning for the play field, replacing the old left/right/rotate/down buttons:
         // dragging a full block width moves the piece one column, dragging down two block
         // heights soft-drops it, dragging up two block heights holds it, and anything that stays
@@ -135,6 +138,10 @@ class GameScreen : Screen {
         // draw the background, picking the variant for the current level tier
         val background = backgrounds[(DroidsWorld.getInstance().level / LEVELS_PER_BACKGROUND) % backgrounds.size]
         Gdx.graphics!!.drawBackground(background)
+        // draw the board (its image has a margin around the cells for the frame and its glow)
+        Gdx.graphics!!.drawPixmap(
+            Assets.playfield!!, workingRegion.x - PLAYFIELD_MARGIN, workingRegion.y - PLAYFIELD_MARGIN
+        )
         // render the game world.
         renderer.draw(this)
 

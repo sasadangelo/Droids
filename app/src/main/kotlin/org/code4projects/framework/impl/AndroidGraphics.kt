@@ -47,6 +47,7 @@ class AndroidGraphics(
     // Filtered so scaled/rotated pixmaps don't look jagged; only used by the animated drawPixmap.
     private val pixmapPaint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
     private val roundRectPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val outlinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
 
     /*
      * Loads a bitmap from filesystem and encapsulate it in a Pixmap object. In Android a bitmap is
@@ -228,6 +229,22 @@ class AndroidGraphics(
         canvas.drawRoundRect(
             x.toFloat(), y.toFloat(), (x + width).toFloat(), (y + height).toFloat(), radius, radius,
             roundRectPaint
+        )
+    }
+
+    /*
+     * Draws an anti-aliased rounded rectangle outline. The stroke is centered on the path, so the
+     * path is inset by half the stroke width to keep the outline within the given bounds.
+     */
+    override fun drawRoundRectOutline(
+        x: Int, y: Int, width: Int, height: Int, radius: Float, strokeWidth: Float, color: Int
+    ) {
+        val half = strokeWidth / 2f
+        outlinePaint.color = color
+        outlinePaint.strokeWidth = strokeWidth
+        canvas.drawRoundRect(
+            x + half, y + half, x + width - half, y + height - half, radius - half, radius - half,
+            outlinePaint
         )
     }
 
