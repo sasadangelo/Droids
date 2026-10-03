@@ -26,6 +26,11 @@ interface Graphics {
     fun newPixmap(fileName: String, format: PixmapFormat): Pixmap
 
     /**
+     * Load a font from a font file (e.g. a TTF in the assets), for use as [TextStyle.font].
+     */
+    fun newFont(fileName: String): Font
+
+    /**
      * Clear the screen with input color.
      * @param color the color used to clear the screen.
      */

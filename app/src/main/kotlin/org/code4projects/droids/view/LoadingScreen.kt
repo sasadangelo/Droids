@@ -28,12 +28,10 @@ class LoadingScreen : Screen {
         Log.i(LOG_TAG, "update -- begin")
         val g: Graphics = Gdx.graphics!!
 
-        Assets.gamescreen = g.newPixmap("gamescreen.png", Graphics.PixmapFormat.RGB565)
-        Assets.gamescreenPurple = g.newPixmap("gamescreen_purple.png", Graphics.PixmapFormat.RGB565)
-        Assets.gamescreenTeal = g.newPixmap("gamescreen_teal.png", Graphics.PixmapFormat.RGB565)
-        Assets.gamescreenAmber = g.newPixmap("gamescreen_amber.png", Graphics.PixmapFormat.RGB565)
-        Assets.gamescreenCrimson = g.newPixmap("gamescreen_crimson.png", Graphics.PixmapFormat.RGB565)
-        Assets.gamescreenOlive = g.newPixmap("gamescreen_olive.png", Graphics.PixmapFormat.RGB565)
+        Assets.gameBackgrounds = listOf("blue", "purple", "teal", "amber", "crimson", "olive").map {
+            g.newPixmap("gamebg_$it.png", Graphics.PixmapFormat.RGB565)
+        }
+        Assets.hudFont = g.newFont("fonts/LilitaOne-Regular.ttf")
         Assets.logo = g.newPixmap("logo.png", Graphics.PixmapFormat.RGB565)
         Assets.splashBackground = g.newPixmap("splash_background.png", Graphics.PixmapFormat.RGB565)
         Assets.splashLogo = g.newPixmap("splash_logo.png", Graphics.PixmapFormat.ARGB8888)
@@ -60,14 +58,6 @@ class LoadingScreen : Screen {
         Assets.yellowblock = g.newPixmap("yellowblock.png", Graphics.PixmapFormat.ARGB8888)
         Assets.magentablock = g.newPixmap("magentablock.png", Graphics.PixmapFormat.ARGB8888)
         Assets.orangeblock = g.newPixmap("orangeblock.png", Graphics.PixmapFormat.ARGB8888)
-
-        Assets.smallredblock = g.newPixmap("smallredblock.png", Graphics.PixmapFormat.ARGB8888)
-        Assets.smallgreenblock = g.newPixmap("smallgreenblock.png", Graphics.PixmapFormat.ARGB8888)
-        Assets.smallblueblock = g.newPixmap("smallblueblock.png", Graphics.PixmapFormat.ARGB8888)
-        Assets.smallcyanblock = g.newPixmap("smallcyanblock.png", Graphics.PixmapFormat.ARGB8888)
-        Assets.smallyellowblock = g.newPixmap("smallyellowblock.png", Graphics.PixmapFormat.ARGB8888)
-        Assets.smallmagentablock = g.newPixmap("smallmagentablock.png", Graphics.PixmapFormat.ARGB8888)
-        Assets.smallorangeblock = g.newPixmap("smallorangeblock.png", Graphics.PixmapFormat.ARGB8888)
 
         Assets.buttons = g.newPixmap("buttons.png", Graphics.PixmapFormat.RGB565)
 

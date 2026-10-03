@@ -49,4 +49,21 @@ class TextStyle {
      * The style of the text. Possible values are NORMAL, BOLD and ITALIC.
      */
     var style: Style = Style.NORMAL
+
+    /**
+     * The font to draw with, loaded by [Graphics.newFont]. When null the platform's default
+     * typeface is used, in the given [style]; a custom font is drawn as it is and ignores [style].
+     */
+    var font: Font? = null
+
+    /**
+     * Color of a hard drop shadow drawn [shadowOffset] units below the text; 0 (transparent, the
+     * default) means no shadow.
+     */
+    var shadowColor: Int = 0
+
+    /**
+     * How far below the text its shadow is drawn.
+     */
+    var shadowOffset: Float = 0f
 }

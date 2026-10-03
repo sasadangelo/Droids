@@ -16,6 +16,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
 
+import org.code4projects.framework.Font
 import org.code4projects.framework.Graphics
 import org.code4projects.framework.Pixmap
 import org.code4projects.framework.TextStyle
@@ -89,6 +90,12 @@ class AndroidGraphics(
 
         return AndroidPixmap(bitmap, resultFormat)
     }
+
+    /*
+     * Loads a font from the assets.
+     */
+    override fun newFont(fileName: String): Font =
+        AndroidFont(Typeface.createFromAsset(assets, fileName))
 
     /*
      * Clears the frame buffer with input color.
@@ -290,7 +297,8 @@ class AndroidGraphics(
         paint.color = style.color
         paint.textSize = style.textSize.toFloat()
 
-        paint.typeface = when (style.style) {
+        paint.isAntiAlias = true
+        paint.typeface = (style.font as AndroidFont?)?.typeface ?: when (style.style) {
             TextStyle.Style.BOLD -> Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             TextStyle.Style.ITALIC -> Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
             else -> Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
@@ -300,6 +308,12 @@ class AndroidGraphics(
             TextStyle.Align.RIGHT -> Paint.Align.RIGHT
             TextStyle.Align.CENTER -> Paint.Align.CENTER
             else -> Paint.Align.LEFT
+        }
+        if (style.shadowColor != 0) {
+            val color = paint.color
+            paint.color = style.shadowColor
+            canvas.drawText(text, x.toFloat(), y + style.shadowOffset, paint)
+            paint.color = color
         }
         canvas.drawText(text, x.toFloat(), y.toFloat(), paint)
     }

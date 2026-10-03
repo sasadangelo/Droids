@@ -39,17 +39,9 @@ class GameScreen : Screen {
         // progress reads as more than just a faster fall speed.
         private const val LEVELS_PER_BACKGROUND = 3
 
-        // Margin around the board's cells in playfield.png, taken by the frame and its glow.
-        private const val PLAYFIELD_MARGIN = 10
-
-        // Gesture tuning for the play field, replacing the old left/right/rotate/down buttons:
-        // dragging a full block width moves the piece one column, dragging down two block
-        // heights soft-drops it, dragging up two block heights holds it, and anything that stays
-        // within the tap thresholds (barely moved, released quickly) is treated as a
-        // tap-to-rotate instead of a drag.
-        private const val MOVE_STEP_PX = DroidsWorldRenderer.BLOCK_WIDTH
-        private const val DROP_SWIPE_PX = DroidsWorldRenderer.BLOCK_HEIGHT * 2
-        private const val HOLD_SWIPE_PX = DroidsWorldRenderer.BLOCK_HEIGHT * 2
+        // Gesture tuning for the play field (see the move/drop/hold steps below, which depend on
+        // the board's cell size): anything that stays within the tap thresholds (barely moved,
+        // released quickly) is treated as a tap-to-rotate instead of a drag.
         private const val TAP_MAX_DISTANCE_PX = 20
         private const val TAP_MAX_DURATION_MS = 250L
         private const val GESTURE_AXIS_LOCK_PX = 24
@@ -59,37 +51,32 @@ class GameScreen : Screen {
     }
 
     // The set of background art cycled through as the level goes up (rather than growing
-    // unbounded with level). Each is a hue-shifted variant of the original gamescreen art.
-    private val backgrounds = arrayOf(
-        Assets.gamescreen!!, Assets.gamescreenPurple!!, Assets.gamescreenTeal!!,
-        Assets.gamescreenAmber!!, Assets.gamescreenCrimson!!, Assets.gamescreenOlive!!
-    )
+    // unbounded with level), one hue per level tier.
+    private val backgrounds = Assets.gameBackgrounds
 
     private val states: MutableMap<DroidsWorld.GameState, GameState> = EnumMap(DroidsWorld.GameState::class.java)
-    val leftRegion = Rectangle(0, 0, 120, 800)
-    val rightRegion = Rectangle(520, 0, 120, 800)
-    val workingRegion = Rectangle(120, 40, 400, 800)
-    val commandRegion = Rectangle(0, 800, 640, 160)
 
-    private val pauseButtonBounds = Rectangle(10, 40, 100, 100)
+    private val layout = GameLayout(Gdx.graphics!!)
+    private val pauseButtonBounds = layout.pauseButton
+
+    // Play field gestures, replacing the old left/right/rotate/down buttons: dragging a full
+    // cell width moves the piece one column, dragging down two cells soft-drops it, dragging up
+    // two cells holds it.
+    private val moveStep = layout.cell
+    private val dropSwipe = layout.cell * 2
+    private val holdSwipe = layout.cell * 2
     private val xButtonBounds = Rectangle(256, 400, 100, 100)
     private val pauseMenuBounds = Rectangle(200, 200, 320, 96)
     private val readyMenuBounds = Rectangle(130, 200, 376, 140)
     private val homeMenuBounds = Rectangle(160, 296, 320, 96)
 
-    private val renderer = DroidsWorldRenderer()
+    private val renderer = DroidsWorldRenderer(layout)
+    private val hud = GameHud(layout)
 
     private val gameOverScoreStyle = TextStyle().apply {
         color = 0xffffffffL.toInt()
         textSize = 48
         style = TextStyle.Style.BOLD
-    }
-
-    private val timerStyle = TextStyle().apply {
-        color = 0xffffffffL.toInt()
-        textSize = 28
-        style = TextStyle.Style.BOLD
-        align = TextStyle.Align.CENTER
     }
 
     init {
@@ -100,12 +87,6 @@ class GameScreen : Screen {
         states[DroidsWorld.GameState.Running] = GameRunning()
         states[DroidsWorld.GameState.GameOver] = GameOver()
         states[DroidsWorld.GameState.Cleared] = GameCleared()
-    }
-
-    // Formats a duration in seconds as "m:ss", used by Sprint mode's timer.
-    private fun formatTime(seconds: Float): String {
-        val totalSeconds = seconds.toInt()
-        return "${totalSeconds / 60}:${(totalSeconds % 60).toString().padStart(2, '0')}"
     }
 
     /*
@@ -138,32 +119,10 @@ class GameScreen : Screen {
         // draw the background, picking the variant for the current level tier
         val background = backgrounds[(DroidsWorld.getInstance().level / LEVELS_PER_BACKGROUND) % backgrounds.size]
         Gdx.graphics!!.drawBackground(background)
-        // draw the board (its image has a margin around the cells for the frame and its glow)
-        Gdx.graphics!!.drawPixmap(
-            Assets.playfield!!, workingRegion.x - PLAYFIELD_MARGIN, workingRegion.y - PLAYFIELD_MARGIN
-        )
-        // render the game world.
-        renderer.draw(this)
-
-        // draw the goal, score and level. In Sprint mode the goal slot shows lines remaining
-        // to the 40-line target instead of the per-level goal, since the level never changes.
-        val style = TextStyle()
-        style.color = 0xffffffffL.toInt()
-        style.textSize = 20
-        style.align = TextStyle.Align.CENTER
-        val world = DroidsWorld.getInstance()
-        val goalDisplay = if (world.mode == DroidsWorld.GameMode.SPRINT)
-            (DroidsWorld.SPRINT_TARGET_LINES - world.linesCleared).coerceAtLeast(0)
-        else
-            world.goal
-        Gdx.graphics!!.drawText("" + world.level, 60 + leftRegion.x, 330 + leftRegion.y, style)
-        Gdx.graphics!!.drawText("" + goalDisplay, 60 + leftRegion.x, 530 + leftRegion.y, style)
-        Gdx.graphics!!.drawText("" + world.score, 60 + rightRegion.x, 530 + rightRegion.y, style)
-
-        // Sprint mode also shows a running race-the-clock timer.
-        if (world.mode == DroidsWorld.GameMode.SPRINT) {
-            Gdx.graphics!!.drawText(formatTime(world.elapsedTime), 320, 40, timerStyle)
-        }
+        // the HUD panels first, so the Hold/Next shapes the renderer draws sit on top of them
+        hud.draw()
+        // render the game world: board, blocks, ghost piece, Hold/Next shapes.
+        renderer.draw()
 
         // draw the state specific element
         states[DroidsWorld.getInstance().state]!!.draw()
@@ -226,7 +185,7 @@ class GameScreen : Screen {
                 val event = touchEvents[i]
                 when (event.type) {
                     TouchEvent.TOUCH_DOWN -> {
-                        if (workingRegion.contains(event.x, event.y)) {
+                        if (layout.board.contains(event.x, event.y)) {
                             gestureActive = true
                             gestureStartX = event.x
                             gestureStartY = event.y
@@ -254,29 +213,29 @@ class GameScreen : Screen {
                             // Step the falling shape one column per block width crossed, so a
                             // continuous drag slides it left/right across multiple columns.
                             if (gestureAxis != GESTURE_AXIS_VERTICAL) {
-                                while (event.x - gestureStepX >= MOVE_STEP_PX) {
+                                while (event.x - gestureStepX >= moveStep) {
                                     DroidsWorld.getInstance().fallingShape!!.moveRight()
                                     if (DroidsWorld.getInstance().fallingShape!!.collide())
                                         DroidsWorld.getInstance().fallingShape!!.moveLeft()
-                                    gestureStepX += MOVE_STEP_PX
+                                    gestureStepX += moveStep
                                 }
-                                while (gestureStepX - event.x >= MOVE_STEP_PX) {
+                                while (gestureStepX - event.x >= moveStep) {
                                     DroidsWorld.getInstance().fallingShape!!.moveLeft()
                                     if (DroidsWorld.getInstance().fallingShape!!.collide())
                                         DroidsWorld.getInstance().fallingShape!!.moveRight()
-                                    gestureStepX -= MOVE_STEP_PX
+                                    gestureStepX -= moveStep
                                 }
                             }
                             // Soft-drop once the finger has dragged down far enough.
                             if (gestureAxis != GESTURE_AXIS_HORIZONTAL &&
-                                !softDropTriggered && event.y - gestureStartY >= DROP_SWIPE_PX
+                                !softDropTriggered && event.y - gestureStartY >= dropSwipe
                             ) {
                                 DroidsWorld.getInstance().fallingShape!!.accelerateFalling()
                                 softDropTriggered = true
                             }
                             // Hold once the finger has dragged up far enough.
                             if (gestureAxis != GESTURE_AXIS_HORIZONTAL &&
-                                !holdTriggered && gestureStartY - event.y >= HOLD_SWIPE_PX
+                                !holdTriggered && gestureStartY - event.y >= holdSwipe
                             ) {
                                 DroidsWorld.getInstance().holdFallingShape()
                                 holdTriggered = true
@@ -316,11 +275,7 @@ class GameScreen : Screen {
          * Draw the game in running state.
          */
         override fun draw() {
-            Log.i(LOG_TAG, "GameRunning.draw -- begin")
-            Gdx.graphics!!.drawPixmap(
-                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 100, 200,
-                pauseButtonBounds.width + 1, pauseButtonBounds.height + 1
-            ) // pause button
+            // nothing on top of the board and HUD while playing
         }
     }
 
@@ -391,14 +346,8 @@ class GameScreen : Screen {
          */
         override fun draw() {
             Log.i(LOG_TAG, "GameReady.draw -- begin")
-            val g: Graphics = Gdx.graphics!!
-
-            g.drawPixmap(
-                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 100, 200,
-                pauseButtonBounds.width + 1, pauseButtonBounds.height + 1
-            ) // pause button
             // draw the ready menu
-            g.drawPixmap(Assets.readymenu!!, readyMenuBounds.x, readyMenuBounds.y)
+            Gdx.graphics!!.drawPixmap(Assets.readymenu!!, readyMenuBounds.x, readyMenuBounds.y)
         }
     }
 
@@ -439,11 +388,6 @@ class GameScreen : Screen {
             Log.i(LOG_TAG, "GameOver.draw -- begin")
             val g: Graphics = Gdx.graphics!!
 
-            // pause button
-            Gdx.graphics!!.drawPixmap(
-                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 100, 200,
-                pauseButtonBounds.width + 1, pauseButtonBounds.height + 1
-            ) // pause button
             // draw game over transparent black background
             g.drawBackground(Assets.gameoverscreen!!)
             // draw the X button
@@ -493,10 +437,6 @@ class GameScreen : Screen {
             Log.i(LOG_TAG, "GameCleared.draw -- begin")
             val g: Graphics = Gdx.graphics!!
 
-            Gdx.graphics!!.drawPixmap(
-                Assets.buttons!!, pauseButtonBounds.x, pauseButtonBounds.y, 100, 200,
-                pauseButtonBounds.width + 1, pauseButtonBounds.height + 1
-            ) // pause button
             g.drawBackground(Assets.gameoverscreen!!)
             g.drawPixmap(
                 Assets.buttons!!, xButtonBounds.x, xButtonBounds.y, 0, 200,

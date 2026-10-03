@@ -36,6 +36,8 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for what's planned next: visual polish, g
 
 The game framework (`org.code4projects.framework`) was written by Salvatore D'Angelo, taking inspiration from the framework presented by [Mario Zechner](https://github.com/badlogic) (@github.com/badlogic) in the book Beginning Android Games, and from the open source library libGDX. No code from those sources was copied; the architecture and class layout follow the same concepts as a learning reference.
 
+The in-game HUD uses the [Lilita One](https://fonts.google.com/specimen/Lilita+One) font by Juan Montoreano, licensed under the [SIL Open Font License 1.1](app/src/main/assets/fonts/LilitaOne-OFL.txt).
+
 # License
 
 The whole project is released under the [MIT license](LICENSE).
@@ -50,7 +52,7 @@ Enable USB Debugging mode that on many devices from 3.2 up to 4.0 (excluded) is 
 
 Enable installation from Unknown Sources clicking on Settings->Security.
 
-Download the application [clicking here](https://github.com/sasadangelo/Droids/releases/download/0.0.4/droids.apk) and install it.
+Download the latest `droids-<version>-debug.apk` from the [latest release](https://github.com/sasadangelo/Droids/releases/latest) and install it.
 
 # Installation & Run from source code
 

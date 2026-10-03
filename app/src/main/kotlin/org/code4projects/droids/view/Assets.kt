@@ -5,6 +5,7 @@
 package org.code4projects.droids.view
 
 import org.code4projects.droids.model.Settings
+import org.code4projects.framework.Font
 import org.code4projects.framework.Music
 import org.code4projects.framework.Pixmap
 import org.code4projects.framework.Sound
@@ -25,16 +26,12 @@ object Assets {
     // one glossy block per color, used by BlockWipeTransition
     @JvmField var wipeBlocks: List<Pixmap> = emptyList()
 
-    // the screen used in DroidsWorld game
-    @JvmField var gamescreen: Pixmap? = null
+    // game screen backgrounds, one hue per level tier, cycled through as the level goes up so
+    // the game's look visibly changes over time, not just the fall speed.
+    @JvmField var gameBackgrounds: List<Pixmap> = emptyList()
 
-    // hue-shifted variants of gamescreen, cycled through as the level goes up so the
-    // playfield's look visibly changes over time, not just the fall speed.
-    @JvmField var gamescreenPurple: Pixmap? = null
-    @JvmField var gamescreenTeal: Pixmap? = null
-    @JvmField var gamescreenAmber: Pixmap? = null
-    @JvmField var gamescreenCrimson: Pixmap? = null
-    @JvmField var gamescreenOlive: Pixmap? = null
+    // the font of the in-game HUD
+    @JvmField var hudFont: Font? = null
 
     @JvmField var startscreen: Pixmap? = null
     @JvmField var highscoresscreen: Pixmap? = null
@@ -57,15 +54,6 @@ object Assets {
     @JvmField var yellowblock: Pixmap? = null
     @JvmField var magentablock: Pixmap? = null
     @JvmField var orangeblock: Pixmap? = null
-
-    // these are the colored block to draw the DroidsWorld next shape.
-    @JvmField var smallredblock: Pixmap? = null
-    @JvmField var smallgreenblock: Pixmap? = null
-    @JvmField var smallblueblock: Pixmap? = null
-    @JvmField var smallcyanblock: Pixmap? = null
-    @JvmField var smallyellowblock: Pixmap? = null
-    @JvmField var smallmagentablock: Pixmap? = null
-    @JvmField var smallorangeblock: Pixmap? = null
 
     // buttons
     @JvmField var buttons: Pixmap? = null
@@ -102,18 +90,6 @@ object Assets {
         0xff00ff00L.toInt() -> 0xff3cd62aL.toInt()
         0xffff00ffL.toInt() -> 0xffc055f0L.toInt()
         else -> 0xffff4f6eL.toInt()
-    }
-
-    @JvmStatic
-    fun getSmallBlockByColor(color: Int): Pixmap? = when (color) {
-        0xffffff00L.toInt() -> smallyellowblock
-        0xffb2ffffL.toInt() -> smallcyanblock
-        0xff0000ffL.toInt() -> smallblueblock
-        0xffff7f00L.toInt() -> smallorangeblock
-        0xff00ff00L.toInt() -> smallgreenblock
-        0xffff00ffL.toInt() -> smallmagentablock
-        0xffff0000L.toInt() -> smallredblock
-        else -> smallredblock
     }
 
     // Centralizes SFX/music gating and volume so call sites don't each have to know about

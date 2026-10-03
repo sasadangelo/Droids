@@ -6,63 +6,58 @@ package org.code4projects.droids.view
 
 import org.code4projects.droids.model.DroidsWorld
 import org.code4projects.droids.model.Shape
-import org.code4projects.droids.model.ShapeCube
-import org.code4projects.droids.model.ShapeI
-import org.code4projects.droids.model.ShapeJ
-import org.code4projects.droids.model.ShapeL
-import org.code4projects.droids.model.ShapeS
-import org.code4projects.droids.model.ShapeT
-import org.code4projects.droids.model.ShapeZ
 import org.code4projects.framework.Gdx
+import org.code4projects.framework.Rectangle
 
 /*
- * The responsibility of this class is to draw the model representation of Droids world.
+ * The responsibility of this class is to draw the model representation of Droids world: the
+ * board, the settled and falling blocks, the ghost piece and the Hold/Next previews, all sized
+ * from the GameLayout.
  *
  * @author Salvatore D'Angelo
  */
-class DroidsWorldRenderer {
+class DroidsWorldRenderer(private val layout: GameLayout) {
     companion object {
-        const val BLOCK_WIDTH = 40
-        const val BLOCK_HEIGHT = 40
+        // Native size of the <color>block.png sprites, scaled (filtered) to whatever size a
+        // block is drawn at.
+        private const val BLOCK_SPRITE_SIZE = 64f
 
-        // The "Next"/"Hold" preview blocks are drawn smaller than their native 32px size, both
-        // to look a little less chunky and to leave room for a visible gap between shapes.
-        private const val NEXT_BLOCK_SRC_SIZE = 32
-        const val NEXT_BLOCK_SIZE = 24
+        // Native cell size of playfield.png, scaled the same way as the blocks.
+        private const val PLAYFIELD_CELL = 64f
 
-        // Vertical space reserved per upcoming shape in the "Next" preview queue. Must clear the
-        // tallest shape (the 4-block-tall I piece, 4 * NEXT_BLOCK_SIZE = 96px) plus a visible
-        // gap, so consecutive shapes never look like they're touching/merging.
-        const val NEXT_QUEUE_SLOT_HEIGHT = 120
+        // Ghost piece outline, relative to the cell size so it matches the blocks at any size.
+        private const val GHOST_INSET = 0.05f
+        private const val GHOST_RADIUS = 0.18f
+        private const val GHOST_STROKE = 0.07f
 
-        // Where the held-shape preview starts, just below the "Hold" label baked into the
-        // background art (which sits right under the pause button, above the "Level" panel).
-        const val HOLD_PREVIEW_Y = 172
-
-        // The "Hold" slot has much less vertical room than "Next" before it runs into the
-        // "Level" panel below it, so its blocks are drawn smaller still: at NEXT_BLOCK_SIZE an
-        // I piece (4 blocks tall) reached past the "Level" label.
-        const val HOLD_BLOCK_SIZE = 16
-
-        // The ghost piece is drawn as rounded outlines matching the glossy blocks' shape.
-        private const val GHOST_INSET = 2
-        private const val GHOST_RADIUS = 7f
+        // Hold/Next preview block sizes, and the room left at the top of their panels for the
+        // panel title.
+        private const val PREVIEW_CELL = 22
+        private const val SECOND_NEXT_CELL = 13
+        private const val PANEL_TITLE_HEIGHT = 34
     }
 
     /*
      This method draw the model representation of Droids world.
      */
-    fun draw(gameScreen: GameScreen) {
-        /*
-         * First we draw all the blocks laying on the bottom of the game screen.
-         */
-        for (block in DroidsWorld.getInstance().blocks) {
-            val x = gameScreen.workingRegion.x + block.x * BLOCK_WIDTH
-            val y = gameScreen.workingRegion.y + block.y * BLOCK_HEIGHT
-            Gdx.graphics!!.drawPixmap(Assets.getBlockByColor(block.color)!!, x, y)
+    fun draw() {
+        val g = Gdx.graphics!!
+        val board = layout.board
+        val cell = layout.cell
+        val world = DroidsWorld.getInstance()
+
+        // the board (the image includes a margin around the cells for the frame and its glow)
+        g.drawPixmap(
+            Assets.playfield!!, board.x + board.width / 2f, board.y + board.height / 2f,
+            cell / PLAYFIELD_CELL, 0f, 1f
+        )
+
+        // the blocks laying on the bottom of the board
+        for (block in world.blocks) {
+            drawBlock(block.color, board.x + block.x * cell, board.y + block.y * cell, cell)
         }
 
-        val fallingShape = DroidsWorld.getInstance().fallingShape!!
+        val fallingShape = world.fallingShape!!
 
         /*
          * Draw a ghost preview of where the falling shape will land, using the same
@@ -71,66 +66,72 @@ class DroidsWorldRenderer {
          */
         val ghostDrop = fallingShape.dropDistance()
         if (ghostDrop > 0) {
+            val inset = (cell * GHOST_INSET).toInt()
+            val size = cell - 2 * inset
+            val radius = cell * GHOST_RADIUS
+            val stroke = maxOf(2f, cell * GHOST_STROKE)
             for (block in fallingShape.getBlocks()) {
-                val x = gameScreen.workingRegion.x + block.x * BLOCK_WIDTH + GHOST_INSET
-                val y = gameScreen.workingRegion.y + (block.y + ghostDrop) * BLOCK_HEIGHT + GHOST_INSET
-                val size = BLOCK_WIDTH - 2 * GHOST_INSET
+                val x = board.x + block.x * cell + inset
+                val y = board.y + (block.y + ghostDrop) * cell + inset
                 val tint = Assets.getBlockTint(block.color) and 0x00ffffff
                 // a faint light veil with an outline in the piece's own color
-                Gdx.graphics!!.drawRoundRect(x, y, size, size, GHOST_RADIUS, 0x1effffff)
-                Gdx.graphics!!.drawRoundRectOutline(x, y, size, size, GHOST_RADIUS, 3f, tint or 0xb4000000.toInt())
+                g.drawRoundRect(x, y, size, size, radius, 0x1effffff)
+                g.drawRoundRectOutline(x, y, size, size, radius, stroke, tint or 0xb4000000.toInt())
             }
         }
 
-        /*
-         * Draw the 4 blocks of the falling shape.
-         */
+        // the 4 blocks of the falling shape
         for (block in fallingShape.getBlocks()) {
-            val x = gameScreen.workingRegion.x + block.x * BLOCK_WIDTH
-            val y = gameScreen.workingRegion.y + block.y * BLOCK_HEIGHT
-            Gdx.graphics!!.drawPixmap(Assets.getBlockByColor(block.color)!!, x, y)
+            drawBlock(block.color, board.x + block.x * cell, board.y + block.y * cell, cell)
         }
 
-        // Draw the upcoming shapes queue in the Game Screen on the top right side, stacked
-        // vertically with the very next shape to fall on top.
-        for ((index, nextShape) in DroidsWorld.getInstance().nextShapes.withIndex()) {
+        // Next panel: the very next shape on the left, the one after it smaller on the right.
+        val next = layout.nextPanel
+        val previewTop = next.y + PANEL_TITLE_HEIGHT
+        val previewHeight = next.height - PANEL_TITLE_HEIGHT - 8
+        val split = next.width * 64 / 100
+        world.nextShapes.getOrNull(0)?.let {
+            drawShapePreview(it, Rectangle(next.x + 4, previewTop, split - 4, previewHeight), PREVIEW_CELL)
+        }
+        world.nextShapes.getOrNull(1)?.let {
             drawShapePreview(
-                nextShape, gameScreen.rightRegion.x, gameScreen.rightRegion.y + 130 + index * NEXT_QUEUE_SLOT_HEIGHT,
-                NEXT_BLOCK_SIZE
+                it, Rectangle(next.x + split, previewTop, next.width - split - 6, previewHeight), SECOND_NEXT_CELL
             )
         }
 
-        // Draw the held shape, if any, under the "Hold" label on the top left side.
-        DroidsWorld.getInstance().heldShape?.let { heldShape ->
-            drawShapePreview(heldShape, gameScreen.leftRegion.x, gameScreen.leftRegion.y + HOLD_PREVIEW_Y, HOLD_BLOCK_SIZE)
+        // Hold panel: the held shape, if any.
+        world.heldShape?.let {
+            val hold = layout.holdPanel
+            drawShapePreview(
+                it, Rectangle(hold.x, hold.y + PANEL_TITLE_HEIGHT, hold.width, hold.height - PANEL_TITLE_HEIGHT - 8),
+                PREVIEW_CELL
+            )
         }
     }
 
     /*
-     * Draws a small preview of a shape with its top-left corner at (baseX, baseY), scaled down to
-     * blockSize per block. Positions/offsets are computed at the assets' native 32px block size,
-     * then scaled down together so each shape stays centered the same way regardless of size.
+     * Draws one glossy block with its top-left corner at (x, y), size x size.
      */
-    private fun drawShapePreview(shape: Shape, baseX: Int, baseY: Int, blockSize: Int) {
-        val scale = blockSize.toFloat() / NEXT_BLOCK_SRC_SIZE
+    private fun drawBlock(color: Int, x: Int, y: Int, size: Int) {
+        Gdx.graphics!!.drawPixmap(
+            Assets.getBlockByColor(color)!!, x + size / 2f, y + size / 2f, size / BLOCK_SPRITE_SIZE, 0f, 1f
+        )
+    }
 
-        for (block in shape.getBlocks()) {
-            var x = block.x * NEXT_BLOCK_SRC_SIZE
-            val y = block.y * NEXT_BLOCK_SRC_SIZE
-
-            when (shape) {
-                is ShapeCube, is ShapeJ -> x += 30
-                is ShapeI -> x += 50
-                is ShapeL -> x += 40
-                is ShapeS, is ShapeT, is ShapeZ -> x += 10
-            }
-
-            Gdx.graphics!!.drawPixmap(
-                Assets.getSmallBlockByColor(block.color)!!,
-                baseX + (x * scale).toInt(),
-                baseY + (y * scale).toInt(),
-                0, 0, NEXT_BLOCK_SRC_SIZE, NEXT_BLOCK_SRC_SIZE, blockSize, blockSize
-            )
+    /*
+     * Draws a shape with blocks of the given size, centered in the box whatever its position and
+     * rotation in the model, by centering the bounding box of its blocks.
+     */
+    private fun drawShapePreview(shape: Shape, box: Rectangle, blockSize: Int) {
+        val blocks = shape.getBlocks()
+        val minX = blocks.minOf { it.x }
+        val minY = blocks.minOf { it.y }
+        val width = (blocks.maxOf { it.x } - minX + 1) * blockSize
+        val height = (blocks.maxOf { it.y } - minY + 1) * blockSize
+        val originX = box.x + (box.width - width) / 2
+        val originY = box.y + (box.height - height) / 2
+        for (block in blocks) {
+            drawBlock(block.color, originX + (block.x - minX) * blockSize, originY + (block.y - minY) * blockSize, blockSize)
         }
     }
 }

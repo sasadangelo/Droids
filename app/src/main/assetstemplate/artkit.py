@@ -9,6 +9,7 @@ Requirements: Python 3 (standard library only), Google Chrome (used headless as 
 renderer, since it handles gradients and patterns correctly) and ImageMagick (`magick`).
 """
 import pathlib
+import random
 import subprocess
 import tempfile
 
@@ -24,6 +25,9 @@ PALETTE = {
     "blue": ("#9cb0ff", "#5c7cff", "#3550c8"),
     "purple": ("#e29cff", "#c055f0", "#8a2fb8"),
 }
+
+# (center, middle, edge) of the radial glow behind the blue backgrounds.
+BLUE_GLOW = ("#2f6cff", "#1a3fc4", "#0b1a66")
 
 TETROMINOES = [
     [(0, 0), (1, 0), (2, 0), (1, 1)], [(0, 0), (1, 0), (0, 1), (1, 1)],
@@ -64,11 +68,32 @@ def glossy_block(x, y, s, color, shadow=True):
     )
 
 
-def blue_background(width, height, cell, spots, glow_y=0.42):
+def scatter_tetrominoes(cols, rows, seed):
+    """
+    Scatter non-overlapping tetromino silhouettes on a cols x rows grid (deterministic for a
+    given seed), as (grid_x, grid_y, tetromino_index) spots for blue_background().
+    """
+    rng = random.Random(seed)
+    taken, spots = set(), []
+    for _ in range(400):
+        k = rng.randrange(len(TETROMINOES))
+        gx, gy = rng.randrange(-1, cols), rng.randrange(-1, rows)
+        cells = {(gx + dx, gy + dy) for dx, dy in TETROMINOES[k]}
+        halo = {(x + ox, y + oy) for x, y in cells for ox in (-1, 0, 1) for oy in (-1, 0, 1)}
+        if halo & taken:
+            continue
+        taken |= cells
+        spots.append((gx, gy, k))
+    return spots
+
+
+def blue_background(width, height, cell, spots, glow_y=0.42, colors=None):
     """
     Radial blue glow, a fine dot texture and faint tetromino silhouettes. [spots] lists
-    (grid_x, grid_y, tetromino_index) on a grid of [cell] units.
+    (grid_x, grid_y, tetromino_index) on a grid of [cell] units. [colors] overrides the
+    (center, middle, edge) colors of the glow, e.g. for hue variants.
     """
+    center, middle, edge = colors or BLUE_GLOW
     tile = cell * 0.82
     tiles = "".join(
         f'<rect x="{(gx + dx) * cell + (cell - tile) / 2:.1f}" y="{(gy + dy) * cell + (cell - tile) / 2:.1f}" '
@@ -78,8 +103,8 @@ def blue_background(width, height, cell, spots, glow_y=0.42):
     dot = cell * 0.25
     defs = (
         f'<radialGradient id="bg" cx="0.5" cy="{glow_y}" r="0.7">'
-        '<stop offset="0" stop-color="#2f6cff"/><stop offset="0.55" stop-color="#1a3fc4"/>'
-        '<stop offset="1" stop-color="#0b1a66"/></radialGradient>'
+        f'<stop offset="0" stop-color="{center}"/><stop offset="0.55" stop-color="{middle}"/>'
+        f'<stop offset="1" stop-color="{edge}"/></radialGradient>'
         f'<pattern id="dots" width="{dot:.2f}" height="{dot:.2f}" patternUnits="userSpaceOnUse">'
         f'<circle cx="{dot / 2:.2f}" cy="{dot / 2:.2f}" r="{dot * 0.18:.2f}" fill="#000000" opacity="0.18"/></pattern>'
     )

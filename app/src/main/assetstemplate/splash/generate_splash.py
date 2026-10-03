@@ -13,13 +13,12 @@ The SVG sources are written next to this script. Requirements: see ../artkit.py.
 Usage: python3 app/src/main/assetstemplate/splash/generate_splash.py
 """
 import pathlib
-import random
 import sys
 import tempfile
 
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
-from artkit import PALETTE, TETROMINOES, blue_background, downscale, glossy_block, render, svg  # noqa: E402
+from artkit import PALETTE, blue_background, downscale, glossy_block, render, scatter_tetrominoes, svg  # noqa: E402
 
 ASSETS = HERE.parent.parent / "assets"
 SUPERSAMPLE = 3
@@ -45,20 +44,7 @@ WIPE_BLOCK = 80
 
 
 def background_spots():
-    """Scatter non-overlapping tetromino silhouettes on the background grid (fixed seed)."""
-    cols, rows = WIDTH // BACKGROUND_CELL, BACKGROUND_HEIGHT // BACKGROUND_CELL
-    rng = random.Random(1985)
-    taken, spots = set(), []
-    for _ in range(400):
-        k = rng.randrange(len(TETROMINOES))
-        gx, gy = rng.randrange(-1, cols), rng.randrange(-1, rows)
-        cells = {(gx + dx, gy + dy) for dx, dy in TETROMINOES[k]}
-        halo = {(x + ox, y + oy) for x, y in cells for ox in (-1, 0, 1) for oy in (-1, 0, 1)}
-        if halo & taken:
-            continue
-        taken |= cells
-        spots.append((gx, gy, k))
-    return spots
+    return scatter_tetrominoes(WIDTH // BACKGROUND_CELL, BACKGROUND_HEIGHT // BACKGROUND_CELL, seed=1985)
 
 
 def logo():
