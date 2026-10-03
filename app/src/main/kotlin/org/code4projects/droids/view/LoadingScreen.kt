@@ -33,6 +33,8 @@ class LoadingScreen : Screen {
         }
         Assets.hudFont = g.newFont("fonts/LilitaOne-Regular.ttf")
         Assets.playButton = g.newPixmap("button_play.png", Graphics.PixmapFormat.ARGB8888)
+        Assets.blueButton = g.newPixmap("button_blue.png", Graphics.PixmapFormat.ARGB8888)
+        Assets.iconBack = g.newPixmap("icon_back.png", Graphics.PixmapFormat.ARGB8888)
         Assets.iconTrophy = g.newPixmap("icon_trophy.png", Graphics.PixmapFormat.ARGB8888)
         Assets.iconGear = g.newPixmap("icon_gear.png", Graphics.PixmapFormat.ARGB8888)
         Assets.iconPower = g.newPixmap("icon_power.png", Graphics.PixmapFormat.ARGB8888)
@@ -41,15 +43,6 @@ class LoadingScreen : Screen {
         Assets.wipeBlocks = listOf("pink", "orange", "yellow", "green", "cyan", "blue", "purple").map {
             g.newPixmap("wipe_$it.png", Graphics.PixmapFormat.ARGB8888)
         }
-
-        // Screens
-        Assets.startscreen = g.newPixmap("startscreen.png", Graphics.PixmapFormat.RGB565)
-        Assets.highscoresscreen = Assets.startscreen
-        Assets.gameoverscreen = g.newPixmap("gameover.png", Graphics.PixmapFormat.RGB565)
-
-        // Menus
-        Assets.pausemenu = g.newPixmap("pausemenu.png", Graphics.PixmapFormat.RGB565)
-        Assets.readymenu = g.newPixmap("ready.png", Graphics.PixmapFormat.ARGB4444)
 
         Assets.playfield = g.newPixmap("playfield.png", Graphics.PixmapFormat.ARGB8888)
 
@@ -60,8 +53,6 @@ class LoadingScreen : Screen {
         Assets.yellowblock = g.newPixmap("yellowblock.png", Graphics.PixmapFormat.ARGB8888)
         Assets.magentablock = g.newPixmap("magentablock.png", Graphics.PixmapFormat.ARGB8888)
         Assets.orangeblock = g.newPixmap("orangeblock.png", Graphics.PixmapFormat.ARGB8888)
-
-        Assets.buttons = g.newPixmap("buttons.png", Graphics.PixmapFormat.RGB565)
 
         // Audio effects
         Assets.click = Gdx.audio!!.newSound("click.ogg")

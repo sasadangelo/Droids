@@ -16,8 +16,10 @@ import org.code4projects.framework.Sound
  * @author Salvatore D'Angelo
  */
 object Assets {
-    // home screen: the big Play button and the icons of its bottom tiles
+    // home screen and menus: the glossy buttons and the icons
     @JvmField var playButton: Pixmap? = null
+    @JvmField var blueButton: Pixmap? = null
+    @JvmField var iconBack: Pixmap? = null
     @JvmField var iconTrophy: Pixmap? = null
     @JvmField var iconGear: Pixmap? = null
     @JvmField var iconPower: Pixmap? = null
@@ -36,14 +38,6 @@ object Assets {
     // the font of the in-game HUD
     @JvmField var hudFont: Font? = null
 
-    @JvmField var startscreen: Pixmap? = null
-    @JvmField var highscoresscreen: Pixmap? = null
-    @JvmField var gameoverscreen: Pixmap? = null
-
-    // the menu used in DroidsWorld game
-    @JvmField var pausemenu: Pixmap? = null
-    @JvmField var readymenu: Pixmap? = null
-
     // the 10x20 board drawn over the game screen background, with a margin for its frame
     @JvmField var playfield: Pixmap? = null
 
@@ -56,9 +50,6 @@ object Assets {
     @JvmField var yellowblock: Pixmap? = null
     @JvmField var magentablock: Pixmap? = null
     @JvmField var orangeblock: Pixmap? = null
-
-    // buttons
-    @JvmField var buttons: Pixmap? = null
 
     // sounds
     @JvmField var click: Sound? = null

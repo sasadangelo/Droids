@@ -10,11 +10,8 @@ import android.util.Log
 import org.code4projects.droids.model.DroidsWorld
 import org.code4projects.droids.model.Settings
 import org.code4projects.framework.Gdx
-import org.code4projects.framework.Graphics
 import org.code4projects.framework.Input.TouchEvent
-import org.code4projects.framework.Rectangle
 import org.code4projects.framework.Screen
-import org.code4projects.framework.TextStyle
 
 import java.util.EnumMap
 import kotlin.math.abs
@@ -65,19 +62,10 @@ class GameScreen : Screen {
     private val moveStep = layout.cell
     private val dropSwipe = layout.cell * 2
     private val holdSwipe = layout.cell * 2
-    private val xButtonBounds = Rectangle(256, 400, 100, 100)
-    private val pauseMenuBounds = Rectangle(200, 200, 320, 96)
-    private val readyMenuBounds = Rectangle(130, 200, 376, 140)
-    private val homeMenuBounds = Rectangle(160, 296, 320, 96)
 
     private val renderer = DroidsWorldRenderer(layout)
     private val hud = GameHud(layout)
-
-    private val gameOverScoreStyle = TextStyle().apply {
-        color = 0xffffffffL.toInt()
-        textSize = 48
-        style = TextStyle.Style.BOLD
-    }
+    private val overlay = GameOverlay(layout)
 
     init {
         Log.i(LOG_TAG, "constructor -- begin")
@@ -280,170 +268,118 @@ class GameScreen : Screen {
     }
 
     /*
-     * This class represents the game screen in pause state. It will be responsible to update and
-     * draw when the game is paused.
+     * This class represents the game screen in pause state: the pause menu, to resume the game
+     * or go back to the start screen (the game stays paused there, ready to be resumed).
      *
      * @author Salvatore D'Angelo
      */
     inner class GamePaused : GameState() {
-        /*
-         * Update the game when it is in paused state. The method catch the user input and
-         * depending on it will resume the game or return to the start screen.
-         */
         override fun update(touchEvents: List<TouchEvent>, deltaTime: Float) {
             Log.i(LOG_TAG, "GamePaused.update -- begin")
-
-            // Check if user asked to resume the game or come back to the start screen.
-            val len = touchEvents.size
-            for (i in 0 until len) {
-                val event = touchEvents[i]
-                if (event.type == TouchEvent.TOUCH_UP) {
-                    if (pauseMenuBounds.contains(event.x, event.y)) {
-                        Assets.playClick()
-                        DroidsWorld.getInstance().state = DroidsWorld.GameState.Running
-                        return
-                    }
-                    if (homeMenuBounds.contains(event.x, event.y)) {
-                        Assets.playClick()
-                        Transitions.leaveGame(this@GameScreen, StartScreen())
-                        return
-                    }
+            val menu = overlay.pauseMenu
+            for (event in touchEvents) {
+                if (event.type != TouchEvent.TOUCH_UP) continue
+                if (menu.primaryButton.contains(event.x, event.y)) {
+                    Assets.playClick()
+                    DroidsWorld.getInstance().state = DroidsWorld.GameState.Running
+                    return
+                }
+                if (menu.secondaryButton.contains(event.x, event.y)) {
+                    Assets.playClick()
+                    Transitions.leaveGame(this@GameScreen, StartScreen())
+                    return
                 }
             }
             // pause the music if it is playing.
             Assets.pauseMusic()
         }
 
-        /*
-         * Draw the game in paused state.
-         */
         override fun draw() {
-            Log.i(LOG_TAG, "GamePaused.draw -- begin")
-            // draw the pause menu
-            Gdx.graphics!!.drawPixmap(Assets.pausemenu!!, pauseMenuBounds.x, pauseMenuBounds.y)
+            overlay.pauseMenu.draw(Gdx.graphics!!, "PAUSED", emptyList(), "RESUME", "HOME")
         }
     }
 
     /*
-     * This class represents the game screen in ready state. It will be responsible to update and
-     * draw when the game is ready.
+     * This class represents the game screen in ready state: any touch starts the game.
      *
      * @author Salvatore D'Angelo
      */
     inner class GameReady : GameState() {
-        /*
-         * Update the game when it is in ready state. The method catch the user input and
-         * resume the game.
-         */
         override fun update(touchEvents: List<TouchEvent>, deltaTime: Float) {
             Log.i(LOG_TAG, "GameReady.update -- begin")
             if (touchEvents.isNotEmpty())
                 DroidsWorld.getInstance().state = DroidsWorld.GameState.Running
         }
 
-        /*
-         * Draw the game in ready state.
-         */
         override fun draw() {
-            Log.i(LOG_TAG, "GameReady.draw -- begin")
-            // draw the ready menu
-            Gdx.graphics!!.drawPixmap(Assets.readymenu!!, readyMenuBounds.x, readyMenuBounds.y)
+            overlay.drawReady(Gdx.graphics!!)
         }
     }
 
     /*
-     * This class represents the game screen when it is over. It will be responsible to update and
-     * draw when the game is over.
-     *
-     * @author Salvatore D'Angelo
+     * Shared by the two end-of-game states (game over, Sprint cleared): play again in the same
+     * mode, or go back to the start screen.
      */
-    inner class GameOver : GameState() {
-        /*
-         * Update the game when it is over. The method catch the user input and return to the
-         * start screen.
-         */
+    abstract inner class GameEnded : GameState() {
+        abstract val menu: GameOverlay.Menu
+
         override fun update(touchEvents: List<TouchEvent>, deltaTime: Float) {
-            Log.i(LOG_TAG, "GameOver.update -- begin")
-            // check if the x button is pressed.
-            val len = touchEvents.size
-            for (i in 0 until len) {
-                val event = touchEvents[i]
-                if (event.type == TouchEvent.TOUCH_UP) {
-                    if (xButtonBounds.contains(event.x, event.y)) {
-                        Assets.playClick()
-                        Transitions.leaveGame(this@GameScreen, StartScreen())
-                        DroidsWorld.getInstance().clear()
-                        return
-                    }
+            for (event in touchEvents) {
+                if (event.type != TouchEvent.TOUCH_UP) continue
+                if (menu.primaryButton.contains(event.x, event.y)) {
+                    Assets.playClick()
+                    // Leaving the screen records the score in pause(); staying to play again
+                    // has to do it here, before the world is reset.
+                    Settings.addScore(DroidsWorld.getInstance().score)
+                    Settings.save(Gdx.fileIO!!)
+                    DroidsWorld.getInstance().clear()
+                    return
+                }
+                if (menu.secondaryButton.contains(event.x, event.y)) {
+                    Assets.playClick()
+                    Transitions.leaveGame(this@GameScreen, StartScreen())
+                    DroidsWorld.getInstance().clear()
+                    return
                 }
             }
             // stop the music if it is playing.
             Assets.stopMusic()
         }
+    }
 
-        /*
-         * Draw the game when it is over.
-         */
+    /*
+     * This class represents the game screen when the game is over.
+     *
+     * @author Salvatore D'Angelo
+     */
+    inner class GameOver : GameEnded() {
+        override val menu = overlay.gameOverMenu
+
         override fun draw() {
-            Log.i(LOG_TAG, "GameOver.draw -- begin")
-            val g: Graphics = Gdx.graphics!!
-
-            // draw game over transparent black background
-            g.drawBackground(Assets.gameoverscreen!!)
-            // draw the X button
-            g.drawPixmap(
-                Assets.buttons!!, xButtonBounds.x, xButtonBounds.y, 0, 200,
-                xButtonBounds.width + 1, xButtonBounds.height + 1
-            ) // down button
-            g.drawText("" + DroidsWorld.getInstance().score, 360, 618, gameOverScoreStyle)
+            menu.draw(
+                Gdx.graphics!!, "GAME OVER", listOf("SCORE" to "${DroidsWorld.getInstance().score}"),
+                "PLAY AGAIN", "HOME"
+            )
         }
     }
 
     /*
      * This class represents the game screen when a Sprint run has been won (the line target was
-     * reached). It reuses the same layout as GameOver - transparent overlay, pause button, X
-     * button to go home - but shows the finishing time alongside the score instead of just the
-     * score, since that's the number a Sprint run is actually judged on.
+     * reached): it shows the finishing time alongside the score, since that's the number a Sprint
+     * run is actually judged on.
      *
      * @author Salvatore D'Angelo
      */
-    inner class GameCleared : GameState() {
-        /*
-         * Update the game when a Sprint run has been cleared. The method catches the user input
-         * and returns to the start screen.
-         */
-        override fun update(touchEvents: List<TouchEvent>, deltaTime: Float) {
-            Log.i(LOG_TAG, "GameCleared.update -- begin")
-            val len = touchEvents.size
-            for (i in 0 until len) {
-                val event = touchEvents[i]
-                if (event.type == TouchEvent.TOUCH_UP) {
-                    if (xButtonBounds.contains(event.x, event.y)) {
-                        Assets.playClick()
-                        Transitions.leaveGame(this@GameScreen, StartScreen())
-                        DroidsWorld.getInstance().clear()
-                        return
-                    }
-                }
-            }
-            // stop the music if it is playing.
-            Assets.stopMusic()
-        }
+    inner class GameCleared : GameEnded() {
+        override val menu = overlay.clearedMenu
 
-        /*
-         * Draw the game when a Sprint run has been cleared.
-         */
         override fun draw() {
-            Log.i(LOG_TAG, "GameCleared.draw -- begin")
-            val g: Graphics = Gdx.graphics!!
-
-            g.drawBackground(Assets.gameoverscreen!!)
-            g.drawPixmap(
-                Assets.buttons!!, xButtonBounds.x, xButtonBounds.y, 0, 200,
-                xButtonBounds.width + 1, xButtonBounds.height + 1
-            ) // down button
-            g.drawText(formatTime(DroidsWorld.getInstance().elapsedTime), 360, 570, gameOverScoreStyle)
-            g.drawText("" + DroidsWorld.getInstance().score, 360, 630, gameOverScoreStyle)
+            val world = DroidsWorld.getInstance()
+            menu.draw(
+                Gdx.graphics!!, "CLEARED!",
+                listOf("TIME" to formatTime(world.elapsedTime), "SCORE" to "${world.score}"),
+                "PLAY AGAIN", "HOME"
+            )
         }
     }
 

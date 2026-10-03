@@ -13,47 +13,45 @@ import org.code4projects.framework.Screen
 import org.code4projects.framework.TextStyle
 
 /*
- * This class represents the highscores screen. The screen show the top five scores achieved by the
- * user.
+ * This class represents the highscores screen: the top five scores achieved on this device, one
+ * row each, the podium places in gold, silver and bronze.
  *
  * @author Salvatore D'Angelo
  */
 class HighscoreScreen : Screen {
-    private val backButtonBounds = Rectangle(64, 740, 100, 100)
-
-    private val lines = Array(5) { "" }
-
-    private val lineStyle = TextStyle().apply {
-        color = 0xffffffffL.toInt()
-        textSize = 48
-        style = TextStyle.Style.BOLD
+    companion object {
+        private const val ROW_WIDTH = 480
+        private const val ROW_HEIGHT = 96
+        private const val ROW_GAP = 18
+        private const val RANK_COLORS_PODIUM = 3
+        private val RANK_COLORS = intArrayOf(0xffffd000.toInt(), 0xffd8e2f0.toInt(), 0xffff9a4a.toInt())
     }
 
-    /*
-     * Initialize the screen with the following scores: 100, 80, 50, 30, 10.
-     */
+    private val page = MenuPage("HIGH SCORES")
+    private val rows: List<Rectangle>
+
+    private val rankStyles = List(Settings.highscores.size) { i ->
+        DroidsUi.textStyle(48, if (i < RANK_COLORS_PODIUM) RANK_COLORS[i] else DroidsUi.TITLE_COLOR)
+    }
+    private val scoreStyle = DroidsUi.textStyle(48, DroidsUi.VALUE_COLOR).apply { align = TextStyle.Align.RIGHT }
+
     init {
-        for (i in 0 until 5) {
-            lines[i] = "" + (i + 1) + ". " + Settings.highscores[i]
-        }
+        val count = Settings.highscores.size
+        val total = count * ROW_HEIGHT + (count - 1) * ROW_GAP
+        val x = (Gdx.graphics!!.getWidth() - ROW_WIDTH) / 2
+        var y = page.contentTop + (page.contentBottom - page.contentTop - total) / 2
+        rows = List(count) { Rectangle(x, y, ROW_WIDTH, ROW_HEIGHT).also { y += ROW_HEIGHT + ROW_GAP } }
     }
 
     /*
      * Check the user input and if he press the back button go back to the start screen.
      */
     override fun update(deltaTime: Float) {
-        val touchEvents = Gdx.input!!.getTouchEvents()
-        Gdx.input!!.getKeyEvents()
-
-        val len = touchEvents.size
-        for (i in 0 until len) {
-            val event = touchEvents[i]
-            if (event.type == TouchEvent.TOUCH_UP) {
-                if (backButtonBounds.contains(event.x, event.y)) {
-                    Assets.playClick()
-                    Transitions.back(this, StartScreen())
-                    return
-                }
+        for (event in Gdx.input!!.getTouchEvents()) {
+            if (event.type == TouchEvent.TOUCH_UP && page.backButton.contains(event.x, event.y)) {
+                Assets.playClick()
+                Transitions.back(this, StartScreen())
+                return
             }
         }
     }
@@ -63,20 +61,14 @@ class HighscoreScreen : Screen {
      */
     override fun draw(deltaTime: Float) {
         val g: Graphics = Gdx.graphics!!
+        page.draw(g)
 
-        // draw the background.
-        g.drawBackground(Assets.highscoresscreen!!)
-        // draw the 5 scores.
-        var y = 240
-        for (i in 0 until 5) {
-            g.drawText(lines[i], 40, y, lineStyle)
-            y += 100
+        for ((i, row) in rows.withIndex()) {
+            DroidsUi.drawPanel(g, row)
+            val baseline = row.y + row.height / 2 + 17
+            g.drawText("${i + 1}", row.x + 56, baseline, rankStyles[i])
+            g.drawText("${Settings.highscores[i]}", row.x + row.width - 32, baseline, scoreStyle)
         }
-        // draw the back button.
-        g.drawPixmap(
-            Assets.buttons!!, backButtonBounds.x, backButtonBounds.y, 100, 100,
-            backButtonBounds.width + 1, backButtonBounds.height + 1
-        )
     }
 
     /*

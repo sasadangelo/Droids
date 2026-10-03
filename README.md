@@ -12,7 +12,9 @@ This game has been created only for educational purpose, it has no claim to be a
 - **Ghost piece** preview showing where the falling piece will land.
 - **Settings screen** — independent Music/SFX toggles, each with its own volume slider.
 - **Local high scores** (top 5) and visual level progression (the background shifts every few levels).
+- **Modern look** — glossy blocks, a full-screen layout with an in-game HUD, a home screen with a big Play button, and menus in the same style.
 - **Animated presentation** — a splash screen with the "DROIDS" block logo, and animated screen transitions (slides between menus, a block wipe into the game).
+- **Play again** straight from the game over screen.
 
 # Screenshots
 

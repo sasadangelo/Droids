@@ -5,6 +5,7 @@
 package org.code4projects.droids.view
 
 import org.code4projects.framework.Graphics
+import org.code4projects.framework.Pixmap
 import org.code4projects.framework.Rectangle
 import org.code4projects.framework.TextStyle
 
@@ -35,6 +36,25 @@ object DroidsUi {
         shadowColor = SHADOW_COLOR
         shadowOffset = size / 10f
     }
+
+    // Native size of the glossy button images (button_play.png, button_blue.png).
+    private const val BUTTON_WIDTH = 420f
+
+    /*
+     * Draws a glossy button image scaled to the rectangle's width (keeping its proportions,
+     * centered on the rectangle) with a centered label.
+     */
+    fun drawButton(g: Graphics, bounds: Rectangle, button: Pixmap, label: String, style: TextStyle) {
+        val centerX = bounds.x + bounds.width / 2f
+        val centerY = bounds.y + bounds.height / 2f
+        g.drawPixmap(button, centerX, centerY, bounds.width / BUTTON_WIDTH, 0f, 1f)
+        g.drawText(label, centerX.toInt(), (centerY + style.textSize * 0.32f).toInt(), style)
+    }
+
+    /*
+     * Height of a button drawn [width] wide by drawButton(), from the images' proportions.
+     */
+    fun buttonHeight(width: Int): Int = width * 136 / 420
 
     fun drawPanel(g: Graphics, panel: Rectangle) {
         g.drawRoundRect(panel.x, panel.y, panel.width, panel.height, PANEL_RADIUS, PANEL_FILL)

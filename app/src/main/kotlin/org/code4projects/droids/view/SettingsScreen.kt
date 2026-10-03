@@ -13,73 +13,78 @@ import org.code4projects.framework.Screen
 import org.code4projects.framework.TextStyle
 
 /*
- * Real options screen replacing the old single sound on/off toggle: music and SFX each get
- * their own enable toggle and a drag-to-set volume slider. There's no baked art for sliders, so
- * they're drawn from plain rectangles, the same way the ghost piece reuses drawRect instead of
- * adding new sprites.
+ * The options screen: music and SFX each get a panel with an on/off toggle and a drag-to-set
+ * volume slider, all drawn in code.
  *
  * @author Salvatore D'Angelo
  */
 class SettingsScreen : Screen {
+    companion object {
+        private const val PANEL_WIDTH = 520
+        private const val PANEL_HEIGHT = 200
+        private const val PANEL_GAP = 32
+        private const val PADDING = 28
+        private const val TOGGLE_WIDTH = 130
+        private const val TOGGLE_HEIGHT = 60
+        private const val TRACK_HEIGHT = 18
+        private const val KNOB_SIZE = 44
+        // Extra vertical room around a slider's track that still grabs it.
+        private const val SLIDER_TOUCH_SLOP = 30
+
+        private const val TRACK_COLOR = 0xff1a2470.toInt()
+        private const val FILL_COLOR = 0xff5fd0ff.toInt()
+        private const val KNOB_COLOR = 0xffffffff.toInt()
+        private const val TOGGLE_ON_COLOR = 0xff3cc62a.toInt()
+        private const val TOGGLE_OFF_COLOR = 0xffd8384f.toInt()
+    }
+
     private enum class Slider { MUSIC, SFX }
 
-    private val backgroundBounds = Rectangle(0, 0, 640, 960)
-    private val backButtonBounds = Rectangle(64, 740, 100, 100)
+    private class Row(val panel: Rectangle) {
+        val toggle = Rectangle(
+            panel.x + panel.width - PADDING - TOGGLE_WIDTH, panel.y + PADDING, TOGGLE_WIDTH, TOGGLE_HEIGHT
+        )
+        val track = Rectangle(
+            panel.x + PADDING + KNOB_SIZE / 2, panel.y + panel.height - PADDING - KNOB_SIZE / 2 - TRACK_HEIGHT / 2,
+            panel.width - 2 * PADDING - KNOB_SIZE, TRACK_HEIGHT
+        )
+        val sliderHitArea = Rectangle(
+            panel.x, track.y - SLIDER_TOUCH_SLOP, panel.width, track.height + 2 * SLIDER_TOUCH_SLOP
+        )
+    }
 
-    private val musicToggleBounds = Rectangle(460, 300, 120, 60)
-    private val musicSliderTrack = Rectangle(80, 440, 480, 16)
-    private val musicSliderHitArea = Rectangle(80, 410, 480, 76)
-
-    private val sfxToggleBounds = Rectangle(460, 540, 120, 60)
-    private val sfxSliderTrack = Rectangle(80, 680, 480, 16)
-    private val sfxSliderHitArea = Rectangle(80, 650, 480, 76)
+    private val page = MenuPage("SETTINGS")
+    private val music: Row
+    private val sfx: Row
 
     // Which slider, if any, is currently being dragged - set on TOUCH_DOWN inside its hit area,
     // cleared on TOUCH_UP, so a single drag doesn't affect both sliders and a tap elsewhere on
     // the screen doesn't move a slider it didn't start on.
     private var activeSlider: Slider? = null
 
-    private val titleStyle = TextStyle().apply {
-        color = 0xffffffffL.toInt()
-        textSize = 48
-        style = TextStyle.Style.BOLD
-        align = TextStyle.Align.CENTER
-    }
+    private val labelStyle = DroidsUi.textStyle(40, DroidsUi.VALUE_COLOR).apply { align = TextStyle.Align.LEFT }
+    private val toggleStyle = DroidsUi.textStyle(28, DroidsUi.VALUE_COLOR)
 
-    private val labelStyle = TextStyle().apply {
-        color = 0xffffffffL.toInt()
-        textSize = 32
-        style = TextStyle.Style.BOLD
+    init {
+        val total = 2 * PANEL_HEIGHT + PANEL_GAP
+        val x = (Gdx.graphics!!.getWidth() - PANEL_WIDTH) / 2
+        val y = page.contentTop + (page.contentBottom - page.contentTop - total) / 2
+        music = Row(Rectangle(x, y, PANEL_WIDTH, PANEL_HEIGHT))
+        sfx = Row(Rectangle(x, y + PANEL_HEIGHT + PANEL_GAP, PANEL_WIDTH, PANEL_HEIGHT))
     }
-
-    private val toggleStyle = TextStyle().apply {
-        color = 0xffffffffL.toInt()
-        textSize = 24
-        style = TextStyle.Style.BOLD
-        align = TextStyle.Align.CENTER
-    }
-
-    private val trackColor = 0x99202040L.toInt()
-    private val fillColor = 0xff00e5ffL.toInt()
-    private val knobColor = 0xffffffffL.toInt()
-    private val toggleOnColor = 0x9900c853L.toInt()
-    private val toggleOffColor = 0x99b71c1cL.toInt()
 
     /*
      * Check the user input: dragging a slider updates the corresponding volume live, tapping a
      * toggle flips it, tapping back returns to the start screen.
      */
     override fun update(deltaTime: Float) {
-        val touchEvents = Gdx.input!!.getTouchEvents()
-        val len = touchEvents.size
-        for (i in 0 until len) {
-            val event = touchEvents[i]
+        for (event in Gdx.input!!.getTouchEvents()) {
             when (event.type) {
                 TouchEvent.TOUCH_DOWN -> {
-                    if (musicSliderHitArea.contains(event.x, event.y)) {
+                    if (music.sliderHitArea.contains(event.x, event.y)) {
                         activeSlider = Slider.MUSIC
                         applySlider(Slider.MUSIC, event.x)
-                    } else if (sfxSliderHitArea.contains(event.x, event.y)) {
+                    } else if (sfx.sliderHitArea.contains(event.x, event.y)) {
                         activeSlider = Slider.SFX
                         applySlider(Slider.SFX, event.x)
                     }
@@ -89,17 +94,17 @@ class SettingsScreen : Screen {
                 }
                 TouchEvent.TOUCH_UP -> {
                     activeSlider = null
-                    if (backButtonBounds.contains(event.x, event.y)) {
+                    if (page.backButton.contains(event.x, event.y)) {
                         Assets.playClick()
                         Transitions.back(this, StartScreen())
                         return
                     }
-                    if (musicToggleBounds.contains(event.x, event.y)) {
+                    if (music.toggle.contains(event.x, event.y)) {
                         Settings.musicEnabled = !Settings.musicEnabled
                         Assets.updateMusicVolume()
                         Assets.playClick()
                     }
-                    if (sfxToggleBounds.contains(event.x, event.y)) {
+                    if (sfx.toggle.contains(event.x, event.y)) {
                         Settings.sfxEnabled = !Settings.sfxEnabled
                         Assets.playClick()
                     }
@@ -110,7 +115,7 @@ class SettingsScreen : Screen {
 
     // Maps a touch x position onto the given slider's 0f..1f volume range and applies it.
     private fun applySlider(slider: Slider, touchX: Int) {
-        val track = if (slider == Slider.MUSIC) musicSliderTrack else sfxSliderTrack
+        val track = if (slider == Slider.MUSIC) music.track else sfx.track
         val fraction = ((touchX - track.x).toFloat() / track.width).coerceIn(0f, 1f)
         if (slider == Slider.MUSIC) {
             Settings.musicVolume = fraction
@@ -121,45 +126,43 @@ class SettingsScreen : Screen {
     }
 
     /*
-     * Draw the settings screen: title, a Music row and an SFX row (each with a toggle and a
-     * volume slider), and the back button.
+     * Draw the settings screen: a Music panel and an SFX panel, each with a toggle and a volume
+     * slider.
      */
     override fun draw(deltaTime: Float) {
         val g: Graphics = Gdx.graphics!!
-        g.drawBackground(Assets.startscreen!!)
-        g.drawText("Settings", backgroundBounds.width / 2, 220, titleStyle)
-
-        g.drawText("Music", musicSliderTrack.x, 280, labelStyle)
-        drawToggle(g, musicToggleBounds, Settings.musicEnabled)
-        drawSlider(g, musicSliderTrack, Settings.musicVolume)
-
-        g.drawText("SFX", sfxSliderTrack.x, 520, labelStyle)
-        drawToggle(g, sfxToggleBounds, Settings.sfxEnabled)
-        drawSlider(g, sfxSliderTrack, Settings.sfxVolume)
-
-        // draw the back button.
-        g.drawPixmap(
-            Assets.buttons!!, backButtonBounds.x, backButtonBounds.y, 100, 100,
-            backButtonBounds.width + 1, backButtonBounds.height + 1
-        )
+        page.draw(g)
+        drawRow(g, music, "MUSIC", Settings.musicEnabled, Settings.musicVolume)
+        drawRow(g, sfx, "SFX", Settings.sfxEnabled, Settings.sfxVolume)
     }
 
-    private fun drawToggle(g: Graphics, bounds: Rectangle, enabled: Boolean) {
-        g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height, if (enabled) toggleOnColor else toggleOffColor)
+    private fun drawRow(g: Graphics, row: Row, label: String, enabled: Boolean, volume: Float) {
+        DroidsUi.drawPanel(g, row.panel)
+        g.drawText(label, row.panel.x + PADDING, row.toggle.y + row.toggle.height / 2 + 14, labelStyle)
+
+        // toggle: a pill, green when on, red when off
+        val toggle = row.toggle
+        g.drawRoundRect(
+            toggle.x, toggle.y, toggle.width, toggle.height, toggle.height / 2f,
+            if (enabled) TOGGLE_ON_COLOR else TOGGLE_OFF_COLOR
+        )
+        g.drawRoundRectOutline(toggle.x, toggle.y, toggle.width, toggle.height, toggle.height / 2f, 3f, KNOB_COLOR)
         g.drawText(
-            if (enabled) "ON" else "OFF", bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 + 8, toggleStyle
+            if (enabled) "ON" else "OFF", toggle.x + toggle.width / 2, toggle.y + toggle.height / 2 + 10, toggleStyle
         )
-    }
 
-    private fun drawSlider(g: Graphics, track: Rectangle, volume: Float) {
-        g.drawRect(track.x, track.y, track.width, track.height, trackColor)
-        val filledWidth = (track.width * volume.coerceIn(0f, 1f)).toInt()
-        if (filledWidth > 0) {
-            g.drawRect(track.x, track.y, filledWidth, track.height, fillColor)
+        // slider: rounded track, filled up to the volume, round knob
+        val track = row.track
+        val radius = track.height / 2f
+        g.drawRoundRect(track.x, track.y, track.width, track.height, radius, TRACK_COLOR)
+        val filled = (track.width * volume.coerceIn(0f, 1f)).toInt()
+        if (filled > 0) {
+            g.drawRoundRect(track.x, track.y, filled, track.height, radius, FILL_COLOR)
         }
-        val knobWidth = 20
-        val knobX = (track.x + filledWidth - knobWidth / 2).coerceIn(track.x, track.x + track.width - knobWidth)
-        g.drawRect(knobX, track.y - 12, knobWidth, track.height + 24, knobColor)
+        val knobX = track.x + filled - KNOB_SIZE / 2
+        val knobY = track.y + track.height / 2 - KNOB_SIZE / 2
+        g.drawRoundRect(knobX, knobY + 3, KNOB_SIZE, KNOB_SIZE, KNOB_SIZE / 2f, DroidsUi.SHADOW_COLOR)
+        g.drawRoundRect(knobX, knobY, KNOB_SIZE, KNOB_SIZE, KNOB_SIZE / 2f, KNOB_COLOR)
     }
 
     /*
