@@ -188,11 +188,15 @@ abstract class AndroidGame : Activity(), Game {
      * rather than in the droids.view screens, since building a dialog needs an Android Context.
      */
     override fun confirmExit(onConfirm: () -> Unit) {
-        AlertDialog.Builder(this)
-            .setMessage("Exit the game?")
-            .setPositiveButton(android.R.string.yes) { _, _ -> onConfirm() }
-            .setNegativeButton(android.R.string.no, null)
-            .show()
+        // Screens call this from the render thread (e.g. a Quit button in update()), but dialogs
+        // can only be created on the UI thread.
+        runOnUiThread {
+            AlertDialog.Builder(this)
+                .setMessage("Exit the game?")
+                .setPositiveButton(android.R.string.yes) { _, _ -> onConfirm() }
+                .setNegativeButton(android.R.string.no, null)
+                .show()
+        }
     }
 
     /*

@@ -16,8 +16,11 @@ import org.code4projects.framework.Sound
  * @author Salvatore D'Angelo
  */
 object Assets {
-    // the logo asset
-    @JvmField var logo: Pixmap? = null
+    // home screen: the big Play button and the icons of its bottom tiles
+    @JvmField var playButton: Pixmap? = null
+    @JvmField var iconTrophy: Pixmap? = null
+    @JvmField var iconGear: Pixmap? = null
+    @JvmField var iconPower: Pixmap? = null
 
     // splash screen: blue background and the "DROIDS" block logo
     @JvmField var splashBackground: Pixmap? = null
@@ -38,7 +41,6 @@ object Assets {
     @JvmField var gameoverscreen: Pixmap? = null
 
     // the menu used in DroidsWorld game
-    @JvmField var mainmenu: Pixmap? = null
     @JvmField var pausemenu: Pixmap? = null
     @JvmField var readymenu: Pixmap? = null
 

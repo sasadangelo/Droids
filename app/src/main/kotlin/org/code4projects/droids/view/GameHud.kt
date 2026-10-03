@@ -8,7 +8,6 @@ import org.code4projects.droids.model.DroidsWorld
 import org.code4projects.framework.Gdx
 import org.code4projects.framework.Graphics
 import org.code4projects.framework.Rectangle
-import org.code4projects.framework.TextStyle
 
 /*
  * The in-game HUD along the top of the game screen: the pause button, the Hold and Next panels
@@ -19,29 +18,10 @@ import org.code4projects.framework.TextStyle
  * @author Salvatore D'Angelo
  */
 class GameHud(private val layout: GameLayout) {
-    companion object {
-        private const val PANEL_FILL = 0xd90b1650.toInt()
-        private const val PANEL_BORDER = 0xff3d5ce0.toInt()
-        private const val PANEL_RADIUS = 14f
-        private const val PANEL_BORDER_WIDTH = 3f
-        private const val TITLE_COLOR = 0xff5fd0ff.toInt()
-        private const val VALUE_COLOR = 0xffffffff.toInt()
-        private const val SHADOW_COLOR = 0xff050a30.toInt()
-    }
-
-    private val titleStyle = hudStyle(24, TITLE_COLOR)
-    private val smallTitleStyle = hudStyle(20, TITLE_COLOR)
-    private val bigValueStyle = hudStyle(40, VALUE_COLOR)
-    private val valueStyle = hudStyle(28, VALUE_COLOR)
-
-    private fun hudStyle(size: Int, textColor: Int) = TextStyle().apply {
-        font = Assets.hudFont
-        textSize = size
-        color = textColor
-        align = TextStyle.Align.CENTER
-        shadowColor = SHADOW_COLOR
-        shadowOffset = size / 10f
-    }
+    private val titleStyle = DroidsUi.textStyle(24, DroidsUi.TITLE_COLOR)
+    private val smallTitleStyle = DroidsUi.textStyle(20, DroidsUi.TITLE_COLOR)
+    private val bigValueStyle = DroidsUi.textStyle(40, DroidsUi.VALUE_COLOR)
+    private val valueStyle = DroidsUi.textStyle(28, DroidsUi.VALUE_COLOR)
 
     fun draw() {
         val g = Gdx.graphics!!
@@ -53,10 +33,7 @@ class GameHud(private val layout: GameLayout) {
     }
 
     private fun drawPanel(g: Graphics, panel: Rectangle, title: String?) {
-        g.drawRoundRect(panel.x, panel.y, panel.width, panel.height, PANEL_RADIUS, PANEL_FILL)
-        g.drawRoundRectOutline(
-            panel.x, panel.y, panel.width, panel.height, PANEL_RADIUS, PANEL_BORDER_WIDTH, PANEL_BORDER
-        )
+        DroidsUi.drawPanel(g, panel)
         if (title != null) {
             g.drawText(title, panel.x + panel.width / 2, panel.y + 28, titleStyle)
         }
@@ -98,8 +75,8 @@ class GameHud(private val layout: GameLayout) {
         val barHeight = button.height * 2 / 5
         val barY = button.y + (button.height - barHeight) / 2
         val centerX = button.x + button.width / 2
-        g.drawRoundRect(centerX - barWidth * 3 / 2, barY, barWidth, barHeight, 3f, TITLE_COLOR)
-        g.drawRoundRect(centerX + barWidth / 2, barY, barWidth, barHeight, 3f, TITLE_COLOR)
+        g.drawRoundRect(centerX - barWidth * 3 / 2, barY, barWidth, barHeight, 3f, DroidsUi.TITLE_COLOR)
+        g.drawRoundRect(centerX + barWidth / 2, barY, barWidth, barHeight, 3f, DroidsUi.TITLE_COLOR)
     }
 }
 

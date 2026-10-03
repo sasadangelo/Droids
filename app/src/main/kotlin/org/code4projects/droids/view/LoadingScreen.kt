@@ -32,7 +32,10 @@ class LoadingScreen : Screen {
             g.newPixmap("gamebg_$it.png", Graphics.PixmapFormat.RGB565)
         }
         Assets.hudFont = g.newFont("fonts/LilitaOne-Regular.ttf")
-        Assets.logo = g.newPixmap("logo.png", Graphics.PixmapFormat.RGB565)
+        Assets.playButton = g.newPixmap("button_play.png", Graphics.PixmapFormat.ARGB8888)
+        Assets.iconTrophy = g.newPixmap("icon_trophy.png", Graphics.PixmapFormat.ARGB8888)
+        Assets.iconGear = g.newPixmap("icon_gear.png", Graphics.PixmapFormat.ARGB8888)
+        Assets.iconPower = g.newPixmap("icon_power.png", Graphics.PixmapFormat.ARGB8888)
         Assets.splashBackground = g.newPixmap("splash_background.png", Graphics.PixmapFormat.RGB565)
         Assets.splashLogo = g.newPixmap("splash_logo.png", Graphics.PixmapFormat.ARGB8888)
         Assets.wipeBlocks = listOf("pink", "orange", "yellow", "green", "cyan", "blue", "purple").map {
@@ -45,7 +48,6 @@ class LoadingScreen : Screen {
         Assets.gameoverscreen = g.newPixmap("gameover.png", Graphics.PixmapFormat.RGB565)
 
         // Menus
-        Assets.mainmenu = g.newPixmap("mainmenu.png", Graphics.PixmapFormat.RGB565)
         Assets.pausemenu = g.newPixmap("pausemenu.png", Graphics.PixmapFormat.RGB565)
         Assets.readymenu = g.newPixmap("ready.png", Graphics.PixmapFormat.ARGB4444)
 

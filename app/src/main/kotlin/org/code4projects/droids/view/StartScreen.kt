@@ -4,77 +4,111 @@
  */
 package org.code4projects.droids.view
 
+import kotlin.math.sin
+
 import org.code4projects.droids.model.DroidsWorld
 import org.code4projects.droids.model.Settings
 import org.code4projects.framework.Gdx
 import org.code4projects.framework.Graphics
 import org.code4projects.framework.Input
+import org.code4projects.framework.Pixmap
 import org.code4projects.framework.Rectangle
 import org.code4projects.framework.Screen
 
 /*
- * This class represents the start screen. It contains the logo and the main menu with three
- * options:
- *     Play
- *     Highscores
- *     Quit
- *
- *  It also has a button that opens the settings screen (music/SFX toggles and volume).
+ * This class represents the start (home) screen: the "DROIDS" block logo over the blue
+ * background, a big Play button (Resume when a game is paused or running) and a row of tiles
+ * along the bottom for the high scores, the settings and quitting. Positions follow the visible
+ * area so the screen fills tall phones too.
  *
  * @author Salvatore D'Angelo
  */
 class StartScreen : Screen {
-    private val logoBounds = Rectangle(64, 40, 512, 320)
-    private val settingsButtonBounds = Rectangle(64, 740, 100, 100)
-    private val mainMenuBounds = Rectangle(168, 440, 306, 248)
-    private val playMenuBounds = Rectangle(128, 440, 384, 84)
-    private val highscoresMenuBounds = Rectangle(128, 440 + 84, 384, 84)
-    private val quitMenuBounds = Rectangle(128, 440 + 168, 384, 84)
+    companion object {
+        private const val TILE_WIDTH = 150
+        private const val TILE_HEIGHT = 130
+        private const val TILE_GAP = 20
+        private const val BOTTOM_MARGIN = 48
+        private const val ICON_SIZE = 72
+    }
+
+    private val playButtonBounds: Rectangle
+    private val logoCenterY: Float
+    private val highscoresTile: Rectangle
+    private val settingsTile: Rectangle
+    private val quitTile: Rectangle
+
+    private val playStyle = DroidsUi.textStyle(64, DroidsUi.VALUE_COLOR)
+    private val tileStyle = DroidsUi.textStyle(24, DroidsUi.TITLE_COLOR)
+
+    // Drives the logo bob and the Play button pulse.
+    private var time = 0f
+
+    init {
+        val g = Gdx.graphics!!
+        val top = g.getVisibleTop()
+        val height = g.getVisibleBottom() - top
+        val width = g.getWidth()
+
+        logoCenterY = top + height * 0.27f
+
+        val button = Assets.playButton!!
+        playButtonBounds = Rectangle(
+            (width - button.getWidth()) / 2, top + (height * 0.58f).toInt() - button.getHeight() / 2,
+            button.getWidth(), button.getHeight()
+        )
+
+        val tilesY = g.getVisibleBottom() - BOTTOM_MARGIN - TILE_HEIGHT
+        var x = (width - 3 * TILE_WIDTH - 2 * TILE_GAP) / 2
+        highscoresTile = Rectangle(x, tilesY, TILE_WIDTH, TILE_HEIGHT)
+        x += TILE_WIDTH + TILE_GAP
+        settingsTile = Rectangle(x, tilesY, TILE_WIDTH, TILE_HEIGHT)
+        x += TILE_WIDTH + TILE_GAP
+        quitTile = Rectangle(x, tilesY, TILE_WIDTH, TILE_HEIGHT)
+    }
+
+    private fun isGameInProgress(): Boolean {
+        val state = DroidsWorld.getInstance().state
+        return state == DroidsWorld.GameState.Paused || state == DroidsWorld.GameState.Running
+    }
 
     /*
-     * Check the user input and if one the the folloing things could occurs:
+     * Check the user input and if one the following things could occur:
      *     - Play the game (choosing a mode first, unless a game is already paused/running)
      *     - See Highscores
-     *     - Quit game
      *     - Open the settings screen
+     *     - Quit game
      */
     override fun update(deltaTime: Float) {
+        time += deltaTime
         val touchEvents = Gdx.input!!.getTouchEvents()
 
-        val len = touchEvents.size
-        for (i in 0 until len) {
-            val event = touchEvents[i]
-            if (event.type == Input.TouchEvent.TOUCH_UP) {
-                // open the settings screen
-                if (settingsButtonBounds.contains(event.x, event.y)) {
-                    Assets.playClick()
-                    Transitions.forward(this, SettingsScreen())
-                    return
-                }
-                // play the game: resume directly if a game is already paused/running (so
-                // pausing and going home doesn't lose progress), otherwise let the player
-                // choose a mode for a new game.
-                if (playMenuBounds.contains(event.x, event.y)) {
-                    Assets.playClick()
-                    val world = DroidsWorld.getInstance()
-                    val resuming = world.state == DroidsWorld.GameState.Paused ||
-                        world.state == DroidsWorld.GameState.Running
-                    if (resuming) Transitions.play(this, GameScreen())
-                    else Transitions.forward(this, ModeSelectScreen())
-                    return
-                }
-                // see highscores.
-                if (highscoresMenuBounds.contains(event.x, event.y)) {
-                    Transitions.forward(this, HighscoreScreen())
-                    Assets.playClick()
-                    return
-                }
-                // quit the game, after confirmation.
-                if (quitMenuBounds.contains(event.x, event.y)) {
-                    Assets.playClick()
-                    Gdx.game!!.confirmExit { exitGame() }
-                    return
-                }
+        for (event in touchEvents) {
+            if (event.type != Input.TouchEvent.TOUCH_UP) continue
+
+            // play the game: resume directly if a game is already paused/running (so pausing and
+            // going home doesn't lose progress), otherwise let the player choose a mode first.
+            if (playButtonBounds.contains(event.x, event.y)) {
+                Assets.playClick()
+                if (isGameInProgress()) Transitions.play(this, GameScreen())
+                else Transitions.forward(this, ModeSelectScreen())
+                return
+            }
+            if (highscoresTile.contains(event.x, event.y)) {
+                Assets.playClick()
+                Transitions.forward(this, HighscoreScreen())
+                return
+            }
+            if (settingsTile.contains(event.x, event.y)) {
+                Assets.playClick()
+                Transitions.forward(this, SettingsScreen())
+                return
+            }
+            // quit the game, after confirmation.
+            if (quitTile.contains(event.x, event.y)) {
+                Assets.playClick()
+                Gdx.game!!.confirmExit { exitGame() }
+                return
             }
         }
     }
@@ -85,23 +119,32 @@ class StartScreen : Screen {
     override fun draw(deltaTime: Float) {
         val g: Graphics = Gdx.graphics!!
 
-        // draw the background
-        g.drawBackground(Assets.startscreen!!)
-        // draw the logo
-        g.drawPixmap(Assets.logo!!, logoBounds.x, logoBounds.y)
-        // draw the main menu
-        g.drawPixmap(Assets.mainmenu!!, mainMenuBounds.x, mainMenuBounds.y)
-        // draw the settings button; the icon reflects whether any audio is currently enabled.
-        if (Settings.musicEnabled || Settings.sfxEnabled)
-            g.drawPixmap(
-                Assets.buttons!!, settingsButtonBounds.x, settingsButtonBounds.y, 0, 0,
-                settingsButtonBounds.width + 1, settingsButtonBounds.height + 1
-            )
-        else
-            g.drawPixmap(
-                Assets.buttons!!, settingsButtonBounds.x, settingsButtonBounds.y, 100, 0,
-                settingsButtonBounds.width + 1, settingsButtonBounds.height + 1
-            )
+        g.drawBackground(Assets.splashBackground!!)
+
+        // the logo floats gently, like at the end of the splash screen
+        val bob = sin(time * 2f) * 6f
+        g.drawPixmap(Assets.splashLogo!!, g.getWidth() / 2f, logoCenterY + bob, 1f, 0f, 1f)
+
+        // the Play button pulses slightly to invite a tap
+        val pulse = 1f + sin(time * 3f) * 0.025f
+        val centerX = playButtonBounds.x + playButtonBounds.width / 2f
+        val centerY = playButtonBounds.y + playButtonBounds.height / 2f
+        g.save()
+        g.scale(pulse, pulse, centerX, centerY)
+        g.drawPixmap(Assets.playButton!!, playButtonBounds.x, playButtonBounds.y)
+        val label = if (isGameInProgress()) "RESUME" else "PLAY"
+        g.drawText(label, centerX.toInt(), (centerY + playStyle.textSize * 0.32f).toInt(), playStyle)
+        g.restore()
+
+        drawTile(g, highscoresTile, Assets.iconTrophy!!, "SCORES")
+        drawTile(g, settingsTile, Assets.iconGear!!, "SETTINGS")
+        drawTile(g, quitTile, Assets.iconPower!!, "QUIT")
+    }
+
+    private fun drawTile(g: Graphics, tile: Rectangle, icon: Pixmap, label: String) {
+        DroidsUi.drawPanel(g, tile)
+        g.drawPixmap(icon, tile.x + (tile.width - ICON_SIZE) / 2, tile.y + 14)
+        g.drawText(label, tile.x + tile.width / 2, tile.y + tile.height - 18, tileStyle)
     }
 
     /*
@@ -124,7 +167,7 @@ class StartScreen : Screen {
     }
 
     /*
-     * Ask for confirmation before exiting, same as the quit menu item.
+     * Ask for confirmation before exiting, same as the quit tile.
      */
     override fun backPressed(): Boolean {
         Gdx.game!!.confirmExit { exitGame() }
